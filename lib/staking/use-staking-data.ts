@@ -1,0 +1,139 @@
+"use client";
+
+import * as React from "react";
+import { useBalance, useReadContract } from "wagmi";
+
+import { ERC20ABI } from "@/lib/abis";
+import { CONFIG } from "@/lib/config";
+import { useStakingStats } from "@/hooks/use-staking-stats";
+import { WithdrawalRequest } from "@/lib/staking/types";
+
+type UseStakingDataOptions = {
+  address?: `0x${string}`;
+};
+
+export function useStakingData({ address }: UseStakingDataOptions) {
+  const {
+    claimableEth,
+    stakedBalance,
+    pendingUnstake,
+    totalStaked,
+    cooldownDuration
+  } = useStakingStats();
+
+  const { data: ssvBalance, refetch: refetchSsvBalance } = useBalance({
+    address,
+    token: CONFIG.contracts.SSVToken,
+    query: { enabled: Boolean(address) }
+  });
+
+  const { data: ssvDecimals } = useReadContract({
+    address: CONFIG.contracts.SSVToken,
+    abi: ERC20ABI,
+    functionName: "decimals",
+    query: { enabled: true }
+  });
+
+  const { data: cssvDecimals } = useReadContract({
+    address: CONFIG.contracts.cSSVToken,
+    abi: ERC20ABI,
+    functionName: "decimals",
+    query: { enabled: true }
+  });
+
+  const { refetch: refetchClaimable } = claimableEth;
+  const { refetch: refetchStaked } = stakedBalance;
+  const { refetch: refetchPending } = pendingUnstake;
+  const { refetch: refetchTotalStaked } = totalStaked;
+
+  const { data: ssvAllowance, refetch: refetchSsvAllowance } = useReadContract({
+    address: CONFIG.contracts.SSVToken,
+    abi: ERC20ABI,
+    functionName: "allowance",
+    args: address ? [address, CONFIG.contracts.Staking] : undefined,
+    query: { enabled: Boolean(address) }
+  });
+
+  const { data: cssvAllowance, refetch: refetchCssvAllowance } =
+    useReadContract({
+      address: CONFIG.contracts.cSSVToken,
+      abi: ERC20ABI,
+      functionName: "allowance",
+      args: address ? [address, CONFIG.contracts.Staking] : undefined,
+      query: { enabled: Boolean(address) }
+    });
+
+  const withdrawalRequests: WithdrawalRequest[] = React.useMemo(() => {
+    const data = pendingUnstake.data as readonly [bigint, bigint] | undefined;
+    if (!data) return [];
+    const [amount, unlockTime] = data;
+    if (amount <= 0n) return [];
+    return [
+      {
+        id: "0",
+        amount,
+        unlockTime: Number(unlockTime)
+      }
+    ];
+  }, [pendingUnstake.data]);
+
+  const claimableValue = (claimableEth.data as bigint | undefined) ?? 0n;
+  const ssvBalanceValue = ssvBalance?.value;
+  const stakedBalanceValue = stakedBalance.data as bigint | undefined;
+  const totalStakedValue = totalStaked.data as bigint | undefined;
+
+  const tokenDecimals = Number(
+    ssvBalance?.decimals ?? (ssvDecimals as number | undefined) ?? 18
+  );
+  const receiptDecimals = Number(
+    (cssvDecimals as number | undefined) ?? tokenDecimals
+  );
+
+  const cooldownDurationSeconds = Number(
+    (cooldownDuration.data as bigint | undefined) ?? 0n
+  );
+  const cooldownDays = cooldownDurationSeconds
+    ? Math.ceil(cooldownDurationSeconds / 86400)
+    : 0;
+  const cooldownLabel = `${cooldownDays || 7} days`;
+
+  const ssvAllowanceValue = (ssvAllowance as bigint | undefined) ?? 0n;
+  const cssvAllowanceValue = (cssvAllowance as bigint | undefined) ?? 0n;
+
+  const refreshAll = React.useCallback(() => {
+    refetchSsvBalance();
+    refetchClaimable();
+    refetchStaked();
+    refetchPending();
+    refetchSsvAllowance();
+    refetchCssvAllowance();
+    refetchTotalStaked();
+  }, [
+    refetchSsvBalance,
+    refetchClaimable,
+    refetchStaked,
+    refetchPending,
+    refetchSsvAllowance,
+    refetchCssvAllowance,
+    refetchTotalStaked
+  ]);
+
+  return {
+    ssvBalance,
+    ssvBalanceFormatted: ssvBalance?.formatted,
+    ssvBalanceValue,
+    stakedBalanceValue,
+    claimableValue,
+    totalStakedValue,
+    tokenDecimals,
+    receiptDecimals,
+    cooldownDurationSeconds,
+    cooldownLabel,
+    ssvAllowanceValue,
+    cssvAllowanceValue,
+    withdrawalRequests,
+    refreshAll,
+    refetchSsvAllowance,
+    refetchCssvAllowance
+  };
+}
