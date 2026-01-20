@@ -1,7 +1,8 @@
 {
   "name": "ssv-staking-dashboard",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "packageManager": "pnpm@9.15.2",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
