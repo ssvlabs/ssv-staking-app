@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 import { Tooltip } from "@/components/ui/tooltip";
 import { InfoIcon } from "@/components/ui/info-icon";
 import { formatToken } from "@/lib/staking/format";
@@ -87,16 +89,23 @@ export function StakingHeader({
             <div className="flex-none rotate-[196deg] scale-y-[-100%]">
               <div className="relative h-[186px] w-[186px] opacity-[0.08]">
                 {aprBgPieces.map((piece) => (
-                  <div key={piece.light} className={piece.className}>
-                    <img
+                  <div
+                    key={piece.light}
+                    className={`relative ${piece.className}`}
+                  >
+                    <Image
                       alt=""
-                      className="h-full w-full dark:hidden"
+                      className="dark:hidden"
                       src={piece.light}
+                      fill
+                      sizes="100%"
                     />
-                    <img
+                    <Image
                       alt=""
-                      className="hidden h-full w-full dark:block"
+                      className="hidden dark:block"
                       src={piece.dark}
+                      fill
+                      sizes="100%"
                     />
                   </div>
                 ))}
@@ -120,7 +129,13 @@ export function StakingHeader({
                 target="_blank"
                 rel="noreferrer"
               >
-                <img alt="" className="size-5" src={calculatorIcon} />
+                <Image
+                  alt=""
+                  className="size-5"
+                  src={calculatorIcon}
+                  width={20}
+                  height={20}
+                />
               </a>
             </Tooltip>
           </div>
@@ -138,16 +153,23 @@ export function StakingHeader({
             <div className="flex-none rotate-[156.904deg] scale-y-[-100%]">
               <div className="relative h-[149.08px] w-[149.08px] opacity-[0.08]">
                 {totalBgPieces.map((piece) => (
-                  <div key={piece.light} className={piece.className}>
-                    <img
+                  <div
+                    key={piece.light}
+                    className={`relative ${piece.className}`}
+                  >
+                    <Image
                       alt=""
-                      className="h-full w-full dark:hidden"
+                      className="dark:hidden"
                       src={piece.light}
+                      fill
+                      sizes="100%"
                     />
-                    <img
+                    <Image
                       alt=""
-                      className="hidden h-full w-full dark:block"
+                      className="hidden dark:block"
                       src={piece.dark}
+                      fill
+                      sizes="100%"
                     />
                   </div>
                 ))}
@@ -165,7 +187,13 @@ export function StakingHeader({
           </div>
           <div className="flex items-center gap-2">
             <span className="flex size-[28px] items-center justify-center rounded-full bg-[linear-gradient(135deg,#5c8de6_0%,#3e75e2_100%)] p-[6px]">
-              <img alt="SSV" className="size-4" src={ssvSmall} />
+              <Image
+                alt="SSV"
+                className="size-4"
+                src={ssvSmall}
+                width={16}
+                height={16}
+              />
             </span>
             <span className="text-[20px] font-bold leading-[28px] text-[#0b2a3c] dark:text-[#fdfefe]">
               {formatToken(totalStakedValue, tokenDecimals)} SSV

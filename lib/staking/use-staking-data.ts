@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useCallback, useMemo } from "react";
 import { useBalance, useReadContract } from "wagmi";
 
 import { ERC20ABI } from "@/lib/abis";
@@ -63,7 +63,7 @@ export function useStakingData({ address }: UseStakingDataOptions) {
       query: { enabled: Boolean(address) }
     });
 
-  const withdrawalRequests: WithdrawalRequest[] = React.useMemo(() => {
+  const withdrawalRequests: WithdrawalRequest[] = useMemo(() => {
     const data = pendingUnstake.data as readonly [bigint, bigint] | undefined;
     if (!data) return [];
     const [amount, unlockTime] = data;
@@ -100,7 +100,7 @@ export function useStakingData({ address }: UseStakingDataOptions) {
   const ssvAllowanceValue = (ssvAllowance as bigint | undefined) ?? 0n;
   const cssvAllowanceValue = (cssvAllowance as bigint | undefined) ?? 0n;
 
-  const refreshAll = React.useCallback(() => {
+  const refreshAll = useCallback(() => {
     refetchSsvBalance();
     refetchClaimable();
     refetchStaked();

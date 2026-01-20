@@ -1,6 +1,15 @@
 "use client";
 
-import * as React from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useState,
+  type ButtonHTMLAttributes,
+  type HTMLAttributes,
+  type MouseEvent,
+  type ReactNode
+} from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -9,7 +18,7 @@ type TabsContextValue = {
   setValue: (value: string) => void;
 };
 
-const TabsContext = React.createContext<TabsContextValue | undefined>(
+const TabsContext = createContext<TabsContextValue | undefined>(
   undefined
 );
 
@@ -18,7 +27,7 @@ type TabsProps = {
   value?: string;
   onValueChange?: (value: string) => void;
   className?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 export function Tabs({
@@ -28,10 +37,10 @@ export function Tabs({
   className,
   children
 }: TabsProps) {
-  const [internalValue, setInternalValue] = React.useState(defaultValue);
+  const [internalValue, setInternalValue] = useState(defaultValue);
   const activeValue = value ?? internalValue;
 
-  const setValue = React.useCallback(
+  const setValue = useCallback(
     (nextValue: string) => {
       setInternalValue(nextValue);
       onValueChange?.(nextValue);
@@ -46,7 +55,7 @@ export function Tabs({
   );
 }
 
-type TabsListProps = React.HTMLAttributes<HTMLDivElement>;
+type TabsListProps = HTMLAttributes<HTMLDivElement>;
 
 export function TabsList({ className, ...props }: TabsListProps) {
   return (
@@ -54,7 +63,7 @@ export function TabsList({ className, ...props }: TabsListProps) {
   );
 }
 
-type TabsTriggerProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+type TabsTriggerProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   value: string;
 };
 
@@ -64,9 +73,9 @@ export function TabsTrigger({
   onClick,
   ...props
 }: TabsTriggerProps) {
-  const context = React.useContext(TabsContext);
+  const context = useContext(TabsContext);
   const isActive = context ? context.value === value : false;
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     onClick?.(event);
     context?.setValue(value);
   };
@@ -82,12 +91,12 @@ export function TabsTrigger({
   );
 }
 
-type TabsContentProps = React.HTMLAttributes<HTMLDivElement> & {
+type TabsContentProps = HTMLAttributes<HTMLDivElement> & {
   value: string;
 };
 
 export function TabsContent({ className, value, ...props }: TabsContentProps) {
-  const context = React.useContext(TabsContext);
+  const context = useContext(TabsContext);
   if (!context) {
     return <div className={className} {...props} />;
   }

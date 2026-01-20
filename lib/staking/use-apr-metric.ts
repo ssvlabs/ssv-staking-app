@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useInterval } from "@/hooks/use-interval";
 
@@ -10,10 +10,10 @@ type UseAprMetricOptions = {
 
 export function useAprMetric(options: UseAprMetricOptions = {}) {
   const { refreshIntervalMs = 5 * 60 * 1000 } = options;
-  const [aprValue, setAprValue] = React.useState<number | null>(null);
-  const aprMountedRef = React.useRef(true);
+  const [aprValue, setAprValue] = useState<number | null>(null);
+  const aprMountedRef = useRef(true);
 
-  const refreshApr = React.useCallback(async () => {
+  const refreshApr = useCallback(async () => {
     try {
       const response = await fetch("/api/apr", { cache: "no-store" });
       if (!response.ok) return;
@@ -26,13 +26,13 @@ export function useAprMetric(options: UseAprMetricOptions = {}) {
     }
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       aprMountedRef.current = false;
     };
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     void refreshApr();
   }, [refreshApr]);
 

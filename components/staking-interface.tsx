@@ -1,11 +1,11 @@
 "use client";
 
-import * as React from "react";
+import { useCallback } from "react";
+import Image from "next/image";
 import { useAccount } from "wagmi";
 import { toast } from "sonner";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 
-import { CONFIG } from "@/lib/config";
 import { STAKING_COPY } from "@/lib/staking/copy";
 import { STAKING_ASSETS } from "@/lib/staking/constants";
 import { addCssvToMetamask } from "@/lib/staking/metamask";
@@ -53,7 +53,7 @@ export default function StakingInterface() {
     refetchSsvAllowance,
     refetchCssvAllowance
   } = useStakingData({ address });
-  const handleAnyTxConfirmed = React.useCallback(() => {
+  const handleAnyTxConfirmed = useCallback(() => {
     refreshAll();
     void refreshApr();
   }, [refreshAll, refreshApr]);
@@ -281,13 +281,13 @@ export default function StakingInterface() {
         isClaimFlowBusy={isClaimFlowBusy}
         onClaim={handleClaim}
       />
-      <section className="rounded-[16px] bg-[var(--color-surface-25)] p-6">
-        <p className="font-dm-sans text-[18px] font-semibold text-[var(--color-ink-500)]">FAQ</p>
+      <section className="rounded-[16px] bg-surface-25 p-6">
+        <p className="font-dm-sans text-[18px] font-semibold text-ink-500">FAQ</p>
         <div className="mt-4 space-y-3">
           {STAKING_FAQ.map((item) => (
             <div
               key={item.id}
-              className="rounded-[12px] bg-[var(--color-surface-100)] p-5"
+              className="rounded-[12px] bg-surface-100 p-5"
             >
               <Faq question={item.question} answer={item.answer} />
             </div>
@@ -304,12 +304,18 @@ export default function StakingInterface() {
         {stakeFlowComplete && !stakeFlowHasError ? (
           <div className="flex w-full justify-center">
             <button
-              className="mt-4 inline-flex h-[40px] items-center gap-2 rounded-[12px] bg-[var(--color-brand-50)] px-5 text-[14px] font-semibold text-[var(--color-brand-600)]"
+              className="mt-4 inline-flex h-[40px] items-center gap-2 rounded-[12px] bg-brand-50 px-5 text-[14px] font-semibold text-brand-600"
               onClick={handleAddCssvToMetamask}
               type="button"
             >
               <span className="truncate">{STAKING_COPY.buttons.addToMetamask}</span>
-              <img alt="" className="size-4" src={metamaskIcon} />
+              <Image
+                alt=""
+                className="size-4"
+                src={metamaskIcon}
+                width={16}
+                height={16}
+              />
             </button>
           </div>
         ) : null}

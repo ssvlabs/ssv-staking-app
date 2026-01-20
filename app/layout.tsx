@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, Manrope } from "next/font/google";
+import type { ReactNode } from "react";
 import "@rainbow-me/rainbowkit/styles.css";
 import "./globals.css";
 import { Toaster } from "sonner";
@@ -51,7 +52,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <html lang="en" className={`${manrope.variable} ${dmSans.variable}`}>

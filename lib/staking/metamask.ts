@@ -7,12 +7,16 @@ type AddTokenParams = {
   onError?: (message: string) => void;
 };
 
+type EthereumProvider = {
+  request?: (args: { method: string; params?: unknown }) => Promise<unknown>;
+};
+
 export async function addCssvToMetamask({
   decimals,
   image,
   onError
 }: AddTokenParams) {
-  const ethereum = (window as { ethereum?: { request?: Function } }).ethereum;
+  const ethereum = (window as { ethereum?: EthereumProvider }).ethereum;
   if (!ethereum?.request) {
     onError?.(STAKING_COPY.toasts.metamaskMissing);
     return;

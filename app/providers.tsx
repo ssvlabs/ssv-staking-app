@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useState, type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
@@ -9,10 +9,10 @@ import { wagmiConfig } from "@/lib/wagmi";
 import { ThemeProvider, useTheme } from "@/lib/theme";
 
 const Disclaimer = () => (
-  <span className="text-[12px] leading-[18px] text-[var(--rk-colors-modalTextSecondary)]">
+  <span className="text-[12px] leading-[18px] text-rk-modal-text-secondary">
     By connecting your wallet, you agree to the{" "}
     <a
-      className="font-semibold text-[var(--rk-colors-accentColor)]"
+      className="font-semibold text-rk-accent-color"
       href="https://ssv.network/terms-of-use/"
       rel="noreferrer"
       target="_blank"
@@ -21,7 +21,7 @@ const Disclaimer = () => (
     </a>{" "}
     and{" "}
     <a
-      className="font-semibold text-[var(--rk-colors-accentColor)]"
+      className="font-semibold text-rk-accent-color"
       href="https://ssv.network/privacy-policy/"
       rel="noreferrer"
       target="_blank"
@@ -32,7 +32,7 @@ const Disclaimer = () => (
   </span>
 );
 
-function ProvidersInner({ children }: { children: React.ReactNode }) {
+function ProvidersInner({ children }: { children: ReactNode }) {
   const { theme } = useTheme();
 
   const rainbowTheme =
@@ -114,9 +114,9 @@ function ProvidersInner({ children }: { children: React.ReactNode }) {
 export default function Providers({
   children
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
-  const [queryClient] = React.useState(() => new QueryClient());
+  const [queryClient] = useState(() => new QueryClient());
 
   return (
     <WagmiProvider config={wagmiConfig}>
