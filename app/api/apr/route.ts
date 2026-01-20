@@ -14,13 +14,12 @@ const publicClient = createPublicClient({
   transport: http(HOODI_RPC_URL)
 });
 
-const fetchIndex = async () => {
-  return publicClient.readContract({
+const fetchIndex = () =>
+  publicClient.readContract({
     address: CONFIG.contracts.Views,
     abi: ViewsABI,
     functionName: "accEthPerShare"
   });
-};
 
 const fetchPrices = async () => {
   const response = await fetch(
