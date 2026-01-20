@@ -1,8 +1,8 @@
-import * as React from "react";
+import type { SVGProps } from "react";
 
 import { cn } from "@/lib/utils";
 
-type InfoIconProps = React.SVGProps<SVGSVGElement>;
+type InfoIconProps = SVGProps<SVGSVGElement>;
 
 export function InfoIcon({ className, ...props }: InfoIconProps) {
   return (

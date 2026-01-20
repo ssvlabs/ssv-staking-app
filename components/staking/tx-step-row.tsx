@@ -21,14 +21,14 @@ const EXPLORER_BASE_URL = "https://hoodi.etherscan.io/tx/";
 const StepIndicator = ({ status }: { status: StepStatus }) => {
   if (status === "confirmed") {
     return (
-      <div className="flex size-[28px] items-center justify-center rounded-full border border-[var(--color-success-600)] bg-[var(--color-success-500)]">
+      <div className="flex size-[28px] items-center justify-center rounded-full border border-success-600 bg-success-500">
         <Check className="size-[14px] text-white" />
       </div>
     );
   }
   if (status === "error") {
     return (
-      <div className="flex size-[28px] items-center justify-center rounded-full bg-[var(--color-danger-500)]">
+      <div className="flex size-[28px] items-center justify-center rounded-full bg-danger-500">
         <X className="size-[12px] text-white" />
       </div>
     );
@@ -36,13 +36,13 @@ const StepIndicator = ({ status }: { status: StepStatus }) => {
   if (status === "waiting" || status === "submitted") {
     return (
       <div className="relative size-[28px]">
-        <div className="absolute inset-0 rounded-full border-4 border-[var(--color-border-strong)] opacity-60" />
-        <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-[var(--color-brand-500)] border-r-[var(--color-brand-500)] animate-spin" />
+        <div className="absolute inset-0 rounded-full border-4 border-border-strong opacity-60" />
+        <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-brand-500 border-r-brand-500 animate-spin" />
       </div>
     );
   }
   return (
-    <div className="size-[28px] rounded-full border-4 border-[var(--color-border-strong)] opacity-60" />
+    <div className="size-[28px] rounded-full border-4 border-border-strong opacity-60" />
   );
 };
 
@@ -60,7 +60,7 @@ export function TxStepRow({
   const renderAction = () => {
     if (status === "waiting") {
       return (
-        <div className="flex h-[40px] items-center justify-center rounded-[8px] bg-[var(--color-brand-100)] px-[16px] text-[14px] font-semibold text-[var(--color-brand-500)]">
+        <div className="flex h-[40px] items-center justify-center rounded-[8px] bg-brand-100 px-[16px] text-[14px] font-semibold text-brand-500">
           Waiting...
         </div>
       );
@@ -68,7 +68,7 @@ export function TxStepRow({
     if (status === "error") {
       return (
         <button
-          className="flex h-[40px] items-center justify-center rounded-[8px] bg-[var(--color-brand-600)] px-[16px] text-[14px] font-semibold text-white disabled:cursor-not-allowed disabled:bg-[var(--color-border)] disabled:text-[var(--color-ink-400)] disabled:opacity-100"
+          className="flex h-[40px] items-center justify-center rounded-[8px] bg-brand-600 px-[16px] text-[14px] font-semibold text-white disabled:cursor-not-allowed disabled:bg-border disabled:text-ink-400 disabled:opacity-100"
           disabled={disabled}
           onClick={onRetry}
           type="button"
@@ -80,7 +80,7 @@ export function TxStepRow({
     if (hash) {
       return (
         <a
-          className="flex h-[40px] items-center gap-[4px] rounded-[8px] border border-[var(--color-border)] bg-[var(--color-surface-100)] pl-[16px] pr-[12px] text-[14px] font-normal text-[var(--color-ink-700)]"
+          className="flex h-[40px] items-center gap-[4px] rounded-[8px] border border-border bg-surface-100 pl-[16px] pr-[12px] text-[14px] font-normal text-ink-700"
           href={`${EXPLORER_BASE_URL}${hash}`}
           rel="noreferrer"
           target="_blank"
@@ -93,7 +93,7 @@ export function TxStepRow({
       );
     }
     return (
-      <div className="flex h-[40px] items-center justify-center rounded-[8px] bg-[var(--color-border)] px-[16px] text-[14px] font-semibold text-[var(--color-ink-400)]">
+      <div className="flex h-[40px] items-center justify-center rounded-[8px] bg-border px-[16px] text-[14px] font-semibold text-ink-400">
         {idleLabel}
       </div>
     );
@@ -101,7 +101,7 @@ export function TxStepRow({
 
   return (
     <div
-      className={`flex w-full gap-3 rounded-[12px] bg-[var(--color-surface-50)] p-5 ${
+      className={`flex w-full gap-3 rounded-[12px] bg-surface-50 p-5 ${
         isError ? "items-start" : "items-center"
       }`}
     >
@@ -114,13 +114,13 @@ export function TxStepRow({
       )}
       {isError ? (
         <div className="flex flex-1 flex-col justify-center py-[8px]">
-          <p className="text-[16px] font-medium leading-[24px] text-[var(--color-ink-900)]">
+          <p className="text-[16px] font-medium leading-[24px] text-ink-900">
             {label}
           </p>
         </div>
       ) : (
         <div className="flex flex-1 flex-col">
-          <p className="text-[16px] font-medium leading-[24px] text-[var(--color-ink-900)]">
+          <p className="text-[16px] font-medium leading-[24px] text-ink-900">
             {label}
           </p>
           {detail}

@@ -1,22 +1,23 @@
 "use client";
 
-import * as React from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 
 import { cn } from "@/lib/utils";
+import { TooltipArrow } from "@/components/ui/tooltip-arrow";
 
 type TooltipProps = {
   content: string;
   className?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 export function Tooltip({ content, className, children }: TooltipProps) {
-  const triggerRef = React.useRef<HTMLSpanElement>(null);
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [coords, setCoords] = React.useState({ left: 0, top: 0 });
+  const triggerRef = useRef<HTMLSpanElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [coords, setCoords] = useState({ left: 0, top: 0 });
 
-  const updatePosition = React.useCallback(() => {
+  const updatePosition = useCallback(() => {
     if (!triggerRef.current) return;
     const rect = triggerRef.current.getBoundingClientRect();
     setCoords({
@@ -25,7 +26,7 @@ export function Tooltip({ content, className, children }: TooltipProps) {
     });
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isOpen) return;
     updatePosition();
     const handleUpdate = () => updatePosition();
@@ -58,20 +59,10 @@ export function Tooltip({ content, className, children }: TooltipProps) {
               style={{ left: coords.left, top: coords.top }}
             >
               <span className="relative flex flex-col items-center">
-                <span className="w-max whitespace-nowrap rounded-[8px] bg-[var(--color-tooltip-bg)] px-4 py-3 text-[14px] font-medium leading-[20px] text-[var(--color-tooltip-text)]">
+                <span className="w-max whitespace-nowrap rounded-[8px] bg-tooltip-bg px-4 py-3 text-[14px] font-medium leading-[20px] text-tooltip-text">
                   {content}
                 </span>
-                <svg
-                  className="absolute -bottom-[6px] h-[13px] w-[24px]"
-                  viewBox="0 0 24 13"
-                  fill="none"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M12 13L0 1h24L12 13Z"
-                    fill="var(--color-tooltip-bg)"
-                  />
-                </svg>
+                <TooltipArrow className="absolute -bottom-[6px] fill-tooltip-bg" />
               </span>
             </span>,
             document.body

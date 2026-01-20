@@ -2,6 +2,7 @@
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
+import Image from "next/image";
 
 import { useTheme } from "@/lib/theme";
 
@@ -17,13 +18,16 @@ export default function TopBar() {
   const toggleLight = "/figma/modeToggle.svg";
   const toggleDark = "/figma/modeToggle-dark.svg";
   return (
-    <header className="relative w-full border-b border-[var(--color-border)] bg-[var(--color-surface-0)]">
+    <header className="relative w-full border-b border-border bg-surface-0">
       <div className="flex h-[72px] w-full items-center justify-between px-6">
         <div className="flex items-center">
-          <img
+          <Image
             alt="ssv.network staking"
             src={logoSrc}
             className="h-[32px] w-[160px]"
+            width={160}
+            height={32}
+            priority
           />
         </div>
         <div className="flex items-center gap-6">
@@ -39,8 +43,8 @@ export default function TopBar() {
               const connected = ready && isConnected && account && chain;
               const label = connected ? account.displayName : "Connect Wallet";
               const buttonClass = connected
-                ? "bg-[var(--color-surface-50)] text-[var(--color-ink-900)] px-4 gap-3"
-                : "bg-[var(--cta-bg)] text-[var(--cta-text)] px-5 gap-2 hover:bg-[var(--cta-bg-hover)] active:bg-[var(--cta-bg-active)] disabled:bg-[var(--cta-bg-disabled)] disabled:text-[var(--cta-text-disabled)]";
+                ? "bg-surface-50 text-ink-900 px-4 gap-3"
+                : "bg-cta-bg text-cta-text px-5 gap-2 hover:bg-cta-bg-hover active:bg-cta-bg-active disabled:bg-cta-bg-disabled disabled:text-cta-text-disabled";
               return (
                 <button
                   type="button"
@@ -53,21 +57,25 @@ export default function TopBar() {
                 >
                   {!connected ? (
                     <span
-                      className="pointer-events-none absolute left-1/2 top-1/2 h-[78px] w-[263px] -translate-x-1/2 -translate-y-1/2 opacity-[var(--cta-pattern-opacity)]"
+                      className="pointer-events-none absolute left-1/2 top-1/2 h-[78px] w-[263px] -translate-x-1/2 -translate-y-1/2 opacity-cta-pattern"
                       aria-hidden="true"
                     >
-                      <img
+                      <Image
                         alt=""
                         src={connectPattern}
-                        className="h-full w-full"
+                        className="size-full"
+                        width={263}
+                        height={78}
                       />
                     </span>
                   ) : null}
                   {connected ? (
-                    <img
+                    <Image
                       src={metamaskIcon}
                       alt=""
                       className="size-6"
+                      width={24}
+                      height={24}
                       aria-hidden="true"
                     />
                   ) : null}
@@ -83,21 +91,25 @@ export default function TopBar() {
             aria-label="Theme toggle"
           >
             <span className="relative block size-full">
-              <img
+              <Image
                 alt=""
                 aria-hidden="true"
                 src={toggleLight}
                 className={`absolute inset-0 size-full transition-all duration-200 ease-out ${
                   isDark ? "translate-x-1 opacity-0" : "translate-x-0 opacity-100"
                 }`}
+                width={44}
+                height={28}
               />
-              <img
+              <Image
                 alt=""
                 aria-hidden="true"
                 src={toggleDark}
                 className={`absolute inset-0 size-full transition-all duration-200 ease-out ${
                   isDark ? "translate-x-0 opacity-100" : "-translate-x-1 opacity-0"
                 }`}
+                width={44}
+                height={28}
               />
             </span>
           </button>

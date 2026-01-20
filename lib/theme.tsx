@@ -1,6 +1,14 @@
 "use client";
 
-import * as React from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode
+} from "react";
 
 type Theme = "light" | "dark";
 
@@ -11,7 +19,7 @@ type ThemeContextValue = {
 
 const THEME_STORAGE_KEY = "ssv-theme";
 
-const ThemeContext = React.createContext<ThemeContextValue | undefined>(
+const ThemeContext = createContext<ThemeContextValue | undefined>(
   undefined
 );
 
@@ -38,32 +46,32 @@ const applyTheme = (theme: Theme) => {
   root.style.colorScheme = theme;
 };
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = React.useState<Theme>("light");
+export function ThemeProvider({ children }: { children: ReactNode }) {
+  const [theme, setTheme] = useState<Theme>("light");
 
-  React.useEffect(() => {
+  useEffect(() => {
     const initial = getPreferredTheme();
     setTheme(initial);
     applyTheme(initial);
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (typeof window === "undefined") return;
     window.localStorage.setItem(THEME_STORAGE_KEY, theme);
     applyTheme(theme);
   }, [theme]);
 
-  const toggleTheme = React.useCallback(() => {
+  const toggleTheme = useCallback(() => {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   }, []);
 
-  const value = React.useMemo(() => ({ theme, toggleTheme }), [theme, toggleTheme]);
+  const value = useMemo(() => ({ theme, toggleTheme }), [theme, toggleTheme]);
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
 export function useTheme() {
-  const context = React.useContext(ThemeContext);
+  const context = useContext(ThemeContext);
   if (!context) {
     throw new Error("useTheme must be used within ThemeProvider");
   }

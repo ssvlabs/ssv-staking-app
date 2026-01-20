@@ -1,8 +1,8 @@
-import * as React from "react";
+import type { ButtonHTMLAttributes } from "react";
 
 import { cn } from "@/lib/utils";
 
-type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement>;
 
 export function Button({ className, ...props }: ButtonProps) {
   return (

@@ -12,7 +12,7 @@ export function TxFlowFooter({
   return (
     <div className="flex w-full pt-4">
       <button
-        className="h-[52px] w-full rounded-[12px] bg-[var(--color-brand-50)] text-[14px] font-semibold text-[var(--color-brand-600)]"
+        className="h-[52px] w-full rounded-[12px] bg-brand-50 text-[14px] font-semibold text-brand-600"
         onClick={onClose}
         type="button"
       >

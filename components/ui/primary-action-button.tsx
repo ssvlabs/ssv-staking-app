@@ -1,11 +1,12 @@
 "use client";
 
-import * as React from "react";
+import type { ButtonHTMLAttributes } from "react";
+import Image from "next/image";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-type PrimaryActionButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+type PrimaryActionButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   isActivated?: boolean;
 };
 
@@ -17,18 +18,18 @@ export function PrimaryActionButton({
 }: PrimaryActionButtonProps) {
   const isDisabled = Boolean(props.disabled);
   const patternOpacityClass = isActivated
-    ? "opacity-[var(--cta-pattern-opacity-activated)]"
+    ? "opacity-cta-pattern-activated"
     : isDisabled
-    ? "opacity-[var(--cta-pattern-opacity-disabled)]"
-    : "opacity-[var(--cta-pattern-opacity)]";
+    ? "opacity-cta-pattern-disabled"
+    : "opacity-cta-pattern";
 
   return (
     <Button
       className={cn(
-        "relative h-[60px] w-full overflow-hidden rounded-[8px] bg-[var(--cta-bg)] text-[14px] font-semibold text-[var(--cta-text)] shadow-[var(--shadow-primary)] transition",
-        "hover:bg-[var(--cta-bg-hover)] active:bg-[var(--cta-bg-active)]",
-        "disabled:bg-[var(--cta-bg-disabled)] disabled:text-[var(--cta-text-disabled)] disabled:shadow-none disabled:opacity-100",
-        "data-[activated=true]:bg-[var(--cta-bg-activated)] data-[activated=true]:text-[var(--cta-text-activated)] data-[activated=true]:shadow-none",
+        "relative h-[60px] w-full overflow-hidden rounded-[8px] bg-cta-bg text-[14px] font-semibold text-cta-text shadow-primary transition",
+        "hover:bg-cta-bg-hover active:bg-cta-bg-active",
+        "disabled:bg-cta-bg-disabled disabled:text-cta-text-disabled disabled:shadow-none disabled:opacity-100",
+        "data-[activated=true]:bg-cta-bg-activated data-[activated=true]:text-cta-text-activated data-[activated=true]:shadow-none",
         className
       )}
       data-activated={isActivated ? "true" : undefined}
@@ -41,10 +42,12 @@ export function PrimaryActionButton({
         )}
         aria-hidden="true"
       >
-        <img
+        <Image
           alt=""
           src="/figma/ssv-button-bg.svg"
-          className="h-full w-full"
+          className="size-full"
+          width={672}
+          height={232}
         />
       </span>
       <span className="relative z-10">{children}</span>

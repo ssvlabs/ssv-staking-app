@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 
@@ -46,55 +46,51 @@ export function useStakeFlows({
   onSsvApprovalConfirmed,
   onCssvApprovalConfirmed
 }: UseStakeFlowsOptions) {
-  const [activeTab, setActiveTab] = React.useState("stake");
-  const [amount, setAmount] = React.useState("");
-  const [txHash, setTxHash] = React.useState<`0x${string}` | undefined>();
-  const [txLabel, setTxLabel] = React.useState<string | null>(null);
-  const [toastId, setToastId] = React.useState<string | number | null>(null);
-  const [stakeFlowOpen, setStakeFlowOpen] = React.useState(false);
-  const [nowEpoch, setNowEpoch] = React.useState(() =>
+  const [activeTab, setActiveTab] = useState("stake");
+  const [amount, setAmount] = useState("");
+  const [txHash, setTxHash] = useState<`0x${string}` | undefined>();
+  const [txLabel, setTxLabel] = useState<string | null>(null);
+  const [toastId, setToastId] = useState<string | number | null>(null);
+  const [stakeFlowOpen, setStakeFlowOpen] = useState(false);
+  const [nowEpoch, setNowEpoch] = useState(() =>
     Math.floor(Date.now() / 1000)
   );
-  const [stakeFlowAmount, setStakeFlowAmount] = React.useState<bigint>(0n);
+  const [stakeFlowAmount, setStakeFlowAmount] = useState<bigint>(0n);
   const [stakeFlowNeedsApproval, setStakeFlowNeedsApproval] =
-    React.useState(false);
-  const [unstakeFlowOpen, setUnstakeFlowOpen] = React.useState(false);
-  const [unstakeFlowAmount, setUnstakeFlowAmount] = React.useState<bigint>(0n);
+    useState(false);
+  const [unstakeFlowOpen, setUnstakeFlowOpen] = useState(false);
+  const [unstakeFlowAmount, setUnstakeFlowAmount] = useState<bigint>(0n);
   const [unstakeFlowNeedsApproval, setUnstakeFlowNeedsApproval] =
-    React.useState(false);
-  const [withdrawFlowOpen, setWithdrawFlowOpen] = React.useState(false);
-  const [withdrawFlowAmount, setWithdrawFlowAmount] =
-    React.useState<bigint>(0n);
-  const [withdrawFlowIds, setWithdrawFlowIds] = React.useState<string[]>([]);
-  const [claimFlowOpen, setClaimFlowOpen] = React.useState(false);
-  const [claimFlowAmount, setClaimFlowAmount] = React.useState<bigint>(0n);
-  const [selectedWithdrawalIds, setSelectedWithdrawalIds] = React.useState<
+    useState(false);
+  const [withdrawFlowOpen, setWithdrawFlowOpen] = useState(false);
+  const [withdrawFlowAmount, setWithdrawFlowAmount] = useState<bigint>(0n);
+  const [withdrawFlowIds, setWithdrawFlowIds] = useState<string[]>([]);
+  const [claimFlowOpen, setClaimFlowOpen] = useState(false);
+  const [claimFlowAmount, setClaimFlowAmount] = useState<bigint>(0n);
+  const [selectedWithdrawalIds, setSelectedWithdrawalIds] = useState<
     string[]
   >([]);
-  const [approvalStatus, setApprovalStatus] =
-    React.useState<StepStatus>("idle");
-  const [stakeStatus, setStakeStatus] = React.useState<StepStatus>("idle");
+  const [approvalStatus, setApprovalStatus] = useState<StepStatus>("idle");
+  const [stakeStatus, setStakeStatus] = useState<StepStatus>("idle");
   const [unstakeApprovalStatus, setUnstakeApprovalStatus] =
-    React.useState<StepStatus>("idle");
-  const [unstakeStatus, setUnstakeStatus] =
-    React.useState<StepStatus>("idle");
-  const [withdrawStatus, setWithdrawStatus] =
-    React.useState<StepStatus>("idle");
-  const [claimStatus, setClaimStatus] = React.useState<StepStatus>("idle");
-  const [approvalHash, setApprovalHash] = React.useState<`0x${string}` | null>(
+    useState<StepStatus>("idle");
+  const [unstakeStatus, setUnstakeStatus] = useState<StepStatus>("idle");
+  const [withdrawStatus, setWithdrawStatus] = useState<StepStatus>("idle");
+  const [claimStatus, setClaimStatus] = useState<StepStatus>("idle");
+  const [approvalHash, setApprovalHash] = useState<`0x${string}` | null>(
     null
   );
-  const [stakeHash, setStakeHash] = React.useState<`0x${string}` | null>(null);
-  const [unstakeApprovalHash, setUnstakeApprovalHash] = React.useState<
+  const [stakeHash, setStakeHash] = useState<`0x${string}` | null>(null);
+  const [unstakeApprovalHash, setUnstakeApprovalHash] = useState<
     `0x${string}` | null
   >(null);
-  const [unstakeHash, setUnstakeHash] = React.useState<`0x${string}` | null>(
+  const [unstakeHash, setUnstakeHash] = useState<`0x${string}` | null>(
     null
   );
-  const [withdrawHash, setWithdrawHash] = React.useState<`0x${string}` | null>(
+  const [withdrawHash, setWithdrawHash] = useState<`0x${string}` | null>(
     null
   );
-  const [claimHash, setClaimHash] = React.useState<`0x${string}` | null>(null);
+  const [claimHash, setClaimHash] = useState<`0x${string}` | null>(null);
 
   const { writeContractAsync } = useWriteContract();
 
@@ -159,7 +155,7 @@ export function useStakeFlows({
   const isWithdrawActionDisabled =
     isConnected && selectedWithdrawable.length === 0;
 
-  const sendTransaction = React.useCallback(
+  const sendTransaction = useCallback(
     async (label: string, config: Parameters<typeof writeContractAsync>[0]) => {
       if (!writeContractAsync) return undefined;
       let pendingToast: string | number | null = null;
@@ -188,7 +184,7 @@ export function useStakeFlows({
     [writeContractAsync]
   );
 
-  const startStakeTransaction = React.useCallback(
+  const startStakeTransaction = useCallback(
     async (amountToStake: bigint) => {
       setStakeStatus("waiting");
       const hash = await sendTransaction("Stake", {
@@ -207,7 +203,7 @@ export function useStakeFlows({
     [sendTransaction]
   );
 
-  const startApprovalTransaction = React.useCallback(
+  const startApprovalTransaction = useCallback(
     async (amountToApprove: bigint) => {
       setApprovalStatus("waiting");
       const hash = await sendTransaction("Approve SSV", {
@@ -226,7 +222,7 @@ export function useStakeFlows({
     [sendTransaction]
   );
 
-  const startUnstakeTransaction = React.useCallback(
+  const startUnstakeTransaction = useCallback(
     async (amountToUnstake: bigint) => {
       setUnstakeStatus("waiting");
       const hash = await sendTransaction("Request Unstake", {
@@ -245,7 +241,7 @@ export function useStakeFlows({
     [sendTransaction]
   );
 
-  const startUnstakeApprovalTransaction = React.useCallback(
+  const startUnstakeApprovalTransaction = useCallback(
     async (amountToApprove: bigint) => {
       setUnstakeApprovalStatus("waiting");
       const hash = await sendTransaction("Approve cSSV", {
@@ -264,7 +260,7 @@ export function useStakeFlows({
     [sendTransaction]
   );
 
-  const startWithdrawTransaction = React.useCallback(
+  const startWithdrawTransaction = useCallback(
     async () => {
       setWithdrawStatus("waiting");
       const hash = await sendTransaction("Withdraw", {
@@ -282,7 +278,7 @@ export function useStakeFlows({
     [sendTransaction]
   );
 
-  const startClaimTransaction = React.useCallback(async () => {
+  const startClaimTransaction = useCallback(async () => {
     setClaimStatus("waiting");
     const hash = await sendTransaction("Claim Rewards", {
       address: CONFIG.contracts.Staking,
@@ -297,7 +293,7 @@ export function useStakeFlows({
     setClaimStatus("submitted");
   }, [sendTransaction]);
 
-  const handleStakeFlow = React.useCallback(async () => {
+  const handleStakeFlow = useCallback(async () => {
     if (!isConnected) {
       openConnectModal?.();
       return;
@@ -336,7 +332,7 @@ export function useStakeFlows({
     startStakeTransaction
   ]);
 
-  const handleRequestUnstake = React.useCallback(async () => {
+  const handleRequestUnstake = useCallback(async () => {
     if (!isConnected) {
       openConnectModal?.();
       return;
@@ -380,7 +376,7 @@ export function useStakeFlows({
     startUnstakeTransaction
   ]);
 
-  const handleWithdrawSelected = React.useCallback(async () => {
+  const handleWithdrawSelected = useCallback(async () => {
     if (!isConnected) {
       openConnectModal?.();
       return;
@@ -404,7 +400,7 @@ export function useStakeFlows({
     startWithdrawTransaction
   ]);
 
-  const handleWithdrawUnlocked = React.useCallback(async () => {
+  const handleWithdrawUnlocked = useCallback(async () => {
     if (!isConnected) {
       openConnectModal?.();
       return;
@@ -432,7 +428,7 @@ export function useStakeFlows({
     startWithdrawTransaction
   ]);
 
-  const handleClaim = React.useCallback(async () => {
+  const handleClaim = useCallback(async () => {
     if (!isConnected) {
       openConnectModal?.();
       return;
@@ -448,48 +444,48 @@ export function useStakeFlows({
     await startClaimTransaction();
   }, [isConnected, openConnectModal, claimableValue, startClaimTransaction]);
 
-  const handleMax = React.useCallback(() => {
+  const handleMax = useCallback(() => {
     if (!ssvBalanceFormatted) return;
     setAmount(ssvBalanceFormatted);
   }, [ssvBalanceFormatted]);
 
-  const retryApproval = React.useCallback(async () => {
+  const retryApproval = useCallback(async () => {
     if (stakeFlowAmount === 0n) return;
     setApprovalHash(null);
     await startApprovalTransaction(stakeFlowAmount);
   }, [stakeFlowAmount, startApprovalTransaction]);
 
-  const retryStake = React.useCallback(async () => {
+  const retryStake = useCallback(async () => {
     if (stakeFlowAmount === 0n) return;
     setStakeHash(null);
     await startStakeTransaction(stakeFlowAmount);
   }, [stakeFlowAmount, startStakeTransaction]);
 
-  const retryUnstakeApproval = React.useCallback(async () => {
+  const retryUnstakeApproval = useCallback(async () => {
     if (unstakeFlowAmount === 0n) return;
     setUnstakeApprovalHash(null);
     await startUnstakeApprovalTransaction(unstakeFlowAmount);
   }, [startUnstakeApprovalTransaction, unstakeFlowAmount]);
 
-  const retryUnstake = React.useCallback(async () => {
+  const retryUnstake = useCallback(async () => {
     if (unstakeFlowAmount === 0n) return;
     setUnstakeHash(null);
     await startUnstakeTransaction(unstakeFlowAmount);
   }, [startUnstakeTransaction, unstakeFlowAmount]);
 
-  const retryWithdraw = React.useCallback(async () => {
+  const retryWithdraw = useCallback(async () => {
     if (!withdrawFlowIds.length) return;
     setWithdrawHash(null);
     await startWithdrawTransaction();
   }, [startWithdrawTransaction, withdrawFlowIds.length]);
 
-  const retryClaim = React.useCallback(async () => {
+  const retryClaim = useCallback(async () => {
     if (claimFlowAmount === 0n) return;
     setClaimHash(null);
     await startClaimTransaction();
   }, [claimFlowAmount, startClaimTransaction]);
 
-  const toggleWithdrawalSelection = React.useCallback(
+  const toggleWithdrawalSelection = useCallback(
     (request: WithdrawalRequest) => {
       if (request.unlockTime > nowEpoch) return;
       setSelectedWithdrawalIds((prev) => {
@@ -502,7 +498,7 @@ export function useStakeFlows({
     [nowEpoch]
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isConfirmed || !txLabel) return;
     if (toastId) toast.dismiss(toastId);
     toast.success(`${txLabel} confirmed`);
@@ -512,7 +508,7 @@ export function useStakeFlows({
     onAnyTxConfirmed?.();
   }, [isConfirmed, txLabel, toastId, onAnyTxConfirmed]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isApprovalConfirmed || !approvalHash) return;
     if (approvalStatus !== "confirmed") {
       setApprovalStatus("confirmed");
@@ -532,14 +528,14 @@ export function useStakeFlows({
     startStakeTransaction
   ]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isStakeConfirmed || !stakeHash) return;
     if (stakeStatus !== "confirmed") {
       setStakeStatus("confirmed");
     }
   }, [isStakeConfirmed, stakeHash, stakeStatus]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isUnstakeApprovalConfirmed || !unstakeApprovalHash) return;
     if (unstakeApprovalStatus !== "confirmed") {
       setUnstakeApprovalStatus("confirmed");
@@ -563,14 +559,14 @@ export function useStakeFlows({
     startUnstakeTransaction
   ]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isUnstakeConfirmed || !unstakeHash) return;
     if (unstakeStatus !== "confirmed") {
       setUnstakeStatus("confirmed");
     }
   }, [isUnstakeConfirmed, unstakeHash, unstakeStatus]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isWithdrawConfirmed || !withdrawHash) return;
     if (withdrawStatus !== "confirmed") {
       setWithdrawStatus("confirmed");
@@ -580,7 +576,7 @@ export function useStakeFlows({
     }
   }, [isWithdrawConfirmed, withdrawHash, withdrawStatus, withdrawFlowIds]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isClaimConfirmed || !claimHash) return;
     if (claimStatus !== "confirmed") {
       setClaimStatus("confirmed");
@@ -591,7 +587,7 @@ export function useStakeFlows({
     setNowEpoch(Math.floor(Date.now() / 1000));
   }, 1000);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setSelectedWithdrawalIds((prev) =>
       prev.filter((id) =>
         withdrawalRequests.some((request) => request.id === id)
@@ -599,13 +595,13 @@ export function useStakeFlows({
     );
   }, [withdrawalRequests]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!multiWithdrawEnabled && activeTab === "withdraw") {
       setActiveTab("unstake");
     }
   }, [multiWithdrawEnabled, activeTab]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!multiWithdrawEnabled) {
       setSelectedWithdrawalIds([]);
     }
