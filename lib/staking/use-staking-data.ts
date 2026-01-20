@@ -64,9 +64,7 @@ export function useStakingData({ address }: UseStakingDataOptions) {
     });
 
   const withdrawalRequests: WithdrawalRequest[] = useMemo(() => {
-    const data = pendingUnstake.data as
-      | readonly [readonly bigint[], readonly bigint[]]
-      | undefined;
+    const data = pendingUnstake.data;
     if (!data) return [];
     const [amounts, unlockTimes] = data;
     const count = Math.min(amounts.length, unlockTimes.length);

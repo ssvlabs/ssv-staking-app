@@ -7,6 +7,10 @@ export function useStakingStats(options?: { enabled?: boolean }) {
   const { address } = useAccount();
   const enabled = options?.enabled ?? true;
   const addressEnabled = enabled && Boolean(address);
+  type PendingUnstakeReturn = readonly [
+    readonly bigint[],
+    readonly bigint[]
+  ];
 
   const claimableEth = useReadContract({
     address: CONFIG.contracts.Views,
@@ -29,7 +33,10 @@ export function useStakingStats(options?: { enabled?: boolean }) {
     abi: ViewsABI,
     functionName: "pendingUnstake",
     args: address ? [address] : undefined,
-    query: { enabled: addressEnabled }
+    query: {
+      enabled: addressEnabled,
+      select: (data) => data as PendingUnstakeReturn
+    }
   });
 
   const totalStaked = useReadContract({
