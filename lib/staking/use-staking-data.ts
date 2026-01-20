@@ -64,17 +64,24 @@ export function useStakingData({ address }: UseStakingDataOptions) {
     });
 
   const withdrawalRequests: WithdrawalRequest[] = useMemo(() => {
-    const data = pendingUnstake.data as readonly [bigint, bigint] | undefined;
+    const data = pendingUnstake.data as
+      | readonly [readonly bigint[], readonly bigint[]]
+      | undefined;
     if (!data) return [];
-    const [amount, unlockTime] = data;
-    if (amount <= 0n) return [];
-    return [
-      {
-        id: "0",
+    const [amounts, unlockTimes] = data;
+    const count = Math.min(amounts.length, unlockTimes.length);
+    const requests: WithdrawalRequest[] = [];
+    for (let index = 0; index < count; index += 1) {
+      const amount = amounts[index] ?? 0n;
+      const unlockTime = unlockTimes[index] ?? 0n;
+      if (amount <= 0n) continue;
+      requests.push({
+        id: String(index),
         amount,
         unlockTime: Number(unlockTime)
-      }
-    ];
+      });
+    }
+    return requests;
   }, [pendingUnstake.data]);
 
   const claimableValue = (claimableEth.data as bigint | undefined) ?? 0n;
