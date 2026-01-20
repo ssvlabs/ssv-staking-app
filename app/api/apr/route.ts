@@ -19,7 +19,7 @@ const fetchIndex = () =>
     address: CONFIG.contracts.Views,
     abi: ViewsABI,
     functionName: "accEthPerShare"
-  });
+  }) as Promise<bigint>;
 
 const fetchPrices = async () => {
   const response = await fetch(
