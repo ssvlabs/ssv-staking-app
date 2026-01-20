@@ -14,12 +14,17 @@ const publicClient = createPublicClient({
   transport: http(HOODI_RPC_URL)
 });
 
-const fetchIndex = () =>
-  publicClient.readContract({
+const fetchIndex = async (): Promise<bigint> => {
+  const value = await publicClient.readContract({
     address: CONFIG.contracts.Views,
     abi: ViewsABI,
     functionName: "accEthPerShare"
   });
+  if (typeof value !== "bigint") {
+    throw new Error("Unexpected accEthPerShare response");
+  }
+  return value;
+};
 
 const fetchPrices = async () => {
   const response = await fetch(
