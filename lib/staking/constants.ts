@@ -9,4 +9,4 @@ export const STAKING_ASSETS = {
   calculatorIcon: `${ASSET_BASE}/calculator.svg`
 } as const;
 
-export const CLAIMABLE_DECIMALS = 9;
+export const CLAIMABLE_DECIMALS = 18;
