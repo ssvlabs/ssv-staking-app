@@ -1,15 +1,15 @@
 "use client";
-import { AlertTriangle, Check } from "lucide-react";
-import Image from "next/image";
+import { AlertTriangle, Check } from "lucide-react"
+import Image from "next/image"
 
-import { InfoIcon } from "@/components/ui/info-icon";
-import { PrimaryActionButton } from "@/components/ui/primary-action-button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Tooltip } from "@/components/ui/tooltip";
-import { TokenInputCard } from "@/components/staking/token-input-card";
-import { CLAIMABLE_DECIMALS } from "@/lib/staking/constants";
-import { formatDuration, formatToken } from "@/lib/staking/format";
-import { WithdrawalRequest } from "@/lib/staking/types";
+import { InfoIcon } from "@/components/ui/info-icon"
+import { PrimaryActionButton } from "@/components/ui/primary-action-button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tooltip } from "@/components/ui/tooltip"
+import { TokenInputCard } from "@/components/staking/token-input-card"
+import { CLAIMABLE_DECIMALS } from "@/lib/staking/constants"
+import { formatDuration, formatToken } from "@/lib/staking/format"
+import { WithdrawalRequest } from "@/lib/staking/types"
 
 type StakeTabsProps = {
   activeTab: string;
@@ -192,7 +192,7 @@ export function StakeTabs({
                       ) : null}
                     </div>
                     <p
-                      className={`flex-1 font-dm-sans text-[28px] font-medium leading-[32px] ${
+                      className={`font-dm-sans flex-1 text-[28px] font-medium leading-[32px] ${
                         isUnlocked
                           ? "text-ink-900"
                           : "text-ink-400"
@@ -366,7 +366,7 @@ export function StakeTabs({
             <div className="rounded-[12px] border border-surface-100 bg-surface-50 px-[24px] py-[16px] pr-[20px]">
               <div className="flex items-center justify-between">
                 <span className="text-[28px] font-medium text-ink-900">
-                  {formatToken(claimableValue, CLAIMABLE_DECIMALS, 4)}
+                  {formatToken(claimableValue, CLAIMABLE_DECIMALS, 5)}
                 </span>
                 <div className="flex items-center gap-2">
                   <Image
