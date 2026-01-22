@@ -9,7 +9,8 @@ import { defineChain } from "viem";
 import { CONFIG } from "@/lib/config";
 
 const projectId =
-  process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ?? "demo-project-id";
+  process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ??
+  "c93804911b583e5cacf856eee58655e6";
 
 type InjectedEthereumProvider = {
   isMetaMask?: boolean;
@@ -90,7 +91,7 @@ export const hoodi = defineChain({
 });
 
 export const wagmiConfig = getDefaultConfig({
-  appName: "SSV Staking Dashboard",
+  appName: "SSV Web App",
   projectId,
   wallets: getWalletGroups(),
   chains: [hoodi],
