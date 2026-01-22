@@ -1,15 +1,20 @@
-# Vercel Deploy
+# SSV Staking Dashboard
 
-Minimal deployment bundle for the SSV staking dashboard.
+![SSV Network](https://raw.githubusercontent.com/ssvlabs/.github/refs/heads/main/assets/ssvnetwork-dark.svg)
 
-## Deploy
-1. Install dependencies: `npm install`
-2. Run locally: `npm run dev`
-3. Build for production: `npm run build`
-4. Deploy to Vercel: import this folder (`vercel-deploy`) as a Next.js project.
+Single-page staking dashboard for the Hoodi network.
 
-## Environment
-- `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` (optional, defaults to `demo-project-id`)
+## Run Locally With Docker
+1. Build the image: `docker build -t ssv-staking-app:local .`
+2. Run the app: `docker run --rm -p 3000:3000 ssv-staking-app:local`
+3. Open `http://localhost:3000`
+
+## Project Structure
+- `app/` Next.js App Router pages, layouts, and API routes.
+- `components/` UI and staking components.
+- `hooks/` shared React hooks.
+- `lib/` config, ABIs, wagmi setup, and staking logic.
+- `public/` static assets and icons.
 
 ## Enable Hidden Features:
 In localstorage add ssv-feature-flags = true
