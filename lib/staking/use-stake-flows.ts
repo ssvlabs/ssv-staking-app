@@ -138,7 +138,11 @@ export function useStakeFlows({
   const unstakeAmount = safeParse(amount, receiptDecimals);
   const actionAmount = activeTab === "unstake" ? unstakeAmount : stakeAmount;
 
-  const isActionDisabled = isConnected && actionAmount === 0n;
+  const isActionDisabled =
+    isConnected &&
+    (actionAmount === 0n ||
+      (activeTab === "stake" && stakeAmount > (ssvBalanceValue ?? 0n)) ||
+      (activeTab === "unstake" && unstakeAmount > (stakedBalanceValue ?? 0n)));
   const isClaimDisabled = isConnected && claimableValue === 0n;
   const pendingAmountLabel = formatToken(pendingAmount, receiptDecimals);
   const pendingCountdownLabel = formatDuration(cooldownSeconds);
@@ -427,6 +431,38 @@ export function useStakeFlows({
     nowEpoch,
     startWithdrawTransaction
   ]);
+
+  const handleWithdrawSingle = useCallback(
+    async (requestId: string) => {
+      if (!isConnected) {
+        openConnectModal?.();
+        return;
+      }
+      const request = withdrawalRequests.find((r) => r.id === requestId);
+      if (!request) {
+        toast.error("Withdrawal request not found.");
+        return;
+      }
+      if (request.unlockTime > nowEpoch) {
+        toast.error("Cooldown not finished.");
+        return;
+      }
+      const ids = [request.id];
+      setWithdrawFlowOpen(true);
+      setWithdrawFlowAmount(request.amount);
+      setWithdrawFlowIds(ids);
+      setWithdrawHash(null);
+      setWithdrawStatus("waiting");
+      await startWithdrawTransaction();
+    },
+    [
+      isConnected,
+      openConnectModal,
+      withdrawalRequests,
+      nowEpoch,
+      startWithdrawTransaction
+    ]
+  );
 
   const handleClaim = useCallback(async () => {
     if (!isConnected) {
@@ -752,6 +788,7 @@ export function useStakeFlows({
     handleRequestUnstake,
     handleWithdrawSelected,
     handleWithdrawUnlocked,
+    handleWithdrawSingle,
     handleClaim,
     retryApproval,
     retryStake,

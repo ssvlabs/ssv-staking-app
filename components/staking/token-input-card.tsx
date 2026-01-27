@@ -26,6 +26,26 @@ export function TokenInputCard({
   showMax = true,
   isConnected
 }: TokenInputCardProps) {
+  const handleInputChange = (value: string) => {
+    // Allow empty string
+    if (value === "") {
+      onAmountChange(value);
+      return;
+    }
+
+    // Only allow numbers and one decimal point
+    const regex = /^\d*\.?\d*$/;
+    if (regex.test(value)) {
+      // Remove leading zeros except when followed by decimal point
+      // Examples: "01" -> "1", "001" -> "1", but "0.1" stays "0.1", "0" stays "0"
+      let cleanedValue = value;
+      if (value.length > 1 && value[0] === "0" && value[1] !== ".") {
+        cleanedValue = value.replace(/^0+/, "") || "0";
+      }
+      onAmountChange(cleanedValue);
+    }
+  };
+
   return (
     <div className="rounded-[12px] border border-border bg-surface-100 px-6 py-4">
       <div className="flex items-center justify-between">
@@ -33,7 +53,7 @@ export function TokenInputCard({
           className="w-full text-[28px] font-medium text-ink-900 placeholder:text-ink-400"
           placeholder="0.0"
           value={amount}
-          onChange={(event) => onAmountChange(event.target.value)}
+          onChange={(event) => handleInputChange(event.target.value)}
           disabled={!isConnected}
         />
         <div className="flex items-center gap-3">

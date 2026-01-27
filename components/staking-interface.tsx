@@ -15,7 +15,7 @@ import { useStakeFlows } from "@/lib/staking/use-stake-flows";
 import { buildApprovalAndActionSteps, buildSingleStep } from "@/lib/staking/tx-steps";
 import { STAKING_FAQ } from "@/lib/staking/faq";
 import { Faq } from "@/components/faq";
-import { StakeTabs } from "@/components/staking/stake-tabs";
+import StakeTabs from "@/components/staking/stake-tabs";
 import { StakingBalances } from "@/components/staking/staking-balances";
 import { StakingHeader } from "@/components/staking/staking-header";
 import { TxFlowModal } from "@/components/staking/tx-flow-modal";
@@ -121,6 +121,7 @@ export default function StakingInterface() {
     handleRequestUnstake,
     handleWithdrawSelected,
     handleWithdrawUnlocked,
+    handleWithdrawSingle,
     handleClaim,
     retryApproval,
     retryStake,
@@ -275,6 +276,7 @@ export default function StakingInterface() {
         isWithdrawActionDisabled={isWithdrawActionDisabled}
         isWithdrawFlowBusy={isWithdrawFlowBusy}
         onWithdrawSelected={handleWithdrawSelected}
+        onWithdrawSingle={handleWithdrawSingle}
         claimableValue={claimableValue}
         ethIcon={ethIcon}
         isClaimDisabled={isClaimDisabled}
