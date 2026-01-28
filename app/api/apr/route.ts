@@ -8,10 +8,8 @@ export const dynamic = "force-dynamic";
 
 const SECONDS_PER_YEAR = 31_536_000;
 
-const HOODI_RPC_URL = "https://0xrpc.io/hoodi";
-
 const publicClient = createPublicClient({
-  transport: http(HOODI_RPC_URL)
+  transport: http(CONFIG.HOODI_RPC_URL)
 });
 
 const fetchIndex = async (): Promise<bigint> => {
