@@ -1,4 +1,7 @@
-import { TxStepRow, type TxStepRowProps } from "@/components/staking/tx-step-row";
+import {
+  TxStepRow,
+  type TxStepRowProps
+} from "@/components/staking/tx-step-row";
 
 type TxStepListProps = {
   steps: TxStepRowProps[];

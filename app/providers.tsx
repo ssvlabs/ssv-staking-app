@@ -1,12 +1,16 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import {
+  darkTheme,
+  lightTheme,
+  RainbowKitProvider
+} from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
 
-import { wagmiConfig } from "@/lib/wagmi";
 import { ThemeProvider, useTheme } from "@/lib/theme";
+import { wagmiConfig } from "@/lib/wagmi";
 
 const Disclaimer = () => (
   <span className="text-[12px] leading-[18px] text-rk-modal-text-secondary">
@@ -111,11 +115,7 @@ function ProvidersInner({ children }: { children: ReactNode }) {
   );
 }
 
-export default function Providers({
-  children
-}: {
-  children: ReactNode;
-}) {
+export default function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
 
   return (

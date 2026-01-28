@@ -5,8 +5,8 @@ import { useBalance, useReadContract } from "wagmi";
 
 import { ERC20ABI } from "@/lib/abis";
 import { CONFIG } from "@/lib/config";
-import { useStakingStats } from "@/hooks/use-staking-stats";
 import { WithdrawalRequest } from "@/lib/staking/types";
+import { useStakingStats } from "@/hooks/use-staking-stats";
 
 type UseStakingDataOptions = {
   address?: `0x${string}`;

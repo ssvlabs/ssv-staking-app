@@ -1,8 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
-import Image from "next/image";
 
 import { useTheme } from "@/lib/theme";
 
@@ -96,7 +96,9 @@ export default function TopBar() {
                 aria-hidden="true"
                 src={toggleLight}
                 className={`absolute inset-0 size-full transition-all duration-200 ease-out ${
-                  isDark ? "translate-x-1 opacity-0" : "translate-x-0 opacity-100"
+                  isDark
+                    ? "translate-x-1 opacity-0"
+                    : "translate-x-0 opacity-100"
                 }`}
                 width={44}
                 height={28}
@@ -106,7 +108,9 @@ export default function TopBar() {
                 aria-hidden="true"
                 src={toggleDark}
                 className={`absolute inset-0 size-full transition-all duration-200 ease-out ${
-                  isDark ? "translate-x-0 opacity-100" : "-translate-x-1 opacity-0"
+                  isDark
+                    ? "translate-x-0 opacity-100"
+                    : "-translate-x-1 opacity-0"
                 }`}
                 width={44}
                 height={28}

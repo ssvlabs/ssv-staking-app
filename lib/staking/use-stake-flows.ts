@@ -6,10 +6,10 @@ import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 
 import { ERC20ABI, StakingABI } from "@/lib/abis";
 import { CONFIG } from "@/lib/config";
-import { useInterval } from "@/hooks/use-interval";
 import { CLAIMABLE_DECIMALS } from "@/lib/staking/constants";
 import { formatDuration, formatToken, safeParse } from "@/lib/staking/format";
 import { StepStatus, WithdrawalRequest } from "@/lib/staking/types";
+import { useInterval } from "@/hooks/use-interval";
 
 type UseStakeFlowsOptions = {
   isConnected: boolean;
@@ -52,12 +52,9 @@ export function useStakeFlows({
   const [txLabel, setTxLabel] = useState<string | null>(null);
   const [toastId, setToastId] = useState<string | number | null>(null);
   const [stakeFlowOpen, setStakeFlowOpen] = useState(false);
-  const [nowEpoch, setNowEpoch] = useState(() =>
-    Math.floor(Date.now() / 1000)
-  );
+  const [nowEpoch, setNowEpoch] = useState(() => Math.floor(Date.now() / 1000));
   const [stakeFlowAmount, setStakeFlowAmount] = useState<bigint>(0n);
-  const [stakeFlowNeedsApproval, setStakeFlowNeedsApproval] =
-    useState(false);
+  const [stakeFlowNeedsApproval, setStakeFlowNeedsApproval] = useState(false);
   const [unstakeFlowOpen, setUnstakeFlowOpen] = useState(false);
   const [unstakeFlowAmount, setUnstakeFlowAmount] = useState<bigint>(0n);
   const [unstakeFlowNeedsApproval, setUnstakeFlowNeedsApproval] =
@@ -67,9 +64,9 @@ export function useStakeFlows({
   const [withdrawFlowIds, setWithdrawFlowIds] = useState<string[]>([]);
   const [claimFlowOpen, setClaimFlowOpen] = useState(false);
   const [claimFlowAmount, setClaimFlowAmount] = useState<bigint>(0n);
-  const [selectedWithdrawalIds, setSelectedWithdrawalIds] = useState<
-    string[]
-  >([]);
+  const [selectedWithdrawalIds, setSelectedWithdrawalIds] = useState<string[]>(
+    []
+  );
   const [approvalStatus, setApprovalStatus] = useState<StepStatus>("idle");
   const [stakeStatus, setStakeStatus] = useState<StepStatus>("idle");
   const [unstakeApprovalStatus, setUnstakeApprovalStatus] =
@@ -77,19 +74,13 @@ export function useStakeFlows({
   const [unstakeStatus, setUnstakeStatus] = useState<StepStatus>("idle");
   const [withdrawStatus, setWithdrawStatus] = useState<StepStatus>("idle");
   const [claimStatus, setClaimStatus] = useState<StepStatus>("idle");
-  const [approvalHash, setApprovalHash] = useState<`0x${string}` | null>(
-    null
-  );
+  const [approvalHash, setApprovalHash] = useState<`0x${string}` | null>(null);
   const [stakeHash, setStakeHash] = useState<`0x${string}` | null>(null);
   const [unstakeApprovalHash, setUnstakeApprovalHash] = useState<
     `0x${string}` | null
   >(null);
-  const [unstakeHash, setUnstakeHash] = useState<`0x${string}` | null>(
-    null
-  );
-  const [withdrawHash, setWithdrawHash] = useState<`0x${string}` | null>(
-    null
-  );
+  const [unstakeHash, setUnstakeHash] = useState<`0x${string}` | null>(null);
+  const [withdrawHash, setWithdrawHash] = useState<`0x${string}` | null>(null);
   const [claimHash, setClaimHash] = useState<`0x${string}` | null>(null);
 
   const { writeContractAsync } = useWriteContract();
@@ -169,8 +160,10 @@ export function useStakeFlows({
       } catch (error) {
         if (pendingToast) toast.dismiss(pendingToast);
         const message =
-          (error as { shortMessage?: string; details?: string })?.shortMessage ||
-          (error as { cause?: { shortMessage?: string } })?.cause?.shortMessage ||
+          (error as { shortMessage?: string; details?: string })
+            ?.shortMessage ||
+          (error as { cause?: { shortMessage?: string } })?.cause
+            ?.shortMessage ||
           (error as { message?: string })?.message ||
           "Transaction failed";
         console.error("Transaction error:", error);
@@ -260,23 +253,20 @@ export function useStakeFlows({
     [sendTransaction]
   );
 
-  const startWithdrawTransaction = useCallback(
-    async () => {
-      setWithdrawStatus("waiting");
-      const hash = await sendTransaction("Withdraw", {
-        address: CONFIG.contracts.Staking,
-        abi: StakingABI,
-        functionName: "withdrawUnlocked"
-      });
-      if (!hash) {
-        setWithdrawStatus("error");
-        return;
-      }
-      setWithdrawHash(hash);
-      setWithdrawStatus("submitted");
-    },
-    [sendTransaction]
-  );
+  const startWithdrawTransaction = useCallback(async () => {
+    setWithdrawStatus("waiting");
+    const hash = await sendTransaction("Withdraw", {
+      address: CONFIG.contracts.Staking,
+      abi: StakingABI,
+      functionName: "withdrawUnlocked"
+    });
+    if (!hash) {
+      setWithdrawStatus("error");
+      return;
+    }
+    setWithdrawHash(hash);
+    setWithdrawStatus("submitted");
+  }, [sendTransaction]);
 
   const startClaimTransaction = useCallback(async () => {
     setClaimStatus("waiting");
@@ -514,7 +504,11 @@ export function useStakeFlows({
       setApprovalStatus("confirmed");
       onSsvApprovalConfirmed?.();
     }
-    if (stakeFlowNeedsApproval && stakeStatus === "idle" && stakeFlowAmount > 0n) {
+    if (
+      stakeFlowNeedsApproval &&
+      stakeStatus === "idle" &&
+      stakeFlowAmount > 0n
+    ) {
       void startStakeTransaction(stakeFlowAmount);
     }
   }, [
@@ -613,9 +607,7 @@ export function useStakeFlows({
     stakeStatus === "waiting" ||
     stakeStatus === "submitted";
   const stakeFlowAmountLabel =
-    stakeFlowAmount > 0n
-      ? formatToken(stakeFlowAmount, tokenDecimals)
-      : "--";
+    stakeFlowAmount > 0n ? formatToken(stakeFlowAmount, tokenDecimals) : "--";
   const stakeFlowHasError =
     approvalStatus === "error" || stakeStatus === "error";
   const stakeFlowComplete = stakeFlowNeedsApproval
@@ -677,8 +669,7 @@ export function useStakeFlows({
       : `Claim ${claimFlowAmountLabel} ETH`;
   const stakeRetryDisabled = isStakeFlowBusy || stakeFlowAmount === 0n;
   const unstakeRetryDisabled = isUnstakeFlowBusy || unstakeFlowAmount === 0n;
-  const withdrawRetryDisabled =
-    isWithdrawFlowBusy || withdrawFlowAmount === 0n;
+  const withdrawRetryDisabled = isWithdrawFlowBusy || withdrawFlowAmount === 0n;
   const claimRetryDisabled = isClaimFlowBusy || claimFlowAmount === 0n;
   const stakeBalanceLabel = `Wallet Balance: ${formatToken(
     ssvBalanceValue,

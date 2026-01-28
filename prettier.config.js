@@ -1,7 +1,7 @@
 /** @type {import('prettier').Config & import('prettier-plugin-tailwindcss').PluginOptions} */
 const config = {
   endOfLine: "lf",
-  semi: false,
+  semi: true,
   singleQuote: false,
   tabWidth: 2,
   trailingComma: "none",
@@ -20,7 +20,7 @@ const config = {
     "^@/styles/(.*)$",
     "^@/app/(.*)$",
     "",
-    "^[./]",
+    "^[./]"
   ],
   importOrderSeparation: false,
   importOrderSortSpecifiers: true,
@@ -32,8 +32,8 @@ const config = {
   tailwindFunctions: ["cva"],
   plugins: [
     "@ianvs/prettier-plugin-sort-imports",
-    "prettier-plugin-tailwindcss",
-  ],
-}
+    "prettier-plugin-tailwindcss"
+  ]
+};
 
-export default config
+export default config;

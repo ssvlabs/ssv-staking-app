@@ -20,15 +20,15 @@ export function PrimaryActionButton({
   const patternOpacityClass = isActivated
     ? "opacity-cta-pattern-activated"
     : isDisabled
-    ? "opacity-cta-pattern-disabled"
-    : "opacity-cta-pattern";
+      ? "opacity-cta-pattern-disabled"
+      : "opacity-cta-pattern";
 
   return (
     <Button
       className={cn(
         "relative h-[60px] w-full overflow-hidden rounded-[8px] bg-cta-bg text-[14px] font-semibold text-cta-text shadow-primary transition",
         "hover:bg-cta-bg-hover active:bg-cta-bg-active",
-        "disabled:bg-cta-bg-disabled disabled:text-cta-text-disabled disabled:shadow-none disabled:opacity-100",
+        "disabled:bg-cta-bg-disabled disabled:text-cta-text-disabled disabled:opacity-100 disabled:shadow-none",
         "data-[activated=true]:bg-cta-bg-activated data-[activated=true]:text-cta-text-activated data-[activated=true]:shadow-none",
         className
       )}

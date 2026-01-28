@@ -54,8 +54,7 @@ const computeApr = (
   if (!Number.isFinite(priceEth) || !Number.isFinite(priceSsv)) return null;
   const ratePerShare = Number(formatUnits(accEthPerShare, 18));
   if (!Number.isFinite(ratePerShare) || ratePerShare <= 0) return null;
-  const apr =
-    ratePerShare * SECONDS_PER_YEAR * (priceEth / priceSsv) * 100;
+  const apr = ratePerShare * SECONDS_PER_YEAR * (priceEth / priceSsv) * 100;
   return Number.isFinite(apr) ? apr : null;
 };
 

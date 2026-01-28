@@ -19,9 +19,7 @@ type ThemeContextValue = {
 
 const THEME_STORAGE_KEY = "ssv-theme";
 
-const ThemeContext = createContext<ThemeContextValue | undefined>(
-  undefined
-);
+const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 const getStoredTheme = (): Theme | null => {
   if (typeof window === "undefined") return null;
@@ -67,7 +65,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(() => ({ theme, toggleTheme }), [theme, toggleTheme]);
 
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+  return (
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+  );
 }
 
 export function useTheme() {

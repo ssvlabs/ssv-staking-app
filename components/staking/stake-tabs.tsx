@@ -1,15 +1,16 @@
 "use client";
-import { AlertTriangle, Check } from "lucide-react"
-import Image from "next/image"
 
-import { InfoIcon } from "@/components/ui/info-icon"
-import { PrimaryActionButton } from "@/components/ui/primary-action-button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Tooltip } from "@/components/ui/tooltip"
-import { TokenInputCard } from "@/components/staking/token-input-card"
-import { CLAIMABLE_DECIMALS } from "@/lib/staking/constants"
-import { formatDuration, formatToken } from "@/lib/staking/format"
-import { WithdrawalRequest } from "@/lib/staking/types"
+import Image from "next/image";
+import { AlertTriangle, Check } from "lucide-react";
+
+import { CLAIMABLE_DECIMALS } from "@/lib/staking/constants";
+import { formatDuration, formatToken } from "@/lib/staking/format";
+import { WithdrawalRequest } from "@/lib/staking/types";
+import { InfoIcon } from "@/components/ui/info-icon";
+import { PrimaryActionButton } from "@/components/ui/primary-action-button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tooltip } from "@/components/ui/tooltip";
+import { TokenInputCard } from "@/components/staking/token-input-card";
 
 type StakeTabsProps = {
   activeTab: string;
@@ -107,10 +108,7 @@ export function StakeTabs({
             <TabsTrigger className={tabButtonClass("stake")} value="stake">
               Stake
             </TabsTrigger>
-            <TabsTrigger
-              className={tabButtonClass("unstake")}
-              value="unstake"
-            >
+            <TabsTrigger className={tabButtonClass("unstake")} value="unstake">
               Unstake
             </TabsTrigger>
             {multiWithdrawEnabled ? (
@@ -193,9 +191,7 @@ export function StakeTabs({
                     </div>
                     <p
                       className={`font-dm-sans flex-1 text-[28px] font-medium leading-[32px] ${
-                        isUnlocked
-                          ? "text-ink-900"
-                          : "text-ink-400"
+                        isUnlocked ? "text-ink-900" : "text-ink-400"
                       }`}
                     >
                       {pendingAmountLabel} cSSV
@@ -233,8 +229,8 @@ export function StakeTabs({
                   {!isConnected
                     ? "Connect Wallet"
                     : isUnlocked
-                    ? "Withdraw"
-                    : `Withdraw in ${pendingCountdownLabel}...`}
+                      ? "Withdraw"
+                      : `Withdraw in ${pendingCountdownLabel}...`}
                 </PrimaryActionButton>
               </>
             ) : (

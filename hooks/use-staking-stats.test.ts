@@ -1,5 +1,5 @@
 import { renderHook } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useStakingStats } from "@/hooks/use-staking-stats";
 
@@ -10,7 +10,9 @@ vi.mock("wagmi", () => ({
 
 const wagmi = await import("wagmi");
 const useAccount = wagmi.useAccount as unknown as ReturnType<typeof vi.fn>;
-const useReadContract = wagmi.useReadContract as unknown as ReturnType<typeof vi.fn>;
+const useReadContract = wagmi.useReadContract as unknown as ReturnType<
+  typeof vi.fn
+>;
 
 const getCall = (functionName: string) =>
   useReadContract.mock.calls.find(

@@ -18,9 +18,7 @@ type TabsContextValue = {
   setValue: (value: string) => void;
 };
 
-const TabsContext = createContext<TabsContextValue | undefined>(
-  undefined
-);
+const TabsContext = createContext<TabsContextValue | undefined>(undefined);
 
 type TabsProps = {
   defaultValue: string;
@@ -58,9 +56,7 @@ export function Tabs({
 type TabsListProps = HTMLAttributes<HTMLDivElement>;
 
 export function TabsList({ className, ...props }: TabsListProps) {
-  return (
-    <div className={cn(className)} {...props} />
-  );
+  return <div className={cn(className)} {...props} />;
 }
 
 type TabsTriggerProps = ButtonHTMLAttributes<HTMLButtonElement> & {

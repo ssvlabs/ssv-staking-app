@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import { STAKING_COPY } from "@/lib/staking/copy";
-import { buildApprovalAndActionSteps, buildSingleStep } from "@/lib/staking/tx-steps";
+import {
+  buildApprovalAndActionSteps,
+  buildSingleStep
+} from "@/lib/staking/tx-steps";
 
 describe("buildSingleStep", () => {
   it("wraps a single step with an idle label", () => {
