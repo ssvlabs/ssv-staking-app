@@ -6,6 +6,7 @@ import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 
 import { ERC20ABI, StakingABI } from "@/lib/abis";
 import { CONFIG } from "@/lib/config";
+import { useMultisigTransactionModal } from "@/lib/multisig-modal";
 import { CLAIMABLE_DECIMALS } from "@/lib/staking/constants";
 import { formatDuration, formatToken, safeParse } from "@/lib/staking/format";
 import { StepStatus, WithdrawalRequest } from "@/lib/staking/types";
@@ -24,6 +25,7 @@ type UseStakeFlowsOptions = {
   tokenDecimals: number;
   receiptDecimals: number;
   multiWithdrawEnabled: boolean;
+  isContractWallet?: boolean;
   onAnyTxConfirmed?: () => void;
   onSsvApprovalConfirmed?: () => void;
   onCssvApprovalConfirmed?: () => void;
@@ -42,6 +44,7 @@ export function useStakeFlows({
   tokenDecimals,
   receiptDecimals,
   multiWithdrawEnabled,
+  isContractWallet,
   onAnyTxConfirmed,
   onSsvApprovalConfirmed,
   onCssvApprovalConfirmed
@@ -84,35 +87,38 @@ export function useStakeFlows({
   const [claimHash, setClaimHash] = useState<`0x${string}` | null>(null);
 
   const { writeContractAsync } = useWriteContract();
+  const { open: openMultisigModal, close: closeMultisigModal } =
+    useMultisigTransactionModal();
+  const isOrdinaryWallet = !isContractWallet;
 
   const { isSuccess: isConfirmed } = useWaitForTransactionReceipt({
     hash: txHash,
-    query: { enabled: Boolean(txHash) }
+    query: { enabled: Boolean(txHash) && isOrdinaryWallet }
   });
   const { isSuccess: isApprovalConfirmed } = useWaitForTransactionReceipt({
     hash: approvalHash ?? undefined,
-    query: { enabled: Boolean(approvalHash) }
+    query: { enabled: Boolean(approvalHash) && isOrdinaryWallet }
   });
   const { isSuccess: isStakeConfirmed } = useWaitForTransactionReceipt({
     hash: stakeHash ?? undefined,
-    query: { enabled: Boolean(stakeHash) }
+    query: { enabled: Boolean(stakeHash) && isOrdinaryWallet }
   });
   const { isSuccess: isUnstakeApprovalConfirmed } =
     useWaitForTransactionReceipt({
       hash: unstakeApprovalHash ?? undefined,
-      query: { enabled: Boolean(unstakeApprovalHash) }
+      query: { enabled: Boolean(unstakeApprovalHash) && isOrdinaryWallet }
     });
   const { isSuccess: isUnstakeConfirmed } = useWaitForTransactionReceipt({
     hash: unstakeHash ?? undefined,
-    query: { enabled: Boolean(unstakeHash) }
+    query: { enabled: Boolean(unstakeHash) && isOrdinaryWallet }
   });
   const { isSuccess: isWithdrawConfirmed } = useWaitForTransactionReceipt({
     hash: withdrawHash ?? undefined,
-    query: { enabled: Boolean(withdrawHash) }
+    query: { enabled: Boolean(withdrawHash) && isOrdinaryWallet }
   });
   const { isSuccess: isClaimConfirmed } = useWaitForTransactionReceipt({
     hash: claimHash ?? undefined,
-    query: { enabled: Boolean(claimHash) }
+    query: { enabled: Boolean(claimHash) && isOrdinaryWallet }
   });
 
   const primaryPending = withdrawalRequests[0];
@@ -151,6 +157,11 @@ export function useStakeFlows({
       if (!writeContractAsync) return undefined;
       let pendingToast: string | number | null = null;
       try {
+        if (isContractWallet) {
+          openMultisigModal();
+          const hash = await writeContractAsync(config);
+          return hash;
+        }
         pendingToast = toast.loading("Transaction pending...");
         setToastId(pendingToast);
         setTxLabel(label);
@@ -159,6 +170,9 @@ export function useStakeFlows({
         return hash;
       } catch (error) {
         if (pendingToast) toast.dismiss(pendingToast);
+        if (isContractWallet) {
+          closeMultisigModal();
+        }
         const message =
           (error as { shortMessage?: string; details?: string })
             ?.shortMessage ||
@@ -174,11 +188,25 @@ export function useStakeFlows({
         return undefined;
       }
     },
-    [writeContractAsync]
+    [
+      writeContractAsync,
+      isContractWallet,
+      openMultisigModal,
+      closeMultisigModal
+    ]
   );
 
   const startStakeTransaction = useCallback(
     async (amountToStake: bigint) => {
+      if (isContractWallet) {
+        await sendTransaction("Stake", {
+          address: CONFIG.contracts.Staking,
+          abi: StakingABI,
+          functionName: "stake",
+          args: [amountToStake]
+        });
+        return;
+      }
       setStakeStatus("waiting");
       const hash = await sendTransaction("Stake", {
         address: CONFIG.contracts.Staking,
@@ -193,11 +221,20 @@ export function useStakeFlows({
       setStakeHash(hash);
       setStakeStatus("submitted");
     },
-    [sendTransaction]
+    [sendTransaction, isContractWallet]
   );
 
   const startApprovalTransaction = useCallback(
     async (amountToApprove: bigint) => {
+      if (isContractWallet) {
+        await sendTransaction("Approve SSV", {
+          address: CONFIG.contracts.SSVToken,
+          abi: ERC20ABI,
+          functionName: "approve",
+          args: [CONFIG.contracts.Staking, amountToApprove]
+        });
+        return;
+      }
       setApprovalStatus("waiting");
       const hash = await sendTransaction("Approve SSV", {
         address: CONFIG.contracts.SSVToken,
@@ -212,11 +249,20 @@ export function useStakeFlows({
       setApprovalHash(hash);
       setApprovalStatus("submitted");
     },
-    [sendTransaction]
+    [sendTransaction, isContractWallet]
   );
 
   const startUnstakeTransaction = useCallback(
     async (amountToUnstake: bigint) => {
+      if (isContractWallet) {
+        await sendTransaction("Request Unstake", {
+          address: CONFIG.contracts.Staking,
+          abi: StakingABI,
+          functionName: "requestUnstake",
+          args: [amountToUnstake]
+        });
+        return;
+      }
       setUnstakeStatus("waiting");
       const hash = await sendTransaction("Request Unstake", {
         address: CONFIG.contracts.Staking,
@@ -231,11 +277,20 @@ export function useStakeFlows({
       setUnstakeHash(hash);
       setUnstakeStatus("submitted");
     },
-    [sendTransaction]
+    [sendTransaction, isContractWallet]
   );
 
   const startUnstakeApprovalTransaction = useCallback(
     async (amountToApprove: bigint) => {
+      if (isContractWallet) {
+        await sendTransaction("Approve cSSV", {
+          address: CONFIG.contracts.cSSVToken,
+          abi: ERC20ABI,
+          functionName: "approve",
+          args: [CONFIG.contracts.Staking, amountToApprove]
+        });
+        return;
+      }
       setUnstakeApprovalStatus("waiting");
       const hash = await sendTransaction("Approve cSSV", {
         address: CONFIG.contracts.cSSVToken,
@@ -250,10 +305,18 @@ export function useStakeFlows({
       setUnstakeApprovalHash(hash);
       setUnstakeApprovalStatus("submitted");
     },
-    [sendTransaction]
+    [sendTransaction, isContractWallet]
   );
 
   const startWithdrawTransaction = useCallback(async () => {
+    if (isContractWallet) {
+      await sendTransaction("Withdraw", {
+        address: CONFIG.contracts.Staking,
+        abi: StakingABI,
+        functionName: "withdrawUnlocked"
+      });
+      return;
+    }
     setWithdrawStatus("waiting");
     const hash = await sendTransaction("Withdraw", {
       address: CONFIG.contracts.Staking,
@@ -266,9 +329,17 @@ export function useStakeFlows({
     }
     setWithdrawHash(hash);
     setWithdrawStatus("submitted");
-  }, [sendTransaction]);
+  }, [sendTransaction, isContractWallet]);
 
   const startClaimTransaction = useCallback(async () => {
+    if (isContractWallet) {
+      await sendTransaction("Claim Rewards", {
+        address: CONFIG.contracts.Staking,
+        abi: StakingABI,
+        functionName: "claimEthRewards"
+      });
+      return;
+    }
     setClaimStatus("waiting");
     const hash = await sendTransaction("Claim Rewards", {
       address: CONFIG.contracts.Staking,
@@ -281,7 +352,7 @@ export function useStakeFlows({
     }
     setClaimHash(hash);
     setClaimStatus("submitted");
-  }, [sendTransaction]);
+  }, [sendTransaction, isContractWallet]);
 
   const handleStakeFlow = useCallback(async () => {
     if (!isConnected) {
@@ -299,6 +370,14 @@ export function useStakeFlows({
     }
 
     const requiresApproval = ssvAllowanceValue < stakeAmount;
+    if (isContractWallet) {
+      if (requiresApproval) {
+        await startApprovalTransaction(stakeAmount);
+      } else {
+        await startStakeTransaction(stakeAmount);
+      }
+      return;
+    }
     setStakeFlowOpen(true);
     setStakeFlowAmount(stakeAmount);
     setStakeFlowNeedsApproval(requiresApproval);
@@ -319,7 +398,8 @@ export function useStakeFlows({
     stakeAmount,
     ssvAllowanceValue,
     startApprovalTransaction,
-    startStakeTransaction
+    startStakeTransaction,
+    isContractWallet
   ]);
 
   const handleRequestUnstake = useCallback(async () => {
@@ -341,6 +421,14 @@ export function useStakeFlows({
     }
 
     const requiresApproval = cssvAllowanceValue < unstakeAmount;
+    if (isContractWallet) {
+      if (requiresApproval) {
+        await startUnstakeApprovalTransaction(unstakeAmount);
+      } else {
+        await startUnstakeTransaction(unstakeAmount);
+      }
+      return;
+    }
     setUnstakeFlowOpen(true);
     setUnstakeFlowAmount(unstakeAmount);
     setUnstakeFlowNeedsApproval(requiresApproval);
@@ -363,7 +451,8 @@ export function useStakeFlows({
     withdrawalRequests.length,
     cssvAllowanceValue,
     startUnstakeApprovalTransaction,
-    startUnstakeTransaction
+    startUnstakeTransaction,
+    isContractWallet
   ]);
 
   const handleWithdrawSelected = useCallback(async () => {
@@ -373,6 +462,10 @@ export function useStakeFlows({
     }
     if (!selectedWithdrawable.length) {
       toast.error("Select withdrawable requests.");
+      return;
+    }
+    if (isContractWallet) {
+      await startWithdrawTransaction();
       return;
     }
     const ids = selectedWithdrawable.map((request) => request.id);
@@ -387,7 +480,8 @@ export function useStakeFlows({
     openConnectModal,
     selectedWithdrawable,
     selectedWithdrawAmount,
-    startWithdrawTransaction
+    startWithdrawTransaction,
+    isContractWallet
   ]);
 
   const handleWithdrawUnlocked = useCallback(async () => {
@@ -403,6 +497,10 @@ export function useStakeFlows({
       toast.error("Cooldown not finished.");
       return;
     }
+    if (isContractWallet) {
+      await startWithdrawTransaction();
+      return;
+    }
     const ids = [primaryPending.id];
     setWithdrawFlowOpen(true);
     setWithdrawFlowAmount(primaryPending.amount);
@@ -415,7 +513,8 @@ export function useStakeFlows({
     openConnectModal,
     primaryPending,
     nowEpoch,
-    startWithdrawTransaction
+    startWithdrawTransaction,
+    isContractWallet
   ]);
 
   const handleClaim = useCallback(async () => {
@@ -427,12 +526,22 @@ export function useStakeFlows({
       toast.error("Nothing to claim.");
       return;
     }
+    if (isContractWallet) {
+      await startClaimTransaction();
+      return;
+    }
     setClaimFlowOpen(true);
     setClaimFlowAmount(claimableValue);
     setClaimHash(null);
     setClaimStatus("waiting");
     await startClaimTransaction();
-  }, [isConnected, openConnectModal, claimableValue, startClaimTransaction]);
+  }, [
+    isConnected,
+    openConnectModal,
+    claimableValue,
+    startClaimTransaction,
+    isContractWallet
+  ]);
 
   const handleMax = useCallback(() => {
     if (!ssvBalanceFormatted) return;
@@ -492,17 +601,30 @@ export function useStakeFlows({
     if (!isConfirmed || !txLabel) return;
     if (toastId) toast.dismiss(toastId);
     toast.success(`${txLabel} confirmed`);
+    if (isContractWallet) {
+      closeMultisigModal();
+    }
     setTxHash(undefined);
     setTxLabel(null);
     setToastId(null);
     onAnyTxConfirmed?.();
-  }, [isConfirmed, txLabel, toastId, onAnyTxConfirmed]);
+  }, [
+    isConfirmed,
+    txLabel,
+    toastId,
+    onAnyTxConfirmed,
+    isContractWallet,
+    closeMultisigModal
+  ]);
 
   useEffect(() => {
     if (!isApprovalConfirmed || !approvalHash) return;
     if (approvalStatus !== "confirmed") {
       setApprovalStatus("confirmed");
       onSsvApprovalConfirmed?.();
+    }
+    if (isContractWallet) {
+      closeMultisigModal();
     }
     if (
       stakeFlowNeedsApproval &&
@@ -516,6 +638,8 @@ export function useStakeFlows({
     approvalHash,
     approvalStatus,
     onSsvApprovalConfirmed,
+    isContractWallet,
+    closeMultisigModal,
     stakeFlowAmount,
     stakeFlowNeedsApproval,
     stakeStatus,
@@ -527,13 +651,25 @@ export function useStakeFlows({
     if (stakeStatus !== "confirmed") {
       setStakeStatus("confirmed");
     }
-  }, [isStakeConfirmed, stakeHash, stakeStatus]);
+    if (isContractWallet) {
+      closeMultisigModal();
+    }
+  }, [
+    isStakeConfirmed,
+    stakeHash,
+    stakeStatus,
+    isContractWallet,
+    closeMultisigModal
+  ]);
 
   useEffect(() => {
     if (!isUnstakeApprovalConfirmed || !unstakeApprovalHash) return;
     if (unstakeApprovalStatus !== "confirmed") {
       setUnstakeApprovalStatus("confirmed");
       onCssvApprovalConfirmed?.();
+    }
+    if (isContractWallet) {
+      closeMultisigModal();
     }
     if (
       unstakeFlowNeedsApproval &&
@@ -547,6 +683,8 @@ export function useStakeFlows({
     unstakeApprovalHash,
     unstakeApprovalStatus,
     onCssvApprovalConfirmed,
+    isContractWallet,
+    closeMultisigModal,
     unstakeFlowAmount,
     unstakeFlowNeedsApproval,
     unstakeStatus,
@@ -558,7 +696,16 @@ export function useStakeFlows({
     if (unstakeStatus !== "confirmed") {
       setUnstakeStatus("confirmed");
     }
-  }, [isUnstakeConfirmed, unstakeHash, unstakeStatus]);
+    if (isContractWallet) {
+      closeMultisigModal();
+    }
+  }, [
+    isUnstakeConfirmed,
+    unstakeHash,
+    unstakeStatus,
+    isContractWallet,
+    closeMultisigModal
+  ]);
 
   useEffect(() => {
     if (!isWithdrawConfirmed || !withdrawHash) return;
@@ -568,14 +715,33 @@ export function useStakeFlows({
         prev.filter((id) => !withdrawFlowIds.includes(id))
       );
     }
-  }, [isWithdrawConfirmed, withdrawHash, withdrawStatus, withdrawFlowIds]);
+    if (isContractWallet) {
+      closeMultisigModal();
+    }
+  }, [
+    isWithdrawConfirmed,
+    withdrawHash,
+    withdrawStatus,
+    withdrawFlowIds,
+    isContractWallet,
+    closeMultisigModal
+  ]);
 
   useEffect(() => {
     if (!isClaimConfirmed || !claimHash) return;
     if (claimStatus !== "confirmed") {
       setClaimStatus("confirmed");
     }
-  }, [isClaimConfirmed, claimHash, claimStatus]);
+    if (isContractWallet) {
+      closeMultisigModal();
+    }
+  }, [
+    isClaimConfirmed,
+    claimHash,
+    claimStatus,
+    isContractWallet,
+    closeMultisigModal
+  ]);
 
   useInterval(() => {
     setNowEpoch(Math.floor(Date.now() / 1000));
@@ -601,11 +767,12 @@ export function useStakeFlows({
     }
   }, [multiWithdrawEnabled]);
 
-  const isStakeFlowBusy =
-    approvalStatus === "waiting" ||
-    approvalStatus === "submitted" ||
-    stakeStatus === "waiting" ||
-    stakeStatus === "submitted";
+  const isStakeFlowBusy = isContractWallet
+    ? false
+    : approvalStatus === "waiting" ||
+      approvalStatus === "submitted" ||
+      stakeStatus === "waiting" ||
+      stakeStatus === "submitted";
   const stakeFlowAmountLabel =
     stakeFlowAmount > 0n ? formatToken(stakeFlowAmount, tokenDecimals) : "--";
   const stakeFlowHasError =
@@ -621,11 +788,12 @@ export function useStakeFlows({
     stakeStatus === "confirmed"
       ? `Staked ${stakeFlowAmountLabel} SSV`
       : `Stake ${stakeFlowAmountLabel} SSV`;
-  const isUnstakeFlowBusy =
-    unstakeApprovalStatus === "waiting" ||
-    unstakeApprovalStatus === "submitted" ||
-    unstakeStatus === "waiting" ||
-    unstakeStatus === "submitted";
+  const isUnstakeFlowBusy = isContractWallet
+    ? false
+    : unstakeApprovalStatus === "waiting" ||
+      unstakeApprovalStatus === "submitted" ||
+      unstakeStatus === "waiting" ||
+      unstakeStatus === "submitted";
   const unstakeFlowAmountLabel =
     unstakeFlowAmount > 0n
       ? formatToken(unstakeFlowAmount, receiptDecimals)
@@ -643,8 +811,9 @@ export function useStakeFlows({
     unstakeStatus === "confirmed"
       ? `Unstaked ${unstakeFlowAmountLabel} SSV`
       : `Unstake ${unstakeFlowAmountLabel} SSV`;
-  const isWithdrawFlowBusy =
-    withdrawStatus === "waiting" || withdrawStatus === "submitted";
+  const isWithdrawFlowBusy = isContractWallet
+    ? false
+    : withdrawStatus === "waiting" || withdrawStatus === "submitted";
   const withdrawFlowAmountLabel =
     withdrawFlowAmount > 0n
       ? formatToken(withdrawFlowAmount, tokenDecimals)
@@ -655,8 +824,9 @@ export function useStakeFlows({
     withdrawStatus === "confirmed"
       ? `Withdrawn ${withdrawFlowAmountLabel} SSV`
       : `Withdraw ${withdrawFlowAmountLabel} SSV`;
-  const isClaimFlowBusy =
-    claimStatus === "waiting" || claimStatus === "submitted";
+  const isClaimFlowBusy = isContractWallet
+    ? false
+    : claimStatus === "waiting" || claimStatus === "submitted";
   const claimFlowAmountLabel =
     claimFlowAmount > 0n
       ? formatToken(claimFlowAmount, CLAIMABLE_DECIMALS, 5)

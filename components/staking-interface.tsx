@@ -4,7 +4,6 @@ import { useCallback } from "react";
 import Image from "next/image";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { toast } from "sonner";
-import { useAccount } from "wagmi";
 
 import { STAKING_ASSETS } from "@/lib/staking/constants";
 import { STAKING_COPY } from "@/lib/staking/copy";
@@ -17,7 +16,9 @@ import {
 import { useAprMetric } from "@/lib/staking/use-apr-metric";
 import { useStakeFlows } from "@/lib/staking/use-stake-flows";
 import { useStakingData } from "@/lib/staking/use-staking-data";
+import { useAccount } from "@/hooks/use-account";
 import { Faq } from "@/components/faq";
+import { MultisigTransactionModal } from "@/components/staking/multisig-transaction-modal";
 import { StakeTabs } from "@/components/staking/stake-tabs";
 import { StakingBalances } from "@/components/staking/staking-balances";
 import { StakingHeader } from "@/components/staking/staking-header";
@@ -29,7 +30,7 @@ const { ssvLarge, ssvMedium, ssvSmall, ethIcon, metamaskIcon, calculatorIcon } =
   STAKING_ASSETS;
 
 export default function StakingInterface() {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, isContract } = useAccount();
   const { openConnectModal } = useConnectModal();
   const multiWithdrawEnabled = true;
   const { aprValue, refreshApr } = useAprMetric();
@@ -142,6 +143,7 @@ export default function StakingInterface() {
     tokenDecimals,
     receiptDecimals,
     multiWithdrawEnabled,
+    isContractWallet: isContract,
     onAnyTxConfirmed: handleAnyTxConfirmed,
     onSsvApprovalConfirmed: refetchSsvAllowance,
     onCssvApprovalConfirmed: refetchCssvAllowance
@@ -354,6 +356,7 @@ export default function StakingInterface() {
           <TxFlowFooter onClose={closeClaimFlow} />
         ) : null}
       </TxFlowModal>
+      <MultisigTransactionModal />
     </div>
   );
 }

@@ -3,7 +3,8 @@ export const STAKING_COPY = {
     stake: "Stake",
     unstake: "Unstake",
     withdraw: "Withdraw",
-    claim: "Claim"
+    claim: "Claim",
+    multisig: "Transaction Initiated"
   },
   actions: {
     approve: "Approve",
@@ -15,6 +16,11 @@ export const STAKING_COPY = {
   },
   buttons: {
     addToMetamask: "Add cSSV to Metamask"
+  },
+  multisig: {
+    pending:
+      "Your transaction has been initiated in your multi-sig wallet and is now pending approval from other participants.",
+    returnWhenApproved: "Please return once approved."
   },
   toasts: {
     metamaskMissing: "Metamask not detected.",
