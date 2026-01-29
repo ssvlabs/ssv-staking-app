@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 
-import { Tooltip } from "@/components/ui/tooltip";
-import { InfoIcon } from "@/components/ui/info-icon";
 import { formatToken } from "@/lib/staking/format";
+import { InfoIcon } from "@/components/ui/info-icon";
+import { Tooltip } from "@/components/ui/tooltip";
 
 type StakingHeaderProps = {
   aprValue: number | null;
@@ -79,15 +79,13 @@ export function StakingHeader({
       </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        <div
-          className="relative flex flex-col gap-4 overflow-hidden rounded-[8px] bg-[#f4f7fa] p-5 dark:bg-[#0b1620]"
-        >
+        <div className="relative flex flex-col gap-4 overflow-hidden rounded-[8px] bg-[#f4f7fa] p-5 dark:bg-[#0b1620]">
           <div
-            className="pointer-events-none absolute left-[72.51px] top-[-48.6px] flex h-[230.063px] w-[230.063px] items-center justify-center"
+            className="pointer-events-none absolute left-[72.51px] top-[-48.6px] flex size-[230.063px] items-center justify-center"
             aria-hidden="true"
           >
             <div className="flex-none rotate-[196deg] scale-y-[-100%]">
-              <div className="relative h-[186px] w-[186px] opacity-[0.08]">
+              <div className="relative size-[186px] opacity-[0.08]">
                 {aprBgPieces.map((piece) => (
                   <div
                     key={piece.light}
@@ -143,15 +141,13 @@ export function StakingHeader({
             {aprValue !== null ? `${aprValue.toFixed(2)} %` : "--"}
           </p>
         </div>
-        <div
-          className="relative flex flex-col gap-4 overflow-hidden rounded-[8px] bg-[#f4f7fa] p-5 dark:bg-[#0b1620]"
-        >
+        <div className="relative flex flex-col gap-4 overflow-hidden rounded-[8px] bg-[#f4f7fa] p-5 dark:bg-[#0b1620]">
           <div
-            className="pointer-events-none absolute left-[134px] top-[-27px] flex h-[195.611px] w-[195.611px] items-center justify-center"
+            className="pointer-events-none absolute left-[134px] top-[-27px] flex size-[195.611px] items-center justify-center"
             aria-hidden="true"
           >
             <div className="flex-none rotate-[156.904deg] scale-y-[-100%]">
-              <div className="relative h-[149.08px] w-[149.08px] opacity-[0.08]">
+              <div className="relative size-[149.08px] opacity-[0.08]">
                 {totalBgPieces.map((piece) => (
                   <div
                     key={piece.light}

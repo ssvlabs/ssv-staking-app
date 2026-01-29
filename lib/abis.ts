@@ -1,7 +1,7 @@
 import { erc20Abi, type Abi } from "viem";
 
-import StakingAbiJson from "@/lib/abis/SSVStaking.json";
 import ViewsAbiJson from "@/lib/abis/SSVNetworkViews.json";
+import StakingAbiJson from "@/lib/abis/SSVStaking.json";
 
 export const StakingABI = StakingAbiJson as Abi;
 

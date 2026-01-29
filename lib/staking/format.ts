@@ -1,10 +1,6 @@
 import { formatUnits, parseUnits } from "viem";
 
-export const formatToken = (
-  value?: bigint,
-  decimals = 18,
-  maxDecimals = 4
-) => {
+export const formatToken = (value?: bigint, decimals = 18, maxDecimals = 4) => {
   if (value === undefined) return "--";
   const formatted = formatUnits(value, decimals);
   const parsed = Number(formatted);

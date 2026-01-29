@@ -8,10 +8,8 @@ export const dynamic = "force-dynamic";
 
 const SECONDS_PER_YEAR = 31_536_000;
 
-const HOODI_RPC_URL = "https://0xrpc.io/hoodi";
-
 const publicClient = createPublicClient({
-  transport: http(HOODI_RPC_URL)
+  transport: http(CONFIG.HOODI_RPC_URL)
 });
 
 const fetchIndex = async (): Promise<bigint> => {
@@ -54,8 +52,7 @@ const computeApr = (
   if (!Number.isFinite(priceEth) || !Number.isFinite(priceSsv)) return null;
   const ratePerShare = Number(formatUnits(accEthPerShare, 18));
   if (!Number.isFinite(ratePerShare) || ratePerShare <= 0) return null;
-  const apr =
-    ratePerShare * SECONDS_PER_YEAR * (priceEth / priceSsv) * 100;
+  const apr = ratePerShare * SECONDS_PER_YEAR * (priceEth / priceSsv) * 100;
   return Number.isFinite(apr) ? apr : null;
 };
 

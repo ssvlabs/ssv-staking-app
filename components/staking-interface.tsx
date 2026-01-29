@@ -2,37 +2,35 @@
 
 import { useCallback } from "react";
 import Image from "next/image";
-import { useAccount } from "wagmi";
-import { toast } from "sonner";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { toast } from "sonner";
 
-import { STAKING_COPY } from "@/lib/staking/copy";
 import { STAKING_ASSETS } from "@/lib/staking/constants";
-import { addCssvToMetamask } from "@/lib/staking/metamask";
-import { useAprMetric } from "@/lib/staking/use-apr-metric";
-import { useStakingData } from "@/lib/staking/use-staking-data";
-import { useStakeFlows } from "@/lib/staking/use-stake-flows";
-import { buildApprovalAndActionSteps, buildSingleStep } from "@/lib/staking/tx-steps";
+import { STAKING_COPY } from "@/lib/staking/copy";
 import { STAKING_FAQ } from "@/lib/staking/faq";
+import { addCssvToMetamask } from "@/lib/staking/metamask";
+import {
+  buildApprovalAndActionSteps,
+  buildSingleStep
+} from "@/lib/staking/tx-steps";
+import { useAprMetric } from "@/lib/staking/use-apr-metric";
+import { useStakeFlows } from "@/lib/staking/use-stake-flows";
+import { useStakingData } from "@/lib/staking/use-staking-data";
+import { useAccount } from "@/hooks/use-account";
 import { Faq } from "@/components/faq";
+import { MultisigTransactionModal } from "@/components/staking/multisig-transaction-modal";
 import { StakeTabs } from "@/components/staking/stake-tabs";
 import { StakingBalances } from "@/components/staking/staking-balances";
 import { StakingHeader } from "@/components/staking/staking-header";
-import { TxFlowModal } from "@/components/staking/tx-flow-modal";
 import { TxFlowFooter } from "@/components/staking/tx-flow-footer";
+import { TxFlowModal } from "@/components/staking/tx-flow-modal";
 import { TxStepList } from "@/components/staking/tx-step-list";
 
-const {
-  ssvLarge,
-  ssvMedium,
-    ssvSmall,
-    ethIcon,
-    metamaskIcon,
-  calculatorIcon
-} = STAKING_ASSETS;
+const { ssvLarge, ssvMedium, ssvSmall, ethIcon, metamaskIcon, calculatorIcon } =
+  STAKING_ASSETS;
 
 export default function StakingInterface() {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, isContract } = useAccount();
   const { openConnectModal } = useConnectModal();
   const multiWithdrawEnabled = true;
   const { aprValue, refreshApr } = useAprMetric();
@@ -145,6 +143,7 @@ export default function StakingInterface() {
     tokenDecimals,
     receiptDecimals,
     multiWithdrawEnabled,
+    isContractWallet: isContract,
     onAnyTxConfirmed: handleAnyTxConfirmed,
     onSsvApprovalConfirmed: refetchSsvAllowance,
     onCssvApprovalConfirmed: refetchCssvAllowance
@@ -282,13 +281,12 @@ export default function StakingInterface() {
         onClaim={handleClaim}
       />
       <section className="rounded-[16px] bg-surface-25 p-6">
-        <p className="font-dm-sans text-[18px] font-semibold text-ink-500">FAQ</p>
+        <p className="font-dm-sans text-[18px] font-semibold text-ink-500">
+          FAQ
+        </p>
         <div className="mt-4 space-y-3">
           {STAKING_FAQ.map((item) => (
-            <div
-              key={item.id}
-              className="rounded-[12px] bg-surface-100 p-5"
-            >
+            <div key={item.id} className="rounded-[12px] bg-surface-100 p-5">
               <Faq question={item.question} answer={item.answer} />
             </div>
           ))}
@@ -308,7 +306,9 @@ export default function StakingInterface() {
               onClick={handleAddCssvToMetamask}
               type="button"
             >
-              <span className="truncate">{STAKING_COPY.buttons.addToMetamask}</span>
+              <span className="truncate">
+                {STAKING_COPY.buttons.addToMetamask}
+              </span>
               <Image
                 alt=""
                 className="size-4"
@@ -356,6 +356,7 @@ export default function StakingInterface() {
           <TxFlowFooter onClose={closeClaimFlow} />
         ) : null}
       </TxFlowModal>
+      <MultisigTransactionModal />
     </div>
   );
 }

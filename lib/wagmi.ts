@@ -78,8 +78,7 @@ export const hoodi = defineChain({
   },
   rpcUrls: {
     default: {
-      http: ["https://0xrpc.io/hoodi"],
-      webSocket: ["wss://0xrpc.io/hoodi"]
+      http: [CONFIG.HOODI_RPC_URL]
     }
   },
   blockExplorers: {

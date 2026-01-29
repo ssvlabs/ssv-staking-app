@@ -52,9 +52,7 @@ export function TokenInputCard({
               height={symbol === "cSSV" ? 20 : 32}
             />
           </span>
-          <span className="text-[28px] font-medium text-ink-900">
-            {symbol}
-          </span>
+          <span className="text-[28px] font-medium text-ink-900">{symbol}</span>
         </div>
       </div>
       <div className="my-4 h-px w-full bg-border" />
