@@ -121,7 +121,6 @@ export default function StakingInterface() {
     handleRequestUnstake,
     handleWithdrawSelected,
     handleWithdrawUnlocked,
-    handleWithdrawSingle,
     handleClaim,
     retryApproval,
     retryStake,
@@ -245,7 +244,6 @@ export default function StakingInterface() {
       <StakeTabs
         activeTab={activeTab}
         onTabChange={setActiveTab}
-        multiWithdrawEnabled={multiWithdrawEnabled}
         amount={amount}
         onAmountChange={setAmount}
         onMax={handleMax}
@@ -262,21 +260,12 @@ export default function StakingInterface() {
         isActionDisabled={isActionDisabled}
         isStakeFlowBusy={isStakeFlowBusy}
         isUnstakeFlowBusy={isUnstakeFlowBusy}
-        hasPending={hasPending}
-        isUnlocked={isUnlocked}
-        pendingAmountLabel={pendingAmountLabel}
-        pendingCountdownLabel={pendingCountdownLabel}
         onWithdrawUnlocked={handleWithdrawUnlocked}
         onRequestUnstake={handleRequestUnstake}
         onStake={handleStakeFlow}
         withdrawalRequests={withdrawalRequests}
         nowEpoch={nowEpoch}
-        selectedWithdrawalIds={selectedWithdrawalIds}
-        onToggleWithdrawalSelection={toggleWithdrawalSelection}
-        isWithdrawActionDisabled={isWithdrawActionDisabled}
         isWithdrawFlowBusy={isWithdrawFlowBusy}
-        onWithdrawSelected={handleWithdrawSelected}
-        onWithdrawSingle={handleWithdrawSingle}
         claimableValue={claimableValue}
         ethIcon={ethIcon}
         isClaimDisabled={isClaimDisabled}

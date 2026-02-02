@@ -37,7 +37,7 @@ const StepIndicator = ({ status }: { status: StepStatus }) => {
     return (
       <div className="relative size-[28px]">
         <div className="absolute inset-0 rounded-full border-4 border-border-strong opacity-60" />
-        <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-brand-500 border-r-brand-500 animate-spin" />
+        <div className="absolute inset-0 animate-spin rounded-full border-4 border-transparent border-r-brand-500 border-t-brand-500" />
       </div>
     );
   }

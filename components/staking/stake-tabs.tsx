@@ -1,20 +1,20 @@
 "use client";
-import { AlertTriangle, Check } from "lucide-react"
-import Image from "next/image"
 
-import { InfoIcon } from "@/components/ui/info-icon"
-import { PrimaryActionButton } from "@/components/ui/primary-action-button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Tooltip } from "@/components/ui/tooltip"
-import { TokenInputCard } from "@/components/staking/token-input-card"
-import { CLAIMABLE_DECIMALS } from "@/lib/staking/constants"
-import { formatDuration, formatToken } from "@/lib/staking/format"
-import { WithdrawalRequest } from "@/lib/staking/types"
+import Image from "next/image";
+import { AlertTriangle, Check } from "lucide-react";
+
+import { CLAIMABLE_DECIMALS } from "@/lib/staking/constants";
+import { formatDuration, formatToken } from "@/lib/staking/format";
+import { WithdrawalRequest } from "@/lib/staking/types";
+import { InfoIcon } from "@/components/ui/info-icon";
+import { PrimaryActionButton } from "@/components/ui/primary-action-button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tooltip } from "@/components/ui/tooltip";
+import { TokenInputCard } from "@/components/staking/token-input-card";
 
 type StakeTabsProps = {
   activeTab: string;
   onTabChange: (value: string) => void;
-  multiWithdrawEnabled: boolean;
   amount: string;
   onAmountChange: (value: string) => void;
   onMax: () => void;
@@ -31,21 +31,12 @@ type StakeTabsProps = {
   isActionDisabled: boolean;
   isStakeFlowBusy: boolean;
   isUnstakeFlowBusy: boolean;
-  hasPending: boolean;
-  isUnlocked: boolean;
-  pendingAmountLabel: string;
-  pendingCountdownLabel: string;
   onWithdrawUnlocked: () => void;
   onRequestUnstake: () => void;
   onStake: () => void;
   withdrawalRequests: WithdrawalRequest[];
   nowEpoch: number;
-  selectedWithdrawalIds: string[];
-  onToggleWithdrawalSelection: (request: WithdrawalRequest) => void;
-  isWithdrawActionDisabled: boolean;
   isWithdrawFlowBusy: boolean;
-  onWithdrawSelected: () => void;
-  onWithdrawSingle: (requestId: string) => void;
   claimableValue: bigint;
   ethIcon: string;
   isClaimDisabled: boolean;
@@ -56,7 +47,6 @@ type StakeTabsProps = {
 function StakeTabs({
   activeTab,
   onTabChange,
-  multiWithdrawEnabled,
   amount,
   onAmountChange,
   onMax,
@@ -73,21 +63,12 @@ function StakeTabs({
   isActionDisabled,
   isStakeFlowBusy,
   isUnstakeFlowBusy,
-  hasPending,
-  isUnlocked,
-  pendingAmountLabel,
-  pendingCountdownLabel,
   onWithdrawUnlocked,
   onRequestUnstake,
   onStake,
   withdrawalRequests,
   nowEpoch,
-  selectedWithdrawalIds,
-  onToggleWithdrawalSelection,
-  isWithdrawActionDisabled,
   isWithdrawFlowBusy,
-  onWithdrawSelected,
-  onWithdrawSingle,
   claimableValue,
   ethIcon,
   isClaimDisabled,
@@ -109,10 +90,7 @@ function StakeTabs({
             <TabsTrigger className={tabButtonClass("stake")} value="stake">
               Stake
             </TabsTrigger>
-            <TabsTrigger
-              className={tabButtonClass("unstake")}
-              value="unstake"
-            >
+            <TabsTrigger className={tabButtonClass("unstake")} value="unstake">
               Unstake
             </TabsTrigger>
             <TabsTrigger className={tabButtonClass("claim")} value="claim">
@@ -172,40 +150,68 @@ function StakeTabs({
           <TabsContent value="unstake" className="space-y-6">
             {withdrawalRequests.length > 0 ? (
               <div className="flex flex-col gap-3">
-                {withdrawalRequests.map((request) => {
-                  const isUnlocked = request.unlockTime <= nowEpoch;
-                  const countdownSeconds = Math.max(
-                    0,
-                    request.unlockTime - nowEpoch
+                {(() => {
+                  const unlockedRequests = withdrawalRequests.filter(
+                    (request) => request.unlockTime <= nowEpoch
                   );
-                  const countdownLabel = formatDuration(countdownSeconds);
+                  const lockedRequests = withdrawalRequests.filter(
+                    (request) => request.unlockTime > nowEpoch
+                  );
+
                   return (
-                    <div
-                      key={request.id}
-                      className={`flex w-full items-center justify-between gap-4 rounded-[12px] border ${isUnlocked ? 'border-brand-100 bg-brand-50' : 'bg-surface-50'} px-5 py-4`}
-                    >
-                      <div className="flex flex-col">
-                        <span className={`font-dm-sans text-[20px] font-medium ${isUnlocked ? 'text-ink-900': 'text-gray-300'}`}>
-                          {formatToken(request.amount, tokenDecimals)} SSV
-                        </span>
-                      </div>
-                      {isUnlocked ? (
-                        <button
-                          type="button"
-                          onClick={() => onWithdrawSingle(request.id)}
-                          disabled={isWithdrawFlowBusy}
-                          className="h-[36px] rounded-[6px] bg-brand-600 px-4 text-[14px] font-semibold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
+                    <>
+                      {unlockedRequests.length > 0 && (
+                        <div
+                          className="flex w-full items-center justify-between gap-4 rounded-[12px] border border-brand-100 bg-brand-50 px-5 py-4"
                         >
-                          Withdraw
-                        </button>
-                      ) : (
-                        <div className="flex h-[36px] py-0 bg-gray-200 items-center justify-center rounded-[4px] bg-ink-100 px-4 text-[12px] font-medium text-gray-600">
-                          Withdrawable in {countdownLabel}
+                          <div className="flex flex-col">
+                            <span className="font-dm-sans text-[20px] font-medium text-ink-900">
+                              {formatToken(
+                                unlockedRequests.reduce(
+                                  (sum, req) => sum + req.amount,
+                                  0n
+                                ),
+                                tokenDecimals
+                              )}{" "}
+                              SSV
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={onWithdrawUnlocked}
+                            disabled={isWithdrawFlowBusy}
+                            className="h-[36px] rounded-[6px] bg-brand-600 px-4 text-[14px] font-semibold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            Withdraw
+                          </button>
                         </div>
                       )}
-                    </div>
+
+                      {lockedRequests.map((request) => {
+                        const countdownSeconds = Math.max(
+                          0,
+                          request.unlockTime - nowEpoch
+                        );
+                        const countdownLabel = formatDuration(countdownSeconds);
+                        return (
+                          <div
+                            key={request.id}
+                            className="flex w-full items-center justify-between gap-4 rounded-[12px] bg-surface-50 px-5 py-4"
+                          >
+                            <div className="flex flex-col">
+                              <span className="font-dm-sans text-[20px] font-medium text-gray-300">
+                                {formatToken(request.amount, tokenDecimals)} SSV
+                              </span>
+                            </div>
+                            <div className="flex h-[36px] items-center justify-center rounded-[4px] border border-surface-100 bg-gray-300 px-4 py-0 text-[14px] font-semibold text-gray-600">
+                              Withdrawable in {countdownLabel}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </>
                   );
-                })}
+                })()}
               </div>
             ) : null}
 
