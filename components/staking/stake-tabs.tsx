@@ -15,7 +15,6 @@ import { TokenInputCard } from "@/components/staking/token-input-card";
 type StakeTabsProps = {
   activeTab: string;
   onTabChange: (value: string) => void;
-  multiWithdrawEnabled: boolean;
   amount: string;
   onAmountChange: (value: string) => void;
   onMax: () => void;
@@ -32,20 +31,12 @@ type StakeTabsProps = {
   isActionDisabled: boolean;
   isStakeFlowBusy: boolean;
   isUnstakeFlowBusy: boolean;
-  hasPending: boolean;
-  isUnlocked: boolean;
-  pendingAmountLabel: string;
-  pendingCountdownLabel: string;
   onWithdrawUnlocked: () => void;
   onRequestUnstake: () => void;
   onStake: () => void;
   withdrawalRequests: WithdrawalRequest[];
   nowEpoch: number;
-  selectedWithdrawalIds: string[];
-  onToggleWithdrawalSelection: (request: WithdrawalRequest) => void;
-  isWithdrawActionDisabled: boolean;
   isWithdrawFlowBusy: boolean;
-  onWithdrawSelected: () => void;
   claimableValue: bigint;
   ethIcon: string;
   isClaimDisabled: boolean;
@@ -53,10 +44,9 @@ type StakeTabsProps = {
   onClaim: () => void;
 };
 
-export function StakeTabs({
+function StakeTabs({
   activeTab,
   onTabChange,
-  multiWithdrawEnabled,
   amount,
   onAmountChange,
   onMax,
@@ -73,20 +63,12 @@ export function StakeTabs({
   isActionDisabled,
   isStakeFlowBusy,
   isUnstakeFlowBusy,
-  hasPending,
-  isUnlocked,
-  pendingAmountLabel,
-  pendingCountdownLabel,
   onWithdrawUnlocked,
   onRequestUnstake,
   onStake,
   withdrawalRequests,
   nowEpoch,
-  selectedWithdrawalIds,
-  onToggleWithdrawalSelection,
-  isWithdrawActionDisabled,
   isWithdrawFlowBusy,
-  onWithdrawSelected,
   claimableValue,
   ethIcon,
   isClaimDisabled,
@@ -111,16 +93,8 @@ export function StakeTabs({
             <TabsTrigger className={tabButtonClass("unstake")} value="unstake">
               Unstake
             </TabsTrigger>
-            {multiWithdrawEnabled ? (
-              <TabsTrigger
-                className={tabButtonClass("withdraw")}
-                value="withdraw"
-              >
-                Withdraw
-              </TabsTrigger>
-            ) : null}
             <TabsTrigger className={tabButtonClass("claim")} value="claim">
-              Rewards
+              Claim
             </TabsTrigger>
           </TabsList>
 
@@ -174,189 +148,104 @@ export function StakeTabs({
           </TabsContent>
 
           <TabsContent value="unstake" className="space-y-6">
-            {!multiWithdrawEnabled && hasPending ? (
-              <>
-                <div className="flex h-[80px] w-full items-center justify-between rounded-[4px] border border-border bg-surface-50 px-6 py-5">
-                  <div className="flex flex-1 items-center gap-3">
-                    <div
-                      className={
-                        isUnlocked
-                          ? "flex size-[28px] items-center justify-center rounded-[2px] bg-brand-600"
-                          : "size-[28px] rounded-[2px] border border-border-strong bg-border"
-                      }
-                    >
-                      {isUnlocked ? (
-                        <Check className="size-4 text-white" />
-                      ) : null}
-                    </div>
-                    <p
-                      className={`font-dm-sans flex-1 text-[28px] font-medium leading-[32px] ${
-                        isUnlocked ? "text-ink-900" : "text-ink-400"
-                      }`}
-                    >
-                      {pendingAmountLabel} cSSV
-                    </p>
-                  </div>
-                  <div className="flex items-center">
-                    <div
-                      className={`flex h-[40px] items-center justify-center rounded-[2px] px-4 text-[14px] font-medium ${
-                        isUnlocked
-                          ? "bg-warning-soft text-warning-600"
-                          : "bg-success-bg text-success-500"
-                      }`}
-                    >
-                      {isUnlocked ? "Withdrawable" : "Requested"}
-                    </div>
-                  </div>
-                </div>
+            {withdrawalRequests.length > 0 ? (
+              <div className="flex flex-col gap-3">
+                {(() => {
+                  const unlockedRequests = withdrawalRequests.filter(
+                    (request) => request.unlockTime <= nowEpoch
+                  );
+                  const lockedRequests = withdrawalRequests.filter(
+                    (request) => request.unlockTime > nowEpoch
+                  );
 
-                <div className="flex w-full items-center gap-3 rounded-[4px] border border-warning-400 bg-warning-bg px-4 py-3 text-[14px] text-ink-900">
-                  <AlertTriangle className="size-5 shrink-0 text-warning-400" />
-                  <p>
-                    You&apos;ll need to wait {cooldownLabel} before you can
-                    unstake your tokens. This cooldown starts when you request
-                    to unstake. Once it ends, you can withdraw during the
-                    unstake window.
-                  </p>
-                </div>
-
-                <PrimaryActionButton
-                  className="font-dm-sans"
-                  onClick={onWithdrawUnlocked}
-                  disabled={isConnected && (!isUnlocked || isWithdrawFlowBusy)}
-                  isActivated={isWithdrawFlowBusy}
-                >
-                  {!isConnected
-                    ? "Connect Wallet"
-                    : isUnlocked
-                      ? "Withdraw"
-                      : `Withdraw in ${pendingCountdownLabel}...`}
-                </PrimaryActionButton>
-              </>
-            ) : (
-              <>
-                <TokenInputCard
-                  balanceLabel={unstakeBalanceLabel}
-                  iconSrc={ssvSmall}
-                  symbol="cSSV"
-                  amount={amount}
-                  onAmountChange={onAmountChange}
-                  onMax={onMax}
-                  isConnected={isConnected}
-                  showMax={false}
-                />
-
-                <div className="flex w-full items-center gap-3 rounded-[4px] border border-warning-400 bg-warning-bg px-4 py-3 text-[14px] text-ink-900">
-                  <AlertTriangle className="size-5 shrink-0 text-warning-400" />
-                  <p>
-                    You&apos;ll need to wait {cooldownLabel} before you can
-                    unstake your tokens. This cooldown starts when you request
-                    to unstake. Once it ends, you can withdraw during the
-                    unstake window.
-                  </p>
-                </div>
-
-                <PrimaryActionButton
-                  className="font-dm-sans"
-                  onClick={onRequestUnstake}
-                  disabled={isActionDisabled || isUnstakeFlowBusy}
-                  isActivated={isUnstakeFlowBusy}
-                >
-                  {isConnected ? "Request Unstake" : "Connect Wallet"}
-                </PrimaryActionButton>
-              </>
-            )}
-          </TabsContent>
-
-          {multiWithdrawEnabled ? (
-            <TabsContent value="withdraw" className="space-y-6">
-              {withdrawalRequests.length ? (
-                <>
-                  <div className="flex flex-col gap-3">
-                    {withdrawalRequests.map((request) => {
-                      const isUnlocked = request.unlockTime <= nowEpoch;
-                      const isSelected = selectedWithdrawalIds.includes(
-                        request.id
-                      );
-                      const countdownSeconds = Math.max(
-                        0,
-                        request.unlockTime - nowEpoch
-                      );
-                      const countdownLabel = isUnlocked
-                        ? "Ready to withdraw"
-                        : `Unlocks in ${formatDuration(countdownSeconds)}`;
-                      return (
-                        <button
-                          key={request.id}
-                          type="button"
-                          onClick={() => onToggleWithdrawalSelection(request)}
-                          disabled={!isUnlocked}
-                          className={`flex w-full items-center justify-between gap-4 rounded-[4px] border px-5 py-4 text-left transition ${
-                            isUnlocked
-                              ? "border-border bg-surface-50"
-                              : "cursor-not-allowed border-border bg-surface-100 opacity-70"
-                          }`}
+                  return (
+                    <>
+                      {unlockedRequests.length > 0 && (
+                        <div
+                          className="flex w-full items-center justify-between gap-4 rounded-[12px] border border-brand-100 bg-brand-50 px-5 py-4"
                         >
-                          <div className="flex items-center gap-3">
-                            <div
-                              className={`flex size-[28px] items-center justify-center rounded-[2px] ${
-                                isSelected
-                                  ? "bg-brand-600"
-                                  : "border border-border-strong bg-surface-0"
-                              }`}
-                            >
-                              {isSelected ? (
-                                <Check className="size-4 text-white" />
-                              ) : null}
-                            </div>
+                          <div className="flex flex-col">
+                            <span className="font-dm-sans text-[20px] font-medium text-ink-900">
+                              {formatToken(
+                                unlockedRequests.reduce(
+                                  (sum, req) => sum + req.amount,
+                                  0n
+                                ),
+                                tokenDecimals
+                              )}{" "}
+                              SSV
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={onWithdrawUnlocked}
+                            disabled={isWithdrawFlowBusy}
+                            className="h-[36px] rounded-[6px] bg-brand-600 px-4 text-[14px] font-semibold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            Withdraw
+                          </button>
+                        </div>
+                      )}
+
+                      {lockedRequests.map((request) => {
+                        const countdownSeconds = Math.max(
+                          0,
+                          request.unlockTime - nowEpoch
+                        );
+                        const countdownLabel = formatDuration(countdownSeconds);
+                        return (
+                          <div
+                            key={request.id}
+                            className="flex w-full items-center justify-between gap-4 rounded-[12px] bg-surface-50 px-5 py-4"
+                          >
                             <div className="flex flex-col">
-                              <span className="font-dm-sans text-[20px] font-medium text-ink-900">
+                              <span className="font-dm-sans text-[20px] font-medium text-gray-300">
                                 {formatToken(request.amount, tokenDecimals)} SSV
                               </span>
-                              <span className="text-[14px] text-ink-400">
-                                {countdownLabel}
-                              </span>
+                            </div>
+                            <div className="flex h-[36px] items-center justify-center rounded-[4px] border border-surface-100 bg-gray-300 px-4 py-0 text-[14px] font-semibold text-gray-600">
+                              Withdrawable in {countdownLabel}
                             </div>
                           </div>
-                          <div
-                            className={`flex h-[32px] items-center justify-center rounded-[2px] px-4 text-[14px] font-medium ${
-                              isUnlocked
-                                ? "bg-warning-soft text-warning-600"
-                                : "bg-success-bg text-success-500"
-                            }`}
-                          >
-                            {isUnlocked ? "Withdrawable" : "Requested"}
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
+                        );
+                      })}
+                    </>
+                  );
+                })()}
+              </div>
+            ) : null}
 
-                  <PrimaryActionButton
-                    className="font-dm-sans"
-                    onClick={onWithdrawSelected}
-                    disabled={isWithdrawActionDisabled || isWithdrawFlowBusy}
-                    isActivated={isWithdrawFlowBusy}
-                  >
-                    {isConnected ? "Withdraw Selected" : "Connect Wallet"}
-                  </PrimaryActionButton>
-                </>
-              ) : (
-                <>
-                  <div className="flex min-h-[180px] items-center justify-center text-[14px] font-medium text-ink-400">
-                    No withdrawal requests pending
-                  </div>
-                  <PrimaryActionButton
-                    className="font-dm-sans"
-                    onClick={onWithdrawSelected}
-                    disabled={isConnected}
-                  >
-                    {isConnected ? "Withdraw" : "Connect Wallet"}
-                  </PrimaryActionButton>
-                </>
-              )}
-            </TabsContent>
-          ) : null}
+            <TokenInputCard
+              balanceLabel={unstakeBalanceLabel}
+              iconSrc={ssvSmall}
+              symbol="cSSV"
+              amount={amount}
+              onAmountChange={onAmountChange}
+              onMax={onMax}
+              isConnected={isConnected}
+              showMax={false}
+            />
+
+            <div className="flex w-full items-center gap-3 rounded-[4px] border border-warning-400 bg-warning-bg px-4 py-3 text-[14px] text-ink-900">
+              <AlertTriangle className="size-5 shrink-0 text-warning-400" />
+              <p>
+                You&apos;ll need to wait {cooldownLabel} before you can
+                unstake your tokens. This cooldown starts when you request
+                to unstake. Once it ends, you can withdraw during the
+                unstake window.
+              </p>
+            </div>
+
+            <PrimaryActionButton
+              className="font-dm-sans"
+              onClick={onRequestUnstake}
+              disabled={isActionDisabled || isUnstakeFlowBusy}
+              isActivated={isUnstakeFlowBusy}
+            >
+              {isConnected ? "Request Unstake" : "Connect Wallet"}
+            </PrimaryActionButton>
+          </TabsContent>
+
 
           <TabsContent value="claim" className="space-y-6">
             <div className="rounded-[12px] border border-surface-100 bg-surface-50 px-[24px] py-[16px] pr-[20px]">
@@ -392,3 +281,5 @@ export function StakeTabs({
     </section>
   );
 }
+
+export default StakeTabs
