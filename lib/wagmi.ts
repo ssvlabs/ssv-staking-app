@@ -71,6 +71,8 @@ const getWalletGroups = () => {
 export const hoodi = defineChain({
   id: CONFIG.chainId,
   name: "Hoodi",
+  iconBackground: "none",
+  iconUrl: "/figma/ethereum_0-2171.svg",
   nativeCurrency: {
     name: "Ether",
     symbol: "ETH",
