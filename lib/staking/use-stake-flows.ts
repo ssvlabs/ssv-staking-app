@@ -12,6 +12,8 @@ import { formatDuration, formatToken, safeParse } from "@/lib/staking/format";
 import { StepStatus, WithdrawalRequest } from "@/lib/staking/types";
 import { useInterval } from "@/hooks/use-interval";
 
+import { globals } from "../globals";
+
 type UseStakeFlowsOptions = {
   isConnected: boolean;
   openConnectModal?: () => void;
@@ -228,33 +230,30 @@ export function useStakeFlows({
     [sendTransaction, isContractWallet]
   );
 
-  const startApprovalTransaction = useCallback(
-    async (amountToApprove: bigint) => {
-      if (isContractWallet) {
-        await sendTransaction("Approve SSV", {
-          address: CONFIG.contracts.SSVToken,
-          abi: ERC20ABI,
-          functionName: "approve",
-          args: [CONFIG.contracts.Staking, amountToApprove]
-        });
-        return;
-      }
-      setApprovalStatus("waiting");
-      const hash = await sendTransaction("Approve SSV", {
+  const startApprovalTransaction = useCallback(async () => {
+    if (isContractWallet) {
+      await sendTransaction("Approve SSV", {
         address: CONFIG.contracts.SSVToken,
         abi: ERC20ABI,
         functionName: "approve",
-        args: [CONFIG.contracts.Staking, amountToApprove]
+        args: [CONFIG.contracts.Staking, globals.MAX_WEI_AMOUNT]
       });
-      if (!hash) {
-        setApprovalStatus("error");
-        return;
-      }
-      setApprovalHash(hash);
-      setApprovalStatus("submitted");
-    },
-    [sendTransaction, isContractWallet]
-  );
+      return;
+    }
+    setApprovalStatus("waiting");
+    const hash = await sendTransaction("Approve SSV", {
+      address: CONFIG.contracts.SSVToken,
+      abi: ERC20ABI,
+      functionName: "approve",
+      args: [CONFIG.contracts.Staking, globals.MAX_WEI_AMOUNT]
+    });
+    if (!hash) {
+      setApprovalStatus("error");
+      return;
+    }
+    setApprovalHash(hash);
+    setApprovalStatus("submitted");
+  }, [sendTransaction, isContractWallet]);
 
   const startUnstakeTransaction = useCallback(
     async (amountToUnstake: bigint) => {
@@ -284,33 +283,30 @@ export function useStakeFlows({
     [sendTransaction, isContractWallet]
   );
 
-  const startUnstakeApprovalTransaction = useCallback(
-    async (amountToApprove: bigint) => {
-      if (isContractWallet) {
-        await sendTransaction("Approve cSSV", {
-          address: CONFIG.contracts.cSSVToken,
-          abi: ERC20ABI,
-          functionName: "approve",
-          args: [CONFIG.contracts.Staking, amountToApprove]
-        });
-        return;
-      }
-      setUnstakeApprovalStatus("waiting");
-      const hash = await sendTransaction("Approve cSSV", {
+  const startUnstakeApprovalTransaction = useCallback(async () => {
+    if (isContractWallet) {
+      await sendTransaction("Approve cSSV", {
         address: CONFIG.contracts.cSSVToken,
         abi: ERC20ABI,
         functionName: "approve",
-        args: [CONFIG.contracts.Staking, amountToApprove]
+        args: [CONFIG.contracts.Staking, globals.MAX_WEI_AMOUNT]
       });
-      if (!hash) {
-        setUnstakeApprovalStatus("error");
-        return;
-      }
-      setUnstakeApprovalHash(hash);
-      setUnstakeApprovalStatus("submitted");
-    },
-    [sendTransaction, isContractWallet]
-  );
+      return;
+    }
+    setUnstakeApprovalStatus("waiting");
+    const hash = await sendTransaction("Approve cSSV", {
+      address: CONFIG.contracts.cSSVToken,
+      abi: ERC20ABI,
+      functionName: "approve",
+      args: [CONFIG.contracts.Staking, globals.MAX_WEI_AMOUNT]
+    });
+    if (!hash) {
+      setUnstakeApprovalStatus("error");
+      return;
+    }
+    setUnstakeApprovalHash(hash);
+    setUnstakeApprovalStatus("submitted");
+  }, [sendTransaction, isContractWallet]);
 
   const startWithdrawTransaction = useCallback(async () => {
     if (isContractWallet) {
@@ -376,7 +372,7 @@ export function useStakeFlows({
     const requiresApproval = ssvAllowanceValue < stakeAmount;
     if (isContractWallet) {
       if (requiresApproval) {
-        await startApprovalTransaction(stakeAmount);
+        await startApprovalTransaction();
       } else {
         await startStakeTransaction(stakeAmount);
       }
@@ -391,7 +387,7 @@ export function useStakeFlows({
     setStakeStatus(requiresApproval ? "idle" : "waiting");
 
     if (requiresApproval) {
-      await startApprovalTransaction(stakeAmount);
+      await startApprovalTransaction();
     } else {
       await startStakeTransaction(stakeAmount);
     }
@@ -427,7 +423,7 @@ export function useStakeFlows({
     const requiresApproval = cssvAllowanceValue < unstakeAmount;
     if (isContractWallet) {
       if (requiresApproval) {
-        await startUnstakeApprovalTransaction(unstakeAmount);
+        await startUnstakeApprovalTransaction();
       } else {
         await startUnstakeTransaction(unstakeAmount);
       }
@@ -442,7 +438,7 @@ export function useStakeFlows({
     setUnstakeStatus(requiresApproval ? "idle" : "waiting");
 
     if (requiresApproval) {
-      await startUnstakeApprovalTransaction(unstakeAmount);
+      await startUnstakeApprovalTransaction();
     } else {
       await startUnstakeTransaction(unstakeAmount);
     }
@@ -590,7 +586,7 @@ export function useStakeFlows({
   const retryApproval = useCallback(async () => {
     if (stakeFlowAmount === 0n) return;
     setApprovalHash(null);
-    await startApprovalTransaction(stakeFlowAmount);
+    await startApprovalTransaction();
   }, [stakeFlowAmount, startApprovalTransaction]);
 
   const retryStake = useCallback(async () => {
@@ -602,7 +598,7 @@ export function useStakeFlows({
   const retryUnstakeApproval = useCallback(async () => {
     if (unstakeFlowAmount === 0n) return;
     setUnstakeApprovalHash(null);
-    await startUnstakeApprovalTransaction(unstakeFlowAmount);
+    await startUnstakeApprovalTransaction();
   }, [startUnstakeApprovalTransaction, unstakeFlowAmount]);
 
   const retryUnstake = useCallback(async () => {
@@ -820,9 +816,7 @@ export function useStakeFlows({
     ? approvalStatus === "confirmed" && stakeStatus === "confirmed"
     : stakeStatus === "confirmed";
   const approvalRowLabel =
-    approvalStatus === "confirmed"
-      ? `Approved ${stakeFlowAmountLabel} SSV`
-      : `Approve ${stakeFlowAmountLabel} SSV`;
+    approvalStatus === "confirmed" ? `SSV Approved` : `Approve SSV`;
   const stakeRowLabel =
     stakeStatus === "confirmed"
       ? `Staked ${stakeFlowAmountLabel} SSV`
@@ -844,8 +838,8 @@ export function useStakeFlows({
     : unstakeStatus === "confirmed";
   const unstakeApprovalRowLabel =
     unstakeApprovalStatus === "confirmed"
-      ? `Approved ${unstakeFlowAmountLabel} cSSV`
-      : `Approve ${unstakeFlowAmountLabel} cSSV`;
+      ? `cSSV Approved`
+      : `Approve cSSV`;
   const unstakeRowLabel =
     unstakeStatus === "confirmed"
       ? `Unstaked ${unstakeFlowAmountLabel} SSV`
