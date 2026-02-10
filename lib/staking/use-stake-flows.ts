@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import confetti from "canvas-confetti";
 import { toast } from "sonner";
 import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 
@@ -764,6 +765,29 @@ export function useStakeFlows({
 
   useEffect(() => {
     if (!isClaimConfirmed || !claimHash) return;
+
+    const confettiSize = 0.03;
+
+    confetti({
+      particleCount: 300,
+      spread: 250,
+      origin: { y: 0.5 },
+      shapes: [
+        confetti.shapeFromPath({
+          path: "M0 0 H20 V10 H0 Z",
+          matrix: new DOMMatrix([
+            confettiSize * 20,
+            0,
+            0,
+            confettiSize * 20,
+            -0.5 * 20,
+            -0.25 * 20
+          ])
+        })
+      ],
+      colors: ["#FFDE7D", "#00B8A9", "#F8F3D4", "#F6416C"]
+    });
+
     if (claimStatus !== "confirmed") {
       setClaimStatus("confirmed");
     }
