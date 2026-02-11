@@ -5,9 +5,19 @@ export const formatToken = (value?: bigint, decimals = 18, maxDecimals = 4) => {
   const formatted = formatUnits(value, decimals);
   const parsed = Number(formatted);
   if (Number.isNaN(parsed)) return formatted;
+  const isCompact = value >= 100000;
   return parsed.toLocaleString(undefined, {
-    maximumFractionDigits: maxDecimals
+    notation: isCompact ? "compact" : "standard",
+    maximumFractionDigits: isCompact ? 1 : maxDecimals,
   });
+};
+
+export const formatApr = (value: number | null): string => {
+  if (value === null) return "--";
+  return new Intl.NumberFormat(undefined, {
+    notation: value > 10000 ? "compact" : "standard",
+    maximumFractionDigits: 2,
+  }).format(value);
 };
 
 export const formatTxHash = (hash: string) =>
