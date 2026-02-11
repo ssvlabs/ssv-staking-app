@@ -35,7 +35,7 @@ export default function StakingInterface() {
   const { address, isConnected } = useAccount();
   const { openConnectModal } = useConnectModal();
   const multiWithdrawEnabled = true;
-  const { aprValue, refreshApr } = useAprMetric();
+  const { aprValue, potentialAprValue, refreshApr } = useAprMetric();
   const {
     ssvBalanceFormatted,
     ssvBalanceValue,
@@ -226,6 +226,7 @@ export default function StakingInterface() {
     <div className="mx-auto flex w-full max-w-[648px] flex-col gap-6 pb-6">
       <StakingHeader
         aprValue={aprValue}
+        potentialAprValue={potentialAprValue}
         totalStakedValue={totalStakedValue}
         tokenDecimals={tokenDecimals}
         ssvSmall={ssvSmall}
