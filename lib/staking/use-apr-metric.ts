@@ -7,9 +7,11 @@ type UseAprMetricOptions = {
 };
 
 type AprResponse = {
-  currentApr?: number | null;
-  aprProjected?: number | null;
-  timestamp?: string;
+  samples?: Array<{
+    currentApr?: string | number | null;
+    aprProjected?: string | number | null;
+  }>;
+  count?: number;
 };
 
 type AprValues = {
@@ -18,17 +20,29 @@ type AprValues = {
 };
 
 async function fetchApr(): Promise<AprValues> {
-  const response = await fetch("/api/apr/current", { cache: "no-store" });
+  const response = await fetch("/api/apr/latest", { cache: "no-store" });
   if (!response.ok) {
     return { aprValue: null, potentialAprValue: null };
   }
   const payload = (await response.json()) as AprResponse;
+  const sample = payload.samples?.[0];
+
+  const parseMetric = (
+    value: string | number | null | undefined
+  ): number | null => {
+    if (typeof value === "number") {
+      return Number.isFinite(value) ? value : null;
+    }
+    if (typeof value === "string") {
+      const parsed = Number.parseFloat(value);
+      return Number.isFinite(parsed) ? parsed : null;
+    }
+    return null;
+  };
 
   return {
-    aprValue:
-      typeof payload.currentApr === "number" ? payload.currentApr : null,
-    potentialAprValue:
-      typeof payload.aprProjected === "number" ? payload.aprProjected : null,
+    aprValue: parseMetric(sample?.currentApr),
+    potentialAprValue: parseMetric(sample?.aprProjected),
   };
 }
 
