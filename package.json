@@ -1,0 +1,53 @@
+{
+  "name": "ssv-staking-dashboard",
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "format:write": "prettier --write \"**/*.{ts,tsx,mdx}\" --cache",
+    "format:check": "prettier --check \"**/*.{ts,tsx,mdx}\" --cache"
+  },
+  "dependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
+    "@rainbow-me/rainbowkit": "2.2.10",
+    "@tanstack/react-query": "5.90.12",
+    "canvas-confetti": "^1.9.4",
+    "clsx": "2.1.1",
+    "lottie-react": "^2.4.1",
+    "lucide-react": "0.446.0",
+    "next": "16.1.1",
+    "prettier-plugin-tailwindcss": "^0.7.2",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-icons": "^5.5.0",
+    "sonner": "1.7.4",
+    "tailwind-merge": "2.6.0",
+    "viem": "2.43.3",
+    "wagmi": "2.19.5"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "6.9.1",
+    "@testing-library/react": "16.3.2",
+    "@testing-library/user-event": "14.6.1",
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/node": "20.19.27",
+    "@types/react": "18.3.27",
+    "@types/react-dom": "18.3.7",
+    "autoprefixer": "10.4.23",
+    "eslint": "9.39.2",
+    "eslint-config-next": "16.1.3",
+    "eslint-config-prettier": "9.1.0",
+    "eslint-plugin-tailwindcss": "3.18.2",
+    "jsdom": "24.1.3",
+    "postcss": "8.5.6",
+    "tailwindcss": "3.4.19",
+    "typescript": "5.9.3",
+    "vitest": "4.0.17"
+  }
+}
