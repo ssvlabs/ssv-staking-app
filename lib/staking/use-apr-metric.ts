@@ -2,69 +2,66 @@
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-const POTENTIAL_APR_URL =
-  "https://api.stage.ops.ssvlabsinternal.com/api/v4/hoodi/apr/latest";
-
 type UseAprMetricOptions = {
   refreshIntervalMs?: number;
 };
 
-type PotentialAprResponse = {
-  samples: Array<{
-    id: string;
-    timestamp: string;
-    accEthPerShare: string;
-    ethPrice: string;
-    ssvPrice: string;
-    currentApr: string;
-    aprProjected: string;
-    deltaIndex: null;
-    deltaTime: null;
-    createdAt: string;
+type AprResponse = {
+  samples?: Array<{
+    currentApr?: string | number | null;
+    aprProjected?: string | number | null;
   }>;
-  count: number;
+  count?: number;
 };
 
-async function fetchApr(): Promise<number | null> {
-  const response = await fetch("/api/apr", { cache: "no-store" });
-  if (!response.ok) return null;
-  const payload = (await response.json()) as { apr?: number | null };
-  return typeof payload.apr === "number" ? payload.apr : null;
-}
+type AprValues = {
+  aprValue: number | null;
+  potentialAprValue: number | null;
+};
 
-async function fetchPotentialApr(): Promise<number | null> {
-  const response = await fetch(POTENTIAL_APR_URL, { cache: "no-store" });
-  if (!response.ok) return null;
-  const payload = (await response.json()) as PotentialAprResponse;
+async function fetchApr(): Promise<AprValues> {
+  const response = await fetch("/api/apr/latest", { cache: "no-store" });
+  if (!response.ok) {
+    return { aprValue: null, potentialAprValue: null };
+  }
+  const payload = (await response.json()) as AprResponse;
   const sample = payload.samples?.[0];
-  if (!sample?.currentApr) return null;
-  const value = Number.parseFloat(sample.currentApr);
-  return Number.isNaN(value) ? null : value;
+
+  const parseMetric = (
+    value: string | number | null | undefined
+  ): number | null => {
+    if (typeof value === "number") {
+      return Number.isFinite(value) ? value : null;
+    }
+    if (typeof value === "string") {
+      const parsed = Number.parseFloat(value);
+      return Number.isFinite(parsed) ? parsed : null;
+    }
+    return null;
+  };
+
+  return {
+    aprValue: parseMetric(sample?.currentApr),
+    potentialAprValue: parseMetric(sample?.aprProjected),
+  };
 }
 
 export function useAprMetric(options: UseAprMetricOptions = {}) {
   const { refreshIntervalMs = 5 * 60 * 1000 } = options;
 
-  const { data: aprValue, refetch } = useQuery({
+  const { data, refetch } = useQuery({
     queryKey: ["apr"],
     queryFn: fetchApr,
     placeholderData: keepPreviousData,
     refetchInterval: refreshIntervalMs,
   });
 
-  const { data: potentialAprValue, refetch: refetchPotentialApr } = useQuery({
-    queryKey: ["potential-apr"],
-    queryFn: fetchPotentialApr,
-    placeholderData: keepPreviousData,
-    refetchInterval: refreshIntervalMs,
-  });
+  const aprValue = data?.aprValue ?? null;
+  const potentialAprValue = data?.potentialAprValue ?? null;
 
-  console.log("aprValue:", aprValue);
-  console.log("potentialAprValue:", potentialAprValue);
   return {
-    aprValue: aprValue ?? null,
-    potentialAprValue: potentialAprValue ?? null,
+    aprValue,
+    potentialAprValue,
     refreshApr: refetch,
-    refreshPotentialApr: refetchPotentialApr,
   };
 }
