@@ -69,7 +69,7 @@ const getWalletGroups = () => {
 };
 
 export const hoodi = defineChain({
-  id: CONFIG.chainId,
+  id: CONFIG.CHAIN_ID,
   name: "Hoodi",
   iconBackground: "none",
   iconUrl: "/figma/ethereum_0-2171.svg",
@@ -80,7 +80,7 @@ export const hoodi = defineChain({
   },
   rpcUrls: {
     default: {
-      http: [CONFIG.HOODI_RPC_URL]
+      http: [CONFIG.RPC_URL]
     }
   },
   blockExplorers: {

@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 const SECONDS_PER_YEAR = 31_536_000;
 
 const publicClient = createPublicClient({
-  transport: http(CONFIG.HOODI_RPC_URL)
+  transport: http(CONFIG.RPC_URL)
 });
 
 const fetchIndex = async (): Promise<bigint> => {
