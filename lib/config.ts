@@ -28,7 +28,7 @@ export const CONFIG = {
         process.env.VIEWS_ADDRESS ??
         "0x5AdDb3f1529C5ec70D77400499eE4bbF328368fe") as Address
   },
-  RPC_URL: process.env.NEXT_PUBLIC_RPC_URL ?? process.env.RPC_URL ?? "http://hoodi-geth-lh-1-a-execution.ethereum.svc:8545"
+  RPC_URL: process.env.NEXT_PUBLIC_RPC_URL ?? process.env.RPC_URL ?? "https://ethereum-hoodi-rpc.publicnode.com/d8a2cc6e7483872e917d7899f9403d738b001c80e37d66834f4e40e9efb54a27"
 } as const;
 
 console.log('CONFIG:', CONFIG);
