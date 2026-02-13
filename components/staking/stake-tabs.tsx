@@ -161,9 +161,7 @@ function StakeTabs({
                   return (
                     <>
                       {unlockedRequests.length > 0 && (
-                        <div
-                          className="flex w-full items-center justify-between gap-4 rounded-[12px] border border-brand-100 bg-brand-50 px-5 py-4"
-                        >
+                        <div className="flex w-full items-center justify-between gap-4 rounded-[12px] border border-brand-100 bg-brand-50 px-5 py-4">
                           <div className="flex flex-col">
                             <span className="font-dm-sans text-[20px] font-medium text-ink-900">
                               {formatToken(
@@ -180,7 +178,7 @@ function StakeTabs({
                             type="button"
                             onClick={onWithdrawUnlocked}
                             disabled={isWithdrawFlowBusy}
-                            className="h-[36px] rounded-[6px] bg-brand-600 px-4 text-[14px] font-semibold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="hover:bg-brand-700 h-[36px] rounded-[6px] bg-brand-600 px-4 text-[14px] font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-50"
                           >
                             Withdraw
                           </button>
@@ -229,10 +227,9 @@ function StakeTabs({
             <div className="flex w-full items-center gap-3 rounded-[4px] border border-warning-400 bg-warning-bg px-4 py-3 text-[14px] text-ink-900">
               <AlertTriangle className="size-5 shrink-0 text-warning-400" />
               <p>
-                You&apos;ll need to wait {cooldownLabel} before you can
-                unstake your tokens. This cooldown starts when you request
-                to unstake. Once it ends, you can withdraw during the
-                unstake window.
+                You&apos;ll need to wait {cooldownLabel} before you can unstake
+                your tokens. This cooldown starts when you request to unstake.
+                Once it ends, you can withdraw during the unstake window.
               </p>
             </div>
 
@@ -245,7 +242,6 @@ function StakeTabs({
               {isConnected ? "Request Unstake" : "Connect Wallet"}
             </PrimaryActionButton>
           </TabsContent>
-
 
           <TabsContent value="claim" className="space-y-6">
             <div className="rounded-[12px] border border-surface-100 bg-surface-50 px-[24px] py-[16px] pr-[20px]">
@@ -282,4 +278,4 @@ function StakeTabs({
   );
 }
 
-export default StakeTabs
+export default StakeTabs;

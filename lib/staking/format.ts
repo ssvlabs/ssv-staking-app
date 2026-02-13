@@ -8,7 +8,7 @@ export const formatToken = (value?: bigint, decimals = 18, maxDecimals = 4) => {
   const isCompact = value >= 100000;
   return parsed.toLocaleString(undefined, {
     notation: isCompact ? "compact" : "standard",
-    maximumFractionDigits: isCompact ? 1 : maxDecimals,
+    maximumFractionDigits: isCompact ? 1 : maxDecimals
   });
 };
 
@@ -16,7 +16,7 @@ export const formatApr = (value: number | null): string => {
   if (value === null) return "--";
   return new Intl.NumberFormat(undefined, {
     notation: value > 10000 ? "compact" : "standard",
-    maximumFractionDigits: 2,
+    maximumFractionDigits: 2
   }).format(value);
 };
 
