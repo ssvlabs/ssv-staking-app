@@ -42,7 +42,7 @@ async function fetchApr(): Promise<AprValues> {
 
   return {
     aprValue: parseMetric(sample?.currentApr),
-    potentialAprValue: parseMetric(sample?.aprProjected),
+    potentialAprValue: parseMetric(sample?.aprProjected)
   };
 }
 
@@ -53,7 +53,8 @@ export function useAprMetric(options: UseAprMetricOptions = {}) {
     queryKey: ["apr"],
     queryFn: fetchApr,
     placeholderData: keepPreviousData,
-    refetchInterval: refreshIntervalMs,
+    refetchInterval: false,
+    staleTime: Infinity
   });
 
   const aprValue = data?.aprValue ?? null;
@@ -62,6 +63,6 @@ export function useAprMetric(options: UseAprMetricOptions = {}) {
   return {
     aprValue,
     potentialAprValue,
-    refreshApr: refetch,
+    refreshApr: refetch
   };
 }
