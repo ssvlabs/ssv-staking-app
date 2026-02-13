@@ -21,52 +21,52 @@ export function StakingHeader({
   totalStakedValue,
   tokenDecimals,
   ssvSmall,
-  calculatorIcon,
+  calculatorIcon
 }: StakingHeaderProps) {
   const aprBgPieces = [
     {
       light: "/figma/staking-apr-bg-light-1.svg",
       dark: "/figma/staking-apr-bg-dark-1.svg",
-      className: "absolute inset-[61%_36.2%_6.6%_36.44%]",
+      className: "absolute inset-[61%_36.2%_6.6%_36.44%]"
     },
     {
       light: "/figma/staking-apr-bg-light-2.svg",
       dark: "/figma/staking-apr-bg-dark-2.svg",
-      className: "absolute inset-[29%_53.64%_38.6%_19%]",
+      className: "absolute inset-[29%_53.64%_38.6%_19%]"
     },
     {
       light: "/figma/staking-apr-bg-light-3.svg",
       dark: "/figma/staking-apr-bg-dark-3.svg",
-      className: "absolute inset-[28.42%_18.92%_39.18%_53.72%]",
+      className: "absolute inset-[28.42%_18.92%_39.18%_53.72%]"
     },
     {
       light: "/figma/staking-apr-bg-light-4.svg",
       dark: "/figma/staking-apr-bg-dark-4.svg",
-      className: "absolute inset-[8%_36.57%_59.6%_36%]",
-    },
+      className: "absolute inset-[8%_36.57%_59.6%_36%]"
+    }
   ];
 
   const totalBgPieces = [
     {
       light: "/figma/staking-total-bg-light-1.svg",
       dark: "/figma/staking-total-bg-dark-1.svg",
-      className: "absolute inset-[61%_36.2%_6.6%_36.44%]",
+      className: "absolute inset-[61%_36.2%_6.6%_36.44%]"
     },
     {
       light: "/figma/staking-total-bg-light-2.svg",
       dark: "/figma/staking-total-bg-dark-2.svg",
-      className: "absolute inset-[29%_53.64%_38.6%_19%]",
+      className: "absolute inset-[29%_53.64%_38.6%_19%]"
     },
     {
       light: "/figma/staking-total-bg-light-3.svg",
       dark: "/figma/staking-total-bg-dark-3.svg",
-      className: "absolute inset-[28.42%_18.92%_39.18%_53.72%]",
+      className: "absolute inset-[28.42%_18.92%_39.18%_53.72%]"
     },
     {
       light: "/figma/staking-total-bg-light-4.svg",
       dark: "/figma/staking-total-bg-dark-4.svg",
-      className: "absolute inset-[8%_36.57%_59.6%_36%]",
-    },
+      className: "absolute inset-[8%_36.57%_59.6%_36%]"
+    }
   ];
 
   return (
@@ -127,7 +127,7 @@ export function StakingHeader({
         </div>
 
         {/* Potential APR — center card with calculator link */}
-        <div className="relative flex flex-col gap-4 overflow-hidden rounded-[12px] bg-gradient-to-br  from-[#264FA4] to-[#2F61C9]  p-5">
+        <div className="relative flex flex-col gap-4 overflow-hidden rounded-[12px] bg-gradient-to-br from-[#264FA4] to-[#2F61C9] p-5">
           <div
             className="pointer-events-none absolute inset-0 flex items-center justify-center"
             aria-hidden="true"

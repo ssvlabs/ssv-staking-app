@@ -861,9 +861,7 @@ export function useStakeFlows({
     ? unstakeApprovalStatus === "confirmed" && unstakeStatus === "confirmed"
     : unstakeStatus === "confirmed";
   const unstakeApprovalRowLabel =
-    unstakeApprovalStatus === "confirmed"
-      ? `cSSV Approved`
-      : `Approve cSSV`;
+    unstakeApprovalStatus === "confirmed" ? `cSSV Approved` : `Approve cSSV`;
   const unstakeRowLabel =
     unstakeStatus === "confirmed"
       ? `Unstaked ${unstakeFlowAmountLabel} SSV`
