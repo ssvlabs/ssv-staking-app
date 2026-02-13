@@ -2,10 +2,6 @@
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-type UseAprMetricOptions = {
-  refreshIntervalMs?: number;
-};
-
 type AprResponse = {
   samples?: Array<{
     currentApr?: string | number | null;
@@ -46,9 +42,7 @@ async function fetchApr(): Promise<AprValues> {
   };
 }
 
-export function useAprMetric(options: UseAprMetricOptions = {}) {
-  const { refreshIntervalMs = 5 * 60 * 1000 } = options;
-
+export function useAprMetric() {
   const { data, refetch } = useQuery({
     queryKey: ["apr"],
     queryFn: fetchApr,
