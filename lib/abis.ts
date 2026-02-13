@@ -10,12 +10,12 @@ type AbiEnv = "Stage" | "Hoodi";
 const abiByEnv: Record<AbiEnv, { staking: Abi; views: Abi }> = {
   Stage: {
     staking: StakingStageAbiJson as Abi,
-    views: ViewsStageAbiJson as Abi,
+    views: ViewsStageAbiJson as Abi
   },
   Hoodi: {
     staking: StakingHoodiAbiJson as Abi,
-    views: ViewsHoodiAbiJson as Abi,
-  },
+    views: ViewsHoodiAbiJson as Abi
+  }
 };
 
 const appEnv = process.env.APP_ENV?.trim().toLowerCase();
