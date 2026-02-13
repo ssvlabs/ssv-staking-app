@@ -5,7 +5,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 const APR_API_BASE_URL = (
   process.env.NEXT_PUBLIC_SSV_API ??
   process.env.SSV_API ??
-  "https://api.hoodi.ssv.network/v4/hoodi"
+  "https://api.hoodi.ssv.network/api/v4/hoodi/"
 ).replace(/\/+$/, "");
 
 type AprResponse = {
@@ -22,7 +22,7 @@ type AprValues = {
 };
 
 async function fetchApr(): Promise<AprValues> {
-  const response = await fetch(`${APR_API_BASE_URL}/api/apr/latest`, {
+  const response = await fetch(`${APR_API_BASE_URL}/apr/latest`, {
     cache: "no-store"
   });
   if (!response.ok) {
