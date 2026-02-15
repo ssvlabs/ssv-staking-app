@@ -8,11 +8,9 @@ export const dynamic = "force-dynamic";
 
 const SECONDS_PER_YEAR = 31_536_000;
 
-const publicClient = createPublicClient({
-  transport: http(CONFIG.RPC_URL)
-});
-
-const fetchIndex = async (): Promise<bigint> => {
+const fetchIndex = async (
+  publicClient: ReturnType<typeof createPublicClient>
+): Promise<bigint> => {
   const value = await publicClient.readContract({
     address: CONFIG.contracts.Views,
     abi: ViewsABI,
@@ -58,8 +56,12 @@ const computeApr = (
 
 export async function GET() {
   try {
+    const publicClient = createPublicClient({
+      transport: http(CONFIG.RPC_URL)
+    });
+
     const [accEthPerShare, prices] = await Promise.all([
-      fetchIndex(),
+      fetchIndex(publicClient),
       fetchPrices()
     ]);
 
