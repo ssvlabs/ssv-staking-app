@@ -18,8 +18,8 @@ const abiByEnv: Record<AbiEnv, { staking: Abi; views: Abi }> = {
   }
 };
 
-// const appEnv = process.env.APP_ENV?.trim().toLowerCase();
-const abiEnv = "Hoodi";
+const appEnv = process.env.APP_ENV?.trim().toLowerCase();
+const abiEnv: AbiEnv = appEnv === "hoodi" ? "Hoodi" : "Stage";
 
 export const StakingABI = abiByEnv[abiEnv].staking;
 
