@@ -2,11 +2,7 @@
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-const APR_API_BASE_URL = (
-  process.env.NEXT_PUBLIC_SSV_API ??
-  process.env.SSV_API ??
-  "https://api.hoodi.ssv.network/api/v4/hoodi/"
-).replace(/\/+$/, "");
+const APR_API_BASE_URL = "https://api.hoodi.ssv.network/api/v4/hoodi";
 
 type AprResponse = {
   apr?: string | number | null;
