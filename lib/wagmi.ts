@@ -8,9 +8,7 @@ import { defineChain } from "viem";
 
 import { CONFIG } from "@/lib/config";
 
-const projectId =
-  process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ??
-  "c93804911b583e5cacf856eee58655e6";
+const projectId = "c93804911b583e5cacf856eee58655e6";
 
 type InjectedEthereumProvider = {
   isMetaMask?: boolean;
