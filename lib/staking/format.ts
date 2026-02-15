@@ -5,7 +5,7 @@ export const formatToken = (value?: bigint, decimals = 18, maxDecimals = 4) => {
   const formatted = formatUnits(value, decimals);
   const parsed = Number(formatted);
   if (Number.isNaN(parsed)) return formatted;
-  const isCompact = value >= 100000;
+  const isCompact = parsed >= 100_000;
   return parsed.toLocaleString(undefined, {
     notation: isCompact ? "compact" : "standard",
     maximumFractionDigits: isCompact ? 1 : maxDecimals
