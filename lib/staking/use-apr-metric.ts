@@ -9,11 +9,8 @@ const APR_API_BASE_URL = (
 ).replace(/\/+$/, "");
 
 type AprResponse = {
-  samples?: Array<{
-    currentApr?: string | number | null;
-    aprProjected?: string | number | null;
-  }>;
-  count?: number;
+  apr?: string | number | null;
+  aprProjected?: string | number | null;
 };
 
 type AprValues = {
@@ -22,14 +19,13 @@ type AprValues = {
 };
 
 async function fetchApr(): Promise<AprValues> {
-  const response = await fetch(`${APR_API_BASE_URL}/apr/latest`, {
+  const response = await fetch(`${APR_API_BASE_URL}/apr/current`, {
     cache: "no-store"
   });
   if (!response.ok) {
     return { aprValue: null, potentialAprValue: null };
   }
   const payload = (await response.json()) as AprResponse;
-  const sample = payload.samples?.[0];
 
   const parseMetric = (
     value: string | number | null | undefined
@@ -45,8 +41,8 @@ async function fetchApr(): Promise<AprValues> {
   };
 
   return {
-    aprValue: parseMetric(sample?.currentApr),
-    potentialAprValue: parseMetric(sample?.aprProjected)
+    aprValue: parseMetric(payload.apr),
+    potentialAprValue: parseMetric(payload.aprProjected)
   };
 }
 
