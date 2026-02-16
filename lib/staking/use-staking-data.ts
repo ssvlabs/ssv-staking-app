@@ -80,7 +80,7 @@ export function useStakingData({ address }: UseStakingDataOptions) {
       }
     } else {
       // Stage format: [uint256[], uint256[]]
-      const [amounts, unlockTimes] = data as [bigint[], bigint[]];
+      const [amounts = [], unlockTimes = []] = data as [bigint[], bigint[]];
       const count = Math.min(amounts.length, unlockTimes.length);
       for (let index = 0; index < count; index += 1) {
         const amount = amounts[index] ?? 0n;
