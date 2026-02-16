@@ -5,46 +5,13 @@ RUN corepack enable
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
-FROM node:24-alpine AS builder
-WORKDIR /app
-RUN corepack enable
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-ENV NEXT_TELEMETRY_DISABLED=1
-
-ARG NEXT_PUBLIC_CHAIN_ID
-ARG NEXT_PUBLIC_RPC_URL
-ARG NEXT_PUBLIC_SSV_TOKEN_ADDRESS
-ARG NEXT_PUBLIC_CSSV_TOKEN_ADDRESS
-ARG NEXT_PUBLIC_STAKING_ADDRESS
-ARG NEXT_PUBLIC_VIEWS_ADDRESS
-ARG NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
-ARG NEXT_PUBLIC_SSV_API
-ARG NEXT_PUBLIC_APP_ENV
-
-ENV NEXT_PUBLIC_CHAIN_ID=$NEXT_PUBLIC_CHAIN_ID
-ENV NEXT_PUBLIC_RPC_URL=$NEXT_PUBLIC_RPC_URL
-ENV NEXT_PUBLIC_SSV_TOKEN_ADDRESS=$NEXT_PUBLIC_SSV_TOKEN_ADDRESS
-ENV NEXT_PUBLIC_CSSV_TOKEN_ADDRESS=$NEXT_PUBLIC_CSSV_TOKEN_ADDRESS
-ENV NEXT_PUBLIC_STAKING_ADDRESS=$NEXT_PUBLIC_STAKING_ADDRESS
-ENV NEXT_PUBLIC_VIEWS_ADDRESS=$NEXT_PUBLIC_VIEWS_ADDRESS
-ENV NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=$NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
-ENV NEXT_PUBLIC_SSV_API=$NEXT_PUBLIC_SSV_API
-ENV NEXT_PUBLIC_APP_ENV=$NEXT_PUBLIC_APP_ENV
-
-RUN pnpm run build
-RUN pnpm prune --prod
-
 FROM node:24-alpine AS runner
 WORKDIR /app
 RUN corepack enable
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-COPY --from=builder /app/node_modules ./node_modules
-COPY package.json pnpm-lock.yaml ./
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/next.config.mjs ./next.config.mjs
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
 EXPOSE 3000
 ENV PORT=3000
-CMD ["pnpm", "run", "start"]
+CMD ["sh", "-c", "pnpm run build && pnpm run start"]
