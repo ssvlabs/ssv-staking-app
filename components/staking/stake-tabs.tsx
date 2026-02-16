@@ -1,16 +1,16 @@
 "use client";
 
+import { AlertTriangle } from "lucide-react";
 import Image from "next/image";
-import { AlertTriangle, Check } from "lucide-react";
 
-import { CLAIMABLE_DECIMALS } from "@/lib/staking/constants";
-import { formatDuration, formatToken } from "@/lib/staking/format";
-import { WithdrawalRequest } from "@/lib/staking/types";
+import { TokenInputCard } from "@/components/staking/token-input-card";
 import { InfoIcon } from "@/components/ui/info-icon";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip } from "@/components/ui/tooltip";
-import { TokenInputCard } from "@/components/staking/token-input-card";
+import { formatDuration, formatToken } from "@/lib/staking/format";
+import { WithdrawalRequest } from "@/lib/staking/types";
+import { formatEther } from "viem";
 
 type StakeTabsProps = {
   activeTab: string;
@@ -73,7 +73,7 @@ function StakeTabs({
   ethIcon,
   isClaimDisabled,
   isClaimFlowBusy,
-  onClaim
+  onClaim,
 }: StakeTabsProps) {
   const tabButtonClass = (value: string) =>
     `flex-1 rounded-[8px] px-4 py-2 text-[16px] font-semibold transition ${
@@ -247,7 +247,7 @@ function StakeTabs({
             <div className="rounded-[12px] border border-surface-100 bg-surface-50 px-[24px] py-[16px] pr-[20px]">
               <div className="flex items-center justify-between">
                 <span className="text-[28px] font-medium text-ink-900">
-                  {formatToken(claimableValue, CLAIMABLE_DECIMALS, 5)}
+                  {formatEther(claimableValue)}
                 </span>
                 <div className="flex items-center gap-2">
                   <Image

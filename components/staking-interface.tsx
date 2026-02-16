@@ -270,7 +270,7 @@ export default function StakingInterface() {
         isClaimFlowBusy={isClaimFlowBusy}
         onClaim={handleClaim}
       />
-      <section className="rounded-[16px] bg-surface-25 p-6">
+      {/* <section className="rounded-[16px] bg-surface-25 p-6">
         <p className="font-dm-sans text-[18px] font-semibold text-ink-500">
           FAQ
         </p>
@@ -281,7 +281,7 @@ export default function StakingInterface() {
             </div>
           ))}
         </div>
-      </section>
+      </section> */}
 
       <TxFlowModal
         title={STAKING_COPY.modals.stake}
