@@ -7,6 +7,7 @@ import { useAccount } from "wagmi";
 import { useTheme } from "@/lib/theme";
 
 import { NetworkSwitchBtn } from "./ui/network-switch-btn";
+import { Button } from "./ui/button";
 
 export default function TopBar() {
   const { isConnected } = useAccount();
@@ -20,7 +21,7 @@ export default function TopBar() {
   const toggleLight = "/figma/modeToggle.svg";
   const toggleDark = "/figma/modeToggle-dark.svg";
   return (
-    <header className="relative w-full border-b border-border bg-surface-0">
+    <header className="relative w-full border-b border-border ">
       <div className="flex h-[72px] w-full items-center justify-between px-6">
         <div className="flex items-center">
           <Image
@@ -34,7 +35,14 @@ export default function TopBar() {
         </div>
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
-            {" "}
+            <a href="https://faucet.ssv.network/request" target="_blank">
+              <Button
+                className="flex h-12 items-center gap-3 rounded-[8px] bg-surface-50 px-4 text-sm"
+                type="button"
+              >
+                Faucet
+              </Button>
+            </a>
             <NetworkSwitchBtn />
             <ConnectButton.Custom>
               {({
@@ -42,7 +50,7 @@ export default function TopBar() {
                 chain,
                 openConnectModal,
                 openAccountModal,
-                mounted
+                mounted,
               }) => {
                 const ready = mounted;
                 const connected = ready && isConnected && account && chain;
@@ -59,7 +67,7 @@ export default function TopBar() {
                     className={`relative flex h-[48px] items-center overflow-hidden rounded-[8px] text-[14px] font-medium transition ${buttonClass}`}
                     {...(!ready && {
                       "aria-hidden": true,
-                      tabIndex: -1
+                      tabIndex: -1,
                     })}
                   >
                     {!connected ? (
