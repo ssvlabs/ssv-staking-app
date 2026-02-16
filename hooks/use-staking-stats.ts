@@ -7,7 +7,9 @@ export function useStakingStats(options?: { enabled?: boolean }) {
   const { address } = useAccount();
   const enabled = options?.enabled ?? true;
   const addressEnabled = enabled && Boolean(address);
-  type PendingUnstakeReturn = readonly [readonly bigint[], readonly bigint[]];
+  type PendingUnstakeStruct = readonly { amount: bigint; unlockTime: bigint }[];
+  type PendingUnstakeTuple = readonly [readonly bigint[], readonly bigint[]];
+  type PendingUnstakeReturn = PendingUnstakeStruct | PendingUnstakeTuple;
 
   const claimableEth = useReadContract({
     address: CONFIG.contracts.Views,
