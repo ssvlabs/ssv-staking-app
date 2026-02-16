@@ -19,7 +19,7 @@ Single-page staking dashboard for the Hoodi network.
 ## Enable Hidden Features:
 In localstorage add ssv-feature-flags = true
 
-# SSV Staking Interface
+# SSV Staking Interface 
 
 ```
 SSV Staking Dashboard
