@@ -66,18 +66,32 @@ export function useStakingData({ address }: UseStakingDataOptions) {
   const withdrawalRequests: WithdrawalRequest[] = useMemo(() => {
     const data = pendingUnstake.data;
     if (!data) return [];
-    const [amounts, unlockTimes] = data;
-    const count = Math.min(amounts.length, unlockTimes.length);
     const requests: WithdrawalRequest[] = [];
-    for (let index = 0; index < count; index += 1) {
-      const amount = amounts[index] ?? 0n;
-      const unlockTime = unlockTimes[index] ?? 0n;
-      if (amount <= 0n) continue;
-      requests.push({
-        id: String(index),
-        amount,
-        unlockTime: Number(unlockTime)
-      });
+    if (Array.isArray(data) && data.length > 0 && typeof data[0] === "object" && "amount" in data[0]) {
+      // Hoodi format: {amount, unlockTime}[]
+      for (let index = 0; index < data.length; index += 1) {
+        const entry = data[index] as { amount: bigint; unlockTime: bigint };
+        if (entry.amount <= 0n) continue;
+        requests.push({
+          id: String(index),
+          amount: entry.amount,
+          unlockTime: Number(entry.unlockTime)
+        });
+      }
+    } else {
+      // Stage format: [uint256[], uint256[]]
+      const [amounts, unlockTimes] = data as [bigint[], bigint[]];
+      const count = Math.min(amounts.length, unlockTimes.length);
+      for (let index = 0; index < count; index += 1) {
+        const amount = amounts[index] ?? 0n;
+        const unlockTime = unlockTimes[index] ?? 0n;
+        if (amount <= 0n) continue;
+        requests.push({
+          id: String(index),
+          amount,
+          unlockTime: Number(unlockTime)
+        });
+      }
     }
     return requests;
   }, [pendingUnstake.data]);
