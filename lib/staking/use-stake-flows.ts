@@ -905,9 +905,14 @@ export function useStakeFlows({
     receiptDecimals
   )}`;
 
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    setAmount("");
+  };
+
   return {
     activeTab,
-    setActiveTab,
+    setActiveTab: handleTabChange,
     amount,
     setAmount,
     handleMax,
@@ -976,8 +981,8 @@ export function useStakeFlows({
     retryUnstake,
     retryWithdraw,
     retryClaim,
-    closeStakeFlow: () => setStakeFlowOpen(false),
-    closeUnstakeFlow: () => setUnstakeFlowOpen(false),
+    closeStakeFlow: () => { setStakeFlowOpen(false); setAmount(""); },
+    closeUnstakeFlow: () => { setUnstakeFlowOpen(false); setAmount(""); },
     closeWithdrawFlow: () => setWithdrawFlowOpen(false),
     closeClaimFlow: () => setClaimFlowOpen(false)
   };

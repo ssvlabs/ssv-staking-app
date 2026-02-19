@@ -152,7 +152,7 @@ export function StakingHeader({
             <Tooltip content="Staking Calculator">
               <a
                 className="inline-flex size-6 items-center justify-center text-white"
-                href="https://ethaccrualtoken.com/"
+                href="https://ssv.network/cssv#calculator"
                 target="_blank"
                 rel="noreferrer"
               >
