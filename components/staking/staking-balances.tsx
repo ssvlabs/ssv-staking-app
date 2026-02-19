@@ -29,7 +29,7 @@ export function StakingBalances({
     <section className="grid grid-cols-1 gap-6 sm:grid-cols-3">
       <div className="rounded-[16px] bg-surface-25 p-6">
         <p className="text-[14px] font-semibold text-ink-400">
-          Available toStake
+          Available to Stake
         </p>
         <div className="mt-3 flex items-center gap-2">
           <Image
