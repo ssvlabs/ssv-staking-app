@@ -40,7 +40,7 @@ export function StakingBalances({
             height={28}
           />
           <span className="text-[20px] font-bold text-ink-950">
-            {formatToken(ssvBalanceValue, tokenDecimals)} SSV
+            {formatToken(ssvBalanceValue, tokenDecimals)}
           </span>
         </div>
       </div>
@@ -57,7 +57,7 @@ export function StakingBalances({
             />
           </span>
           <span className="text-[20px] font-bold text-ink-950">
-            {formatToken(stakedBalanceValue, receiptDecimals)} cSSV
+            {formatToken(stakedBalanceValue, receiptDecimals)}
           </span>
         </div>
       </div>
@@ -72,7 +72,7 @@ export function StakingBalances({
             height={28}
           />
           <span className="text-[20px] font-bold text-ink-900">
-            {formatToken(claimableValue, 18, 5)} ETH
+            {formatToken(claimableValue, 18, 5)}
           </span>
         </div>
       </div>

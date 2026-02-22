@@ -224,7 +224,7 @@ export function StakingHeader({
               />
             </span>
             <span className="text-[20px] font-bold leading-[28px] text-[#0b2a3c] dark:text-[#fdfefe]">
-              {formatToken(totalStakedValue, tokenDecimals)} SSV
+              {formatToken(totalStakedValue, tokenDecimals)}
             </span>
           </div>
         </div>
