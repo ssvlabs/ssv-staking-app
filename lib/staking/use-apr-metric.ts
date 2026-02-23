@@ -4,7 +4,6 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 const APR_API_BASE_URL = (
   process.env.NEXT_PUBLIC_SSV_API ??
-  process.env.SSV_API ??
   "https://api.hoodi.ssv.network/api/v4/hoodi/"
 ).replace(/\/+$/, "");
 
