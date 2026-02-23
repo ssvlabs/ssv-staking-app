@@ -42,6 +42,8 @@ type StakeTabsProps = {
   isClaimDisabled: boolean;
   isClaimFlowBusy: boolean;
   onClaim: () => void;
+  ssvBalanceValue?: bigint;
+  stakedBalanceValue?: bigint;
 };
 
 function StakeTabs({
@@ -74,6 +76,8 @@ function StakeTabs({
   isClaimDisabled,
   isClaimFlowBusy,
   onClaim,
+  ssvBalanceValue,
+  stakedBalanceValue,
 }: StakeTabsProps) {
   const tabButtonClass = (value: string) =>
     `flex-1 rounded-[8px] px-4 py-2 text-[16px] font-semibold transition ${
@@ -81,6 +85,18 @@ function StakeTabs({
         ? "bg-[#fdfefe] text-[#34455a] shadow-sm dark:bg-[#0b2a3c] dark:text-[#e6eaf7]"
         : "text-[#97a5ba]"
     }`;
+
+  const hasInsufficientStakeBalance =
+    isConnected &&
+    amount &&
+    stakeAmount > 0n &&
+    stakeAmount > (ssvBalanceValue ?? 0n);
+
+  const hasInsufficientUnstakeBalance =
+    isConnected &&
+    amount &&
+    stakeAmount > 0n &&
+    stakeAmount > (stakedBalanceValue ?? 0n);
 
   return (
     <section className="rounded-[16px] bg-surface-0 p-6">
@@ -108,6 +124,23 @@ function StakeTabs({
               onMax={onMax}
               isConnected={isConnected}
             />
+
+            {hasInsufficientStakeBalance && (
+              <div className="flex w-full items-center justify-between gap-3 rounded-[4px] border border-red-400 bg-red-50 px-4 py-3 text-[14px] text-ink-900">
+                <p>
+                  Insufficient SSV balance. There is not enough SSV in your
+                  wallet.
+                </p>
+                <a
+                  href="https://faucet.ssv.network/request"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="shrink-0 font-semibold text-brand-600 no-underline hover:text-brand-700"
+                >
+                  Need SSV?
+                </a>
+              </div>
+            )}
 
             <div className="space-y-3 text-[14px]">
               <div className="flex items-center justify-between text-ink-700">

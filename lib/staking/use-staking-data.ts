@@ -27,6 +27,12 @@ export function useStakingData({ address }: UseStakingDataOptions) {
     query: { enabled: Boolean(address) }
   });
 
+  const { data: cssvBalance, refetch: refetchCssvBalance } = useBalance({
+    address,
+    token: CONFIG.contracts.cSSVToken,
+    query: { enabled: Boolean(address) }
+  });
+
   const { data: ssvDecimals } = useReadContract({
     address: CONFIG.contracts.SSVToken,
     abi: ERC20ABI,
@@ -98,8 +104,16 @@ export function useStakingData({ address }: UseStakingDataOptions) {
 
   const claimableValue = (claimableEth.data as bigint | undefined) ?? 0n;
   const ssvBalanceValue = ssvBalance?.value;
-  const stakedBalanceValue = stakedBalance.data as bigint | undefined;
+  const stakedBalanceValue = cssvBalance?.value;
   const totalStakedValue = totalStaked.data as bigint | undefined;
+
+  console.log('🔍 cSSV Balance Debug:', {
+    raw: cssvBalance?.value,
+    formatted: stakedBalanceValue?.toString(),
+    address: address,
+    isLoading: cssvBalance === undefined,
+    token: CONFIG.contracts.cSSVToken
+  });
 
   const tokenDecimals = Number(
     ssvBalance?.decimals ?? (ssvDecimals as number | undefined) ?? 18
@@ -121,6 +135,7 @@ export function useStakingData({ address }: UseStakingDataOptions) {
 
   const refreshAll = useCallback(() => {
     refetchSsvBalance();
+    refetchCssvBalance();
     refetchClaimable();
     refetchStaked();
     refetchPending();
@@ -129,6 +144,7 @@ export function useStakingData({ address }: UseStakingDataOptions) {
     refetchTotalStaked();
   }, [
     refetchSsvBalance,
+    refetchCssvBalance,
     refetchClaimable,
     refetchStaked,
     refetchPending,

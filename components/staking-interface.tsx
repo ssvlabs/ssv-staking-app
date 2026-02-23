@@ -269,6 +269,8 @@ export default function StakingInterface() {
         isClaimDisabled={isClaimDisabled}
         isClaimFlowBusy={isClaimFlowBusy}
         onClaim={handleClaim}
+        ssvBalanceValue={ssvBalanceValue}
+        stakedBalanceValue={stakedBalanceValue}
       />
       {/* <section className="rounded-[16px] bg-surface-25 p-6">
         <p className="font-dm-sans text-[18px] font-semibold text-ink-500">
