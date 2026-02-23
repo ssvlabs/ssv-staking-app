@@ -107,14 +107,6 @@ export function useStakingData({ address }: UseStakingDataOptions) {
   const stakedBalanceValue = cssvBalance?.value;
   const totalStakedValue = totalStaked.data as bigint | undefined;
 
-  console.log('🔍 cSSV Balance Debug:', {
-    raw: cssvBalance?.value,
-    formatted: stakedBalanceValue?.toString(),
-    address: address,
-    isLoading: cssvBalance === undefined,
-    token: CONFIG.contracts.cSSVToken
-  });
-
   const tokenDecimals = Number(
     ssvBalance?.decimals ?? (ssvDecimals as number | undefined) ?? 18
   );
