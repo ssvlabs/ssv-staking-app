@@ -864,8 +864,8 @@ export function useStakeFlows({
     unstakeApprovalStatus === "confirmed" ? `cSSV Approved` : `Approve cSSV`;
   const unstakeRowLabel =
     unstakeStatus === "confirmed"
-      ? `Unstaked ${unstakeFlowAmountLabel} SSV`
-      : `Unstake ${unstakeFlowAmountLabel} SSV`;
+      ? `Unstaked ${unstakeFlowAmountLabel} cSSV`
+      : `Unstake ${unstakeFlowAmountLabel} cSSV`;
   const isWithdrawFlowBusy = isContractWallet
     ? false
     : withdrawStatus === "waiting" || withdrawStatus === "submitted";
