@@ -1,7 +1,7 @@
-import { createPublicClient, formatUnits, http } from "viem";
+import { createPublicClient, formatUnits, http, type Address } from "viem";
 
-import { ViewsABI } from "@/lib/abis";
-import { CONFIG } from "@/lib/config";
+import { getViewsAbiByChainId } from "@/lib/abis";
+import { getNetworkConfigByChainId } from "@/lib/config";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -9,11 +9,13 @@ export const dynamic = "force-dynamic";
 const SECONDS_PER_YEAR = 31_536_000;
 
 const fetchIndex = async (
-  publicClient: ReturnType<typeof createPublicClient>
+  publicClient: ReturnType<typeof createPublicClient>,
+  chainId: number,
+  viewsAddress: Address
 ): Promise<bigint> => {
   const value = await publicClient.readContract({
-    address: CONFIG.contracts.Views,
-    abi: ViewsABI,
+    address: viewsAddress,
+    abi: getViewsAbiByChainId(chainId),
     functionName: "accEthPerShare"
   });
   if (typeof value !== "bigint") {
@@ -54,14 +56,22 @@ const computeApr = (
   return Number.isFinite(apr) ? apr : null;
 };
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const url = new URL(request.url);
+    const requestedChainIdRaw = url.searchParams.get("chainId");
+    const requestedChainId = Number.parseInt(requestedChainIdRaw ?? "", 10);
+    const chainId = Number.isInteger(requestedChainId)
+      ? requestedChainId
+      : undefined;
+    const network = getNetworkConfigByChainId(chainId);
+
     const publicClient = createPublicClient({
-      transport: http(CONFIG.RPC_URL)
+      transport: http(network.rpcUrl)
     });
 
     const [accEthPerShare, prices] = await Promise.all([
-      fetchIndex(publicClient),
+      fetchIndex(publicClient, network.chainId, network.contracts.Views),
       fetchPrices()
     ]);
 

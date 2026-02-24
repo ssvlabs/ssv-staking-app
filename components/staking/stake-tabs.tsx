@@ -1,16 +1,16 @@
 "use client";
 
-import { AlertTriangle } from "lucide-react";
 import Image from "next/image";
+import { AlertTriangle } from "lucide-react";
+import { formatEther } from "viem";
 
-import { TokenInputCard } from "@/components/staking/token-input-card";
+import { formatDuration, formatToken } from "@/lib/staking/format";
+import { WithdrawalRequest } from "@/lib/staking/types";
 import { InfoIcon } from "@/components/ui/info-icon";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip } from "@/components/ui/tooltip";
-import { formatDuration, formatToken } from "@/lib/staking/format";
-import { WithdrawalRequest } from "@/lib/staking/types";
-import { formatEther } from "viem";
+import { TokenInputCard } from "@/components/staking/token-input-card";
 
 type StakeTabsProps = {
   activeTab: string;
@@ -42,6 +42,7 @@ type StakeTabsProps = {
   isClaimDisabled: boolean;
   isClaimFlowBusy: boolean;
   onClaim: () => void;
+  faucetUrl: string | null;
   ssvBalanceValue?: bigint;
   stakedBalanceValue?: bigint;
 };
@@ -76,8 +77,9 @@ function StakeTabs({
   isClaimDisabled,
   isClaimFlowBusy,
   onClaim,
+  faucetUrl,
   ssvBalanceValue,
-  stakedBalanceValue,
+  stakedBalanceValue
 }: StakeTabsProps) {
   const tabButtonClass = (value: string) =>
     `flex-1 rounded-[8px] px-4 py-2 text-[16px] font-semibold transition ${
@@ -131,14 +133,16 @@ function StakeTabs({
                   Insufficient SSV balance. There is not enough SSV in your
                   wallet.
                 </p>
-                <a
-                  href="https://faucet.ssv.network/request"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="shrink-0 font-semibold text-brand-600 no-underline hover:text-brand-700"
-                >
-                  Need SSV?
-                </a>
+                {faucetUrl ? (
+                  <a
+                    href={faucetUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-brand-700 shrink-0 font-semibold text-brand-600 no-underline"
+                  >
+                    Need SSV?
+                  </a>
+                ) : null}
               </div>
             )}
 

@@ -6,9 +6,9 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { toast } from "sonner";
 import { useAccount } from "wagmi";
 
+import { getNetworkConfigByChainId } from "@/lib/config";
 import { STAKING_ASSETS } from "@/lib/staking/constants";
 import { STAKING_COPY } from "@/lib/staking/copy";
-import { STAKING_FAQ } from "@/lib/staking/faq";
 import { addCssvToMetamask } from "@/lib/staking/metamask";
 import {
   buildApprovalAndActionSteps,
@@ -17,7 +17,6 @@ import {
 import { useAprMetric } from "@/lib/staking/use-apr-metric";
 import { useStakeFlows } from "@/lib/staking/use-stake-flows";
 import { useStakingData } from "@/lib/staking/use-staking-data";
-import { Faq } from "@/components/faq";
 import StakeTabs from "@/components/staking/stake-tabs";
 import { StakingBalances } from "@/components/staking/staking-balances";
 import { StakingHeader } from "@/components/staking/staking-header";
@@ -29,10 +28,11 @@ const { ssvLarge, ssvMedium, ssvSmall, ethIcon, metamaskIcon, calculatorIcon } =
   STAKING_ASSETS;
 
 export default function StakingInterface() {
-  const { address, isConnected } = useAccount();
+  const { address, chainId, isConnected } = useAccount();
+  const activeNetwork = getNetworkConfigByChainId(chainId);
   const { openConnectModal } = useConnectModal();
   const multiWithdrawEnabled = true;
-  const { aprValue, potentialAprValue, refreshApr } = useAprMetric();
+  const { aprValue, potentialAprValue, refreshApr } = useAprMetric(chainId);
   const {
     ssvBalanceFormatted,
     ssvBalanceValue,
@@ -213,6 +213,7 @@ export default function StakingInterface() {
 
   const handleAddCssvToMetamask = async () => {
     await addCssvToMetamask({
+      tokenAddress: activeNetwork.contracts.cSSVToken,
       decimals: receiptDecimals,
       image: ssvSmall,
       onError: (message) => toast.error(message)
@@ -269,6 +270,7 @@ export default function StakingInterface() {
         isClaimDisabled={isClaimDisabled}
         isClaimFlowBusy={isClaimFlowBusy}
         onClaim={handleClaim}
+        faucetUrl={activeNetwork.faucetUrl}
         ssvBalanceValue={ssvBalanceValue}
         stakedBalanceValue={stakedBalanceValue}
       />

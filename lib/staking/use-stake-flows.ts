@@ -3,10 +3,14 @@
 import { useCallback, useEffect, useState } from "react";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
-import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import {
+  useAccount,
+  useWaitForTransactionReceipt,
+  useWriteContract
+} from "wagmi";
 
-import { ERC20ABI, StakingABI } from "@/lib/abis";
-import { CONFIG } from "@/lib/config";
+import { ERC20ABI, getStakingAbiByChainId } from "@/lib/abis";
+import { getNetworkConfigByChainId } from "@/lib/config";
 import { useMultisigTransactionModal } from "@/lib/multisig-modal";
 import { CLAIMABLE_DECIMALS } from "@/lib/staking/constants";
 import { formatDuration, formatToken, safeParse } from "@/lib/staking/format";
@@ -52,6 +56,10 @@ export function useStakeFlows({
   onSsvApprovalConfirmed,
   onCssvApprovalConfirmed
 }: UseStakeFlowsOptions) {
+  const { chainId } = useAccount();
+  const network = getNetworkConfigByChainId(chainId);
+  const stakingAbi = getStakingAbiByChainId(chainId);
+
   const [activeTab, setActiveTab] = useState("stake");
   const [amount, setAmount] = useState("");
   const [txHash, setTxHash] = useState<`0x${string}` | undefined>();
@@ -207,8 +215,8 @@ export function useStakeFlows({
     async (amountToStake: bigint) => {
       if (isContractWallet) {
         await sendTransaction("Stake", {
-          address: CONFIG.contracts.Staking,
-          abi: StakingABI,
+          address: network.contracts.Staking,
+          abi: stakingAbi,
           functionName: "stake",
           args: [amountToStake]
         });
@@ -216,8 +224,8 @@ export function useStakeFlows({
       }
       setStakeStatus("waiting");
       const hash = await sendTransaction("Stake", {
-        address: CONFIG.contracts.Staking,
-        abi: StakingABI,
+        address: network.contracts.Staking,
+        abi: stakingAbi,
         functionName: "stake",
         args: [amountToStake]
       });
@@ -228,25 +236,25 @@ export function useStakeFlows({
       setStakeHash(hash);
       setStakeStatus("submitted");
     },
-    [sendTransaction, isContractWallet]
+    [sendTransaction, isContractWallet, network.contracts.Staking, stakingAbi]
   );
 
   const startApprovalTransaction = useCallback(async () => {
     if (isContractWallet) {
       await sendTransaction("Approve SSV", {
-        address: CONFIG.contracts.SSVToken,
+        address: network.contracts.SSVToken,
         abi: ERC20ABI,
         functionName: "approve",
-        args: [CONFIG.contracts.Staking, globals.MAX_WEI_AMOUNT]
+        args: [network.contracts.Staking, globals.MAX_WEI_AMOUNT]
       });
       return;
     }
     setApprovalStatus("waiting");
     const hash = await sendTransaction("Approve SSV", {
-      address: CONFIG.contracts.SSVToken,
+      address: network.contracts.SSVToken,
       abi: ERC20ABI,
       functionName: "approve",
-      args: [CONFIG.contracts.Staking, globals.MAX_WEI_AMOUNT]
+      args: [network.contracts.Staking, globals.MAX_WEI_AMOUNT]
     });
     if (!hash) {
       setApprovalStatus("error");
@@ -254,14 +262,19 @@ export function useStakeFlows({
     }
     setApprovalHash(hash);
     setApprovalStatus("submitted");
-  }, [sendTransaction, isContractWallet]);
+  }, [
+    sendTransaction,
+    isContractWallet,
+    network.contracts.SSVToken,
+    network.contracts.Staking
+  ]);
 
   const startUnstakeTransaction = useCallback(
     async (amountToUnstake: bigint) => {
       if (isContractWallet) {
         await sendTransaction("Request Unstake", {
-          address: CONFIG.contracts.Staking,
-          abi: StakingABI,
+          address: network.contracts.Staking,
+          abi: stakingAbi,
           functionName: "requestUnstake",
           args: [amountToUnstake]
         });
@@ -269,8 +282,8 @@ export function useStakeFlows({
       }
       setUnstakeStatus("waiting");
       const hash = await sendTransaction("Request Unstake", {
-        address: CONFIG.contracts.Staking,
-        abi: StakingABI,
+        address: network.contracts.Staking,
+        abi: stakingAbi,
         functionName: "requestUnstake",
         args: [amountToUnstake]
       });
@@ -281,25 +294,25 @@ export function useStakeFlows({
       setUnstakeHash(hash);
       setUnstakeStatus("submitted");
     },
-    [sendTransaction, isContractWallet]
+    [sendTransaction, isContractWallet, network.contracts.Staking, stakingAbi]
   );
 
   const startUnstakeApprovalTransaction = useCallback(async () => {
     if (isContractWallet) {
       await sendTransaction("Approve cSSV", {
-        address: CONFIG.contracts.cSSVToken,
+        address: network.contracts.cSSVToken,
         abi: ERC20ABI,
         functionName: "approve",
-        args: [CONFIG.contracts.Staking, globals.MAX_WEI_AMOUNT]
+        args: [network.contracts.Staking, globals.MAX_WEI_AMOUNT]
       });
       return;
     }
     setUnstakeApprovalStatus("waiting");
     const hash = await sendTransaction("Approve cSSV", {
-      address: CONFIG.contracts.cSSVToken,
+      address: network.contracts.cSSVToken,
       abi: ERC20ABI,
       functionName: "approve",
-      args: [CONFIG.contracts.Staking, globals.MAX_WEI_AMOUNT]
+      args: [network.contracts.Staking, globals.MAX_WEI_AMOUNT]
     });
     if (!hash) {
       setUnstakeApprovalStatus("error");
@@ -307,21 +320,26 @@ export function useStakeFlows({
     }
     setUnstakeApprovalHash(hash);
     setUnstakeApprovalStatus("submitted");
-  }, [sendTransaction, isContractWallet]);
+  }, [
+    sendTransaction,
+    isContractWallet,
+    network.contracts.cSSVToken,
+    network.contracts.Staking
+  ]);
 
   const startWithdrawTransaction = useCallback(async () => {
     if (isContractWallet) {
       await sendTransaction("Withdraw", {
-        address: CONFIG.contracts.Staking,
-        abi: StakingABI,
+        address: network.contracts.Staking,
+        abi: stakingAbi,
         functionName: "withdrawUnlocked"
       });
       return;
     }
     setWithdrawStatus("waiting");
     const hash = await sendTransaction("Withdraw", {
-      address: CONFIG.contracts.Staking,
-      abi: StakingABI,
+      address: network.contracts.Staking,
+      abi: stakingAbi,
       functionName: "withdrawUnlocked"
     });
     if (!hash) {
@@ -330,21 +348,21 @@ export function useStakeFlows({
     }
     setWithdrawHash(hash);
     setWithdrawStatus("submitted");
-  }, [sendTransaction, isContractWallet]);
+  }, [sendTransaction, isContractWallet, network.contracts.Staking, stakingAbi]);
 
   const startClaimTransaction = useCallback(async () => {
     if (isContractWallet) {
       await sendTransaction("Claim Rewards", {
-        address: CONFIG.contracts.Staking,
-        abi: StakingABI,
+        address: network.contracts.Staking,
+        abi: stakingAbi,
         functionName: "claimEthRewards"
       });
       return;
     }
     setClaimStatus("waiting");
     const hash = await sendTransaction("Claim Rewards", {
-      address: CONFIG.contracts.Staking,
-      abi: StakingABI,
+      address: network.contracts.Staking,
+      abi: stakingAbi,
       functionName: "claimEthRewards"
     });
     if (!hash) {
@@ -353,7 +371,7 @@ export function useStakeFlows({
     }
     setClaimHash(hash);
     setClaimStatus("submitted");
-  }, [sendTransaction, isContractWallet]);
+  }, [sendTransaction, isContractWallet, network.contracts.Staking, stakingAbi]);
 
   const handleStakeFlow = useCallback(async () => {
     if (!isConnected) {

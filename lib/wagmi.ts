@@ -6,7 +6,7 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 import { defineChain } from "viem";
 
-import { CONFIG } from "@/lib/config";
+import { NETWORK_CONFIGS } from "@/lib/config";
 
 const projectId = "c93804911b583e5cacf856eee58655e6";
 
@@ -67,8 +67,8 @@ const getWalletGroups = () => {
 };
 
 export const hoodi = defineChain({
-  id: CONFIG.CHAIN_ID,
-  name: "Hoodi",
+  id: NETWORK_CONFIGS.hoodi.chainId,
+  name: NETWORK_CONFIGS.hoodi.chainName,
   iconBackground: "none",
   iconUrl: "/figma/ethereum_0-2171.svg",
   nativeCurrency: {
@@ -78,21 +78,46 @@ export const hoodi = defineChain({
   },
   rpcUrls: {
     default: {
-      http: [CONFIG.RPC_URL]
+      http: [NETWORK_CONFIGS.hoodi.rpcUrl]
     }
   },
   blockExplorers: {
     default: {
-      name: "Hoodi Explorer",
-      url: "https://hoodi.etherscan.io"
+      name: NETWORK_CONFIGS.hoodi.blockExplorer.name,
+      url: NETWORK_CONFIGS.hoodi.blockExplorer.url
     }
   }
 });
+
+export const mainnet = defineChain({
+  id: NETWORK_CONFIGS.mainnet.chainId,
+  name: NETWORK_CONFIGS.mainnet.chainName,
+  iconBackground: "none",
+  iconUrl: "/figma/ethereum_0-2171.svg",
+  nativeCurrency: {
+    name: "Ether",
+    symbol: "ETH",
+    decimals: 18
+  },
+  rpcUrls: {
+    default: {
+      http: [NETWORK_CONFIGS.mainnet.rpcUrl]
+    }
+  },
+  blockExplorers: {
+    default: {
+      name: NETWORK_CONFIGS.mainnet.blockExplorer.name,
+      url: NETWORK_CONFIGS.mainnet.blockExplorer.url
+    }
+  }
+});
+
+const chains = [hoodi, mainnet] as const;
 
 export const wagmiConfig = getDefaultConfig({
   appName: "SSV Web App",
   projectId,
   wallets: getWalletGroups(),
-  chains: [hoodi],
+  chains,
   ssr: true
 });
