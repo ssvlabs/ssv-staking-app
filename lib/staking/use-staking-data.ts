@@ -1,10 +1,10 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
-import { useBalance, useReadContract } from "wagmi";
+import { useAccount, useBalance, useReadContract } from "wagmi";
 
 import { ERC20ABI } from "@/lib/abis";
-import { CONFIG } from "@/lib/config";
+import { getNetworkConfigByChainId } from "@/lib/config";
 import { WithdrawalRequest } from "@/lib/staking/types";
 import { useStakingStats } from "@/hooks/use-staking-stats";
 
@@ -13,6 +13,9 @@ type UseStakingDataOptions = {
 };
 
 export function useStakingData({ address }: UseStakingDataOptions) {
+  const { chainId } = useAccount();
+  const network = getNetworkConfigByChainId(chainId);
+
   const {
     claimableEth,
     stakedBalance,
@@ -23,25 +26,25 @@ export function useStakingData({ address }: UseStakingDataOptions) {
 
   const { data: ssvBalance, refetch: refetchSsvBalance } = useBalance({
     address,
-    token: CONFIG.contracts.SSVToken,
+    token: network.contracts.SSVToken,
     query: { enabled: Boolean(address) }
   });
 
   const { data: cssvBalance, refetch: refetchCssvBalance } = useBalance({
     address,
-    token: CONFIG.contracts.cSSVToken,
+    token: network.contracts.cSSVToken,
     query: { enabled: Boolean(address) }
   });
 
   const { data: ssvDecimals } = useReadContract({
-    address: CONFIG.contracts.SSVToken,
+    address: network.contracts.SSVToken,
     abi: ERC20ABI,
     functionName: "decimals",
     query: { enabled: true }
   });
 
   const { data: cssvDecimals } = useReadContract({
-    address: CONFIG.contracts.cSSVToken,
+    address: network.contracts.cSSVToken,
     abi: ERC20ABI,
     functionName: "decimals",
     query: { enabled: true }
@@ -53,19 +56,19 @@ export function useStakingData({ address }: UseStakingDataOptions) {
   const { refetch: refetchTotalStaked } = totalStaked;
 
   const { data: ssvAllowance, refetch: refetchSsvAllowance } = useReadContract({
-    address: CONFIG.contracts.SSVToken,
+    address: network.contracts.SSVToken,
     abi: ERC20ABI,
     functionName: "allowance",
-    args: address ? [address, CONFIG.contracts.Staking] : undefined,
+    args: address ? [address, network.contracts.Staking] : undefined,
     query: { enabled: Boolean(address) }
   });
 
   const { data: cssvAllowance, refetch: refetchCssvAllowance } =
     useReadContract({
-      address: CONFIG.contracts.cSSVToken,
+      address: network.contracts.cSSVToken,
       abi: ERC20ABI,
       functionName: "allowance",
-      args: address ? [address, CONFIG.contracts.Staking] : undefined,
+      args: address ? [address, network.contracts.Staking] : undefined,
       query: { enabled: Boolean(address) }
     });
 
@@ -164,4 +167,3 @@ export function useStakingData({ address }: UseStakingDataOptions) {
     refetchCssvAllowance
   };
 }
-

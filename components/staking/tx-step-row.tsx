@@ -2,7 +2,9 @@
 
 import type { ReactNode } from "react";
 import { Check, ExternalLink, X } from "lucide-react";
+import { useAccount } from "wagmi";
 
+import { getNetworkConfigByChainId } from "@/lib/config";
 import { formatTxHash } from "@/lib/staking/format";
 import { StepStatus } from "@/lib/staking/types";
 
@@ -15,8 +17,6 @@ export type TxStepRowProps = {
   detail?: ReactNode;
   disabled?: boolean;
 };
-
-const EXPLORER_BASE_URL = "https://hoodi.etherscan.io/tx/";
 
 const StepIndicator = ({ status }: { status: StepStatus }) => {
   if (status === "confirmed") {
@@ -55,6 +55,8 @@ export function TxStepRow({
   detail,
   disabled
 }: TxStepRowProps) {
+  const { chainId } = useAccount();
+  const explorerBaseUrl = getNetworkConfigByChainId(chainId).blockExplorer.txBaseUrl;
   const isError = status === "error";
 
   const renderAction = () => {
@@ -81,7 +83,7 @@ export function TxStepRow({
       return (
         <a
           className="flex h-[40px] items-center gap-[4px] rounded-[8px] border border-border bg-surface-100 pl-[16px] pr-[12px] text-[14px] font-normal text-ink-700"
-          href={`${EXPLORER_BASE_URL}${hash}`}
+          href={`${explorerBaseUrl}${hash}`}
           rel="noreferrer"
           target="_blank"
         >
