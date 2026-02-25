@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
+import { formatUnits } from "viem";
 import {
   useAccount,
   useWaitForTransactionReceipt,
@@ -12,7 +13,10 @@ import {
 import { ERC20ABI, getStakingAbiByChainId } from "@/lib/abis";
 import { getNetworkConfigByChainId } from "@/lib/config";
 import { useMultisigTransactionModal } from "@/lib/multisig-modal";
-import { CLAIMABLE_DECIMALS } from "@/lib/staking/constants";
+import {
+  CLAIMABLE_DECIMALS,
+  MINIMAL_STAKING_AMOUNT
+} from "@/lib/staking/constants";
 import { formatDuration, formatToken, safeParse } from "@/lib/staking/format";
 import { StepStatus, WithdrawalRequest } from "@/lib/staking/types";
 import { useInterval } from "@/hooks/use-interval";
@@ -145,10 +149,16 @@ export function useStakeFlows({
   const stakeAmount = safeParse(amount, tokenDecimals);
   const unstakeAmount = safeParse(amount, receiptDecimals);
   const actionAmount = activeTab === "unstake" ? unstakeAmount : stakeAmount;
+  const minimalStakeLabel = formatUnits(MINIMAL_STAKING_AMOUNT, tokenDecimals);
+  const isBelowMinimalStake =
+    isConnected &&
+    stakeAmount > 0n &&
+    stakeAmount < MINIMAL_STAKING_AMOUNT;
 
   const isActionDisabled =
     isConnected &&
     (actionAmount === 0n ||
+      (activeTab === "stake" && isBelowMinimalStake) ||
       (activeTab === "stake" && stakeAmount > (ssvBalanceValue ?? 0n)) ||
       (activeTab === "unstake" && unstakeAmount > (stakedBalanceValue ?? 0n)));
   const isClaimDisabled = isConnected && claimableValue === 0n;
@@ -383,6 +393,10 @@ export function useStakeFlows({
       toast.error("Enter an amount to stake.");
       return;
     }
+    if (stakeAmount < MINIMAL_STAKING_AMOUNT) {
+      toast.error(`Minimum stake amount is ${minimalStakeLabel} SSV.`);
+      return;
+    }
     if (stakeAmount > balanceValue) {
       toast.error("Insufficient SSV balance.");
       return;
@@ -415,6 +429,7 @@ export function useStakeFlows({
     openConnectModal,
     ssvBalanceValue,
     stakeAmount,
+    minimalStakeLabel,
     ssvAllowanceValue,
     startApprovalTransaction,
     startStakeTransaction,
@@ -936,6 +951,8 @@ export function useStakeFlows({
     handleMax,
     nowEpoch,
     stakeAmount,
+    isBelowMinimalStake,
+    minimalStakeLabel,
     hasPending,
     isUnlocked,
     pendingAmountLabel,
