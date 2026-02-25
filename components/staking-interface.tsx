@@ -66,6 +66,7 @@ export default function StakingInterface() {
     isBelowMinimalStake,
     minimalStakeLabel,
     isActionDisabled,
+    isUnstakeRequestLimitReached,
     isClaimDisabled,
     stakeFlowOpen,
     unstakeFlowOpen,
@@ -253,6 +254,7 @@ export default function StakingInterface() {
         cooldownLabel={cooldownLabel}
         isConnected={isConnected}
         isActionDisabled={isActionDisabled}
+        isUnstakeRequestLimitReached={isUnstakeRequestLimitReached}
         isStakeFlowBusy={isStakeFlowBusy}
         isUnstakeFlowBusy={isUnstakeFlowBusy}
         onWithdrawUnlocked={handleWithdrawUnlocked}
