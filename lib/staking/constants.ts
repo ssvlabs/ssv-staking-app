@@ -10,3 +10,4 @@ export const STAKING_ASSETS = {
 } as const;
 
 export const CLAIMABLE_DECIMALS = 18;
+export const MINIMAL_STAKING_AMOUNT = 1_000_000_000n;

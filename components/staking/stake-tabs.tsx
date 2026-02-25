@@ -25,6 +25,8 @@ type StakeTabsProps = {
   tokenDecimals: number;
   receiptDecimals: number;
   stakeAmount: bigint;
+  isBelowMinimalStake: boolean;
+  minimalStakeLabel: string;
   cooldownDurationSeconds: number;
   cooldownLabel: string;
   isConnected: boolean;
@@ -60,6 +62,8 @@ function StakeTabs({
   tokenDecimals,
   receiptDecimals,
   stakeAmount,
+  isBelowMinimalStake,
+  minimalStakeLabel,
   cooldownDurationSeconds,
   cooldownLabel,
   isConnected,
@@ -143,6 +147,12 @@ function StakeTabs({
                     Need SSV?
                   </a>
                 ) : null}
+              </div>
+            )}
+            {isBelowMinimalStake && (
+              <div className="flex w-full items-center gap-3 rounded-[4px] border border-warning-400 bg-warning-bg px-4 py-3 text-[14px] text-ink-900">
+                <AlertTriangle className="size-5 shrink-0 text-warning-400" />
+                <p>Minimum stake amount is {minimalStakeLabel} SSV.</p>
               </div>
             )}
 
