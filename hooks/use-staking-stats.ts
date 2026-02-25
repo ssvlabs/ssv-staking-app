@@ -1,10 +1,12 @@
 import { useAccount, useReadContract } from "wagmi";
 
-import { ViewsABI } from "@/lib/abis";
-import { CONFIG } from "@/lib/config";
+import { getViewsAbiByChainId } from "@/lib/abis";
+import { getNetworkConfigByChainId } from "@/lib/config";
 
 export function useStakingStats(options?: { enabled?: boolean }) {
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
+  const network = getNetworkConfigByChainId(chainId);
+  const viewsAbi = getViewsAbiByChainId(chainId);
   const enabled = options?.enabled ?? true;
   const addressEnabled = enabled && Boolean(address);
   type PendingUnstakeStruct = readonly { amount: bigint; unlockTime: bigint }[];
@@ -12,24 +14,24 @@ export function useStakingStats(options?: { enabled?: boolean }) {
   type PendingUnstakeReturn = PendingUnstakeStruct | PendingUnstakeTuple;
 
   const claimableEth = useReadContract({
-    address: CONFIG.contracts.Views,
-    abi: ViewsABI,
+    address: network.contracts.Views,
+    abi: viewsAbi,
     functionName: "previewClaimableEth",
     args: address ? [address] : undefined,
     query: { enabled: addressEnabled }
   });
 
   const stakedBalance = useReadContract({
-    address: CONFIG.contracts.Views,
-    abi: ViewsABI,
+    address: network.contracts.Views,
+    abi: viewsAbi,
     functionName: "stakedBalanceOf",
     args: address ? [address] : undefined,
     query: { enabled: addressEnabled }
   });
 
   const pendingUnstake = useReadContract({
-    address: CONFIG.contracts.Views,
-    abi: ViewsABI,
+    address: network.contracts.Views,
+    abi: viewsAbi,
     functionName: "pendingUnstake",
     args: address ? [address] : undefined,
     query: {
@@ -39,22 +41,22 @@ export function useStakingStats(options?: { enabled?: boolean }) {
   });
 
   const totalStaked = useReadContract({
-    address: CONFIG.contracts.Views,
-    abi: ViewsABI,
+    address: network.contracts.Views,
+    abi: viewsAbi,
     functionName: "totalStaked",
     query: { enabled }
   });
 
   const cooldownDuration = useReadContract({
-    address: CONFIG.contracts.Views,
-    abi: ViewsABI,
+    address: network.contracts.Views,
+    abi: viewsAbi,
     functionName: "cooldownDuration",
     query: { enabled }
   });
 
   const stakingEthPoolBalance = useReadContract({
-    address: CONFIG.contracts.Views,
-    abi: ViewsABI,
+    address: network.contracts.Views,
+    abi: viewsAbi,
     functionName: "stakingEthPoolBalance",
     query: { enabled, refetchInterval: 30000 }
   });

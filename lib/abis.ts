@@ -1,28 +1,36 @@
 import { erc20Abi, type Abi } from "viem";
 
 import StakingHoodiAbiJson from "@/lib/abis/StakingHoodi.json";
-import StakingStageAbiJson from "@/lib/abis/StakingStage.json";
+import StakingMainnetAbiJson from "@/lib/abis/StakingMainnet.json";
 import ViewsHoodiAbiJson from "@/lib/abis/ViewsHoodi.json";
-import ViewsStageAbiJson from "@/lib/abis/ViewsStage.json";
+import ViewsMainnetAbiJson from "@/lib/abis/ViewsMainnet.json";
+import { NetworkKey, getNetworkConfigByChainId } from "@/lib/config";
 
-type AbiEnv = "Stage" | "Hoodi";
+type AbiSet = { staking: Abi; views: Abi };
 
-const abiByEnv: Record<AbiEnv, { staking: Abi; views: Abi }> = {
-  Stage: {
-    staking: StakingStageAbiJson as Abi,
-    views: ViewsStageAbiJson as Abi
-  },
-  Hoodi: {
+const abiByNetwork: Record<NetworkKey, AbiSet> = {
+  hoodi: {
     staking: StakingHoodiAbiJson as Abi,
     views: ViewsHoodiAbiJson as Abi
+  },
+  mainnet: {
+    staking: StakingMainnetAbiJson as Abi,
+    views: ViewsMainnetAbiJson as Abi
   }
 };
 
-const appEnv = process.env.NEXT_PUBLIC_APP_ENV?.trim().toLowerCase();
-const abiEnv: AbiEnv = appEnv === "hoodi" ? "Hoodi" : "Stage";
+export const getAbiSetByChainId = (
+  chainId: number | undefined
+): AbiSet => {
+  const network = getNetworkConfigByChainId(chainId);
+  return abiByNetwork[network.key];
+};
 
-export const StakingABI = abiByEnv[abiEnv].staking;
+export const getStakingAbiByChainId = (
+  chainId: number | undefined
+): Abi => getAbiSetByChainId(chainId).staking;
 
-export const ViewsABI = abiByEnv[abiEnv].views;
+export const getViewsAbiByChainId = (chainId: number | undefined): Abi =>
+  getAbiSetByChainId(chainId).views;
 
 export { erc20Abi as ERC20ABI };
