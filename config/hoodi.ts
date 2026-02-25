@@ -89,5 +89,15 @@ export const HOODI_CONFIG = {
       { key: "HOODI_FAUCET_URL", value: process.env.HOODI_FAUCET_URL }
     ],
     "Hoodi faucet URL"
+  ),
+  dvtUrl: getRequiredUrl(
+    [
+      {
+        key: "NEXT_PUBLIC_DVT_APP_URL",
+        value: process.env.NEXT_PUBLIC_DVT_APP_URL
+      },
+      { key: "DVT_APP_URL", value: process.env.DVT_APP_URL }
+    ],
+    "Hoodi DVT URL"
   )
 } as const;

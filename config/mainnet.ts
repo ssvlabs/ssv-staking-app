@@ -80,5 +80,6 @@ export const MAINNET_CONFIG = {
     txBaseUrl: `${normalizedExplorerUrl}/tx/`,
     addressBaseUrl: `${normalizedExplorerUrl}/address/`
   },
-  faucetUrl: null
+  faucetUrl: null,
+  dvtUrl: "https://app.ssv.network"
 } as const;
