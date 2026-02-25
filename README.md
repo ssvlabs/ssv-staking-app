@@ -46,7 +46,7 @@ Single-page staking dashboard on the Hoodi network. Users stake SSV to mint cSSV
 | :---- |
 
 # Navigation
-Top bar with branding and wallet state. When disconnected, clicking the primary button opens the wallet connect modal.
+Top bar with branding, optional network links (`Faucet` and `DVT` on Hoodi), and wallet state. When disconnected, clicking the primary button opens the wallet connect modal.
 
 # Network Summary
 Always visible (no wallet required).

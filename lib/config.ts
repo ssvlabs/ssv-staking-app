@@ -27,6 +27,7 @@ export type NetworkConfig = {
     addressBaseUrl: string;
   };
   faucetUrl: string | null;
+  dvtUrl: string | null;
 };
 
 const hoodiConfig: NetworkConfig = {
@@ -37,7 +38,8 @@ const hoodiConfig: NetworkConfig = {
   ssvApiBaseUrl: HOODI_CONFIG.ssvApiBaseUrl,
   contracts: HOODI_CONFIG.contracts,
   blockExplorer: HOODI_CONFIG.blockExplorer,
-  faucetUrl: HOODI_CONFIG.faucetUrl
+  faucetUrl: HOODI_CONFIG.faucetUrl,
+  dvtUrl: HOODI_CONFIG.dvtUrl
 };
 
 const mainnetConfig: NetworkConfig = {
@@ -48,7 +50,8 @@ const mainnetConfig: NetworkConfig = {
   ssvApiBaseUrl: MAINNET_CONFIG.ssvApiBaseUrl,
   contracts: MAINNET_CONFIG.contracts,
   blockExplorer: MAINNET_CONFIG.blockExplorer,
-  faucetUrl: MAINNET_CONFIG.faucetUrl
+  faucetUrl: MAINNET_CONFIG.faucetUrl,
+  dvtUrl: MAINNET_CONFIG.dvtUrl
 };
 
 export const NETWORK_CONFIGS: Record<NetworkKey, NetworkConfig> = {
