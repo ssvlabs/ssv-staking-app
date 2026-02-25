@@ -63,15 +63,10 @@ export default function StakingInterface() {
     handleMax,
     nowEpoch,
     stakeAmount,
-    hasPending,
-    isUnlocked,
-    pendingAmountLabel,
-    pendingCountdownLabel,
+    isBelowMinimalStake,
+    minimalStakeLabel,
     isActionDisabled,
     isClaimDisabled,
-    isWithdrawActionDisabled,
-    selectedWithdrawalIds,
-    toggleWithdrawalSelection,
     stakeFlowOpen,
     unstakeFlowOpen,
     withdrawFlowOpen,
@@ -116,7 +111,6 @@ export default function StakingInterface() {
     unstakeBalanceLabel,
     handleStakeFlow,
     handleRequestUnstake,
-    handleWithdrawSelected,
     handleWithdrawUnlocked,
     handleClaim,
     retryApproval,
@@ -253,6 +247,8 @@ export default function StakingInterface() {
         tokenDecimals={tokenDecimals}
         receiptDecimals={receiptDecimals}
         stakeAmount={stakeAmount}
+        isBelowMinimalStake={isBelowMinimalStake}
+        minimalStakeLabel={minimalStakeLabel}
         cooldownDurationSeconds={cooldownDurationSeconds}
         cooldownLabel={cooldownLabel}
         isConnected={isConnected}
