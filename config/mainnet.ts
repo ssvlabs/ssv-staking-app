@@ -1,4 +1,5 @@
 import { mainnet } from "viem/chains";
+
 import { createEnvAssertions } from "@/config/env-assertions";
 
 const { getRequiredUrl, getRequiredAddress } = createEnvAssertions("mainnet");
@@ -93,5 +94,15 @@ export const MAINNET_CONFIG = {
     txBaseUrl: `${normalizedExplorerUrl}/tx/`,
     addressBaseUrl: `${normalizedExplorerUrl}/address/`
   },
-  faucetUrl: null
+  faucetUrl: null,
+  dvtUrl: getRequiredUrl(
+    [
+      {
+        key: "NEXT_PUBLIC_MAINNET_DVT_APP_URL",
+        value: process.env.NEXT_PUBLIC_MAINNET_DVT_APP_URL
+      },
+      { key: "MAINNET_DVT_APP_URL", value: process.env.MAINNET_DVT_APP_URL }
+    ],
+    "Mainnet DVT URL"
+  )
 } as const;
