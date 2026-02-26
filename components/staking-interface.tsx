@@ -12,7 +12,7 @@ import { STAKING_COPY } from "@/lib/staking/copy";
 import { addCssvToMetamask } from "@/lib/staking/metamask";
 import {
   buildApprovalAndActionSteps,
-  buildSingleStep
+  buildSingleStep,
 } from "@/lib/staking/tx-steps";
 import { useAprMetric } from "@/lib/staking/use-apr-metric";
 import { useStakeFlows } from "@/lib/staking/use-stake-flows";
@@ -23,6 +23,7 @@ import { StakingHeader } from "@/components/staking/staking-header";
 import { TxFlowFooter } from "@/components/staking/tx-flow-footer";
 import { TxFlowModal } from "@/components/staking/tx-flow-modal";
 import { TxStepList } from "@/components/staking/tx-step-list";
+import { AprHistoryChart } from "@/components/apr-history-chart";
 
 const { ssvLarge, ssvMedium, ssvSmall, ethIcon, metamaskIcon, calculatorIcon } =
   STAKING_ASSETS;
@@ -48,7 +49,7 @@ export default function StakingInterface() {
     withdrawalRequests,
     refreshAll,
     refetchSsvAllowance,
-    refetchCssvAllowance
+    refetchCssvAllowance,
   } = useStakingData({ address });
   const handleAnyTxConfirmed = useCallback(() => {
     refreshAll();
@@ -122,7 +123,7 @@ export default function StakingInterface() {
     closeStakeFlow,
     closeUnstakeFlow,
     closeWithdrawFlow,
-    closeClaimFlow
+    closeClaimFlow,
   } = useStakeFlows({
     isConnected,
     openConnectModal,
@@ -138,7 +139,7 @@ export default function StakingInterface() {
     multiWithdrawEnabled,
     onAnyTxConfirmed: handleAnyTxConfirmed,
     onSsvApprovalConfirmed: refetchSsvAllowance,
-    onCssvApprovalConfirmed: refetchCssvAllowance
+    onCssvApprovalConfirmed: refetchCssvAllowance,
   });
 
   const stakeSteps = buildApprovalAndActionSteps(
@@ -148,17 +149,17 @@ export default function StakingInterface() {
       label: approvalRowLabel,
       hash: approvalHash,
       onRetry: retryApproval,
-      disabled: stakeRetryDisabled
+      disabled: stakeRetryDisabled,
     },
     {
       status: stakeStatus,
       label: stakeRowLabel,
       hash: stakeHash,
       onRetry: retryStake,
-      disabled: stakeRetryDisabled
+      disabled: stakeRetryDisabled,
     },
     {
-      action: STAKING_COPY.actions.stake
+      action: STAKING_COPY.actions.stake,
     }
   );
 
@@ -169,17 +170,17 @@ export default function StakingInterface() {
       label: unstakeApprovalRowLabel,
       hash: unstakeApprovalHash,
       onRetry: retryUnstakeApproval,
-      disabled: unstakeRetryDisabled
+      disabled: unstakeRetryDisabled,
     },
     {
       status: unstakeStatus,
       label: unstakeRowLabel,
       hash: unstakeHash,
       onRetry: retryUnstake,
-      disabled: unstakeRetryDisabled
+      disabled: unstakeRetryDisabled,
     },
     {
-      action: STAKING_COPY.actions.unstake
+      action: STAKING_COPY.actions.unstake,
     }
   );
 
@@ -189,7 +190,7 @@ export default function StakingInterface() {
       label: withdrawRowLabel,
       hash: withdrawHash,
       onRetry: retryWithdraw,
-      disabled: withdrawRetryDisabled
+      disabled: withdrawRetryDisabled,
     },
     STAKING_COPY.actions.withdraw
   );
@@ -200,7 +201,7 @@ export default function StakingInterface() {
       label: claimRowLabel,
       hash: claimHash,
       onRetry: retryClaim,
-      disabled: claimRetryDisabled
+      disabled: claimRetryDisabled,
     },
     STAKING_COPY.actions.claim
   );
@@ -210,7 +211,7 @@ export default function StakingInterface() {
       tokenAddress: activeNetwork.contracts.cSSVToken,
       decimals: receiptDecimals,
       image: ssvSmall,
-      onError: (message) => toast.error(message)
+      onError: (message) => toast.error(message),
     });
   };
 
