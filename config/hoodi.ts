@@ -20,6 +20,19 @@ export const HOODI_CONFIG = {
     ],
     "Hoodi RPC URL"
   ),
+  ssvApiBaseUrl: getRequiredUrl(
+    [
+      {
+        key: "NEXT_PUBLIC_HOODI_SSV_API",
+        value: process.env.NEXT_PUBLIC_HOODI_SSV_API
+      },
+      {
+        key: "HOODI_SSV_API",
+        value: process.env.HOODI_SSV_API
+      }
+    ],
+    "Hoodi SSV API URL"
+  ).replace(/\/+$/, ""),
   contracts: {
     SSVToken: getRequiredAddress(
       [
