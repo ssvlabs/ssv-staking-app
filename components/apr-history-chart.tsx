@@ -185,8 +185,8 @@ export function AprHistoryChart({ chainId }: AprHistoryChartProps) {
             <Area
               type="stepAfter"
               dataKey="apr"
-              stroke="var(--color-brand-600)"
-              strokeWidth={1.5}
+              stroke="var(--color-brand-500)"
+              strokeWidth={1}
               fill="url(#aprGradient)"
             />
           </AreaChart>
