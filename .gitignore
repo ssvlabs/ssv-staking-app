@@ -17,5 +17,8 @@ pnpm-debug.log*
 .env
 .env.*
 !.env.example
+!.env.stage
+!.env.production
+!.env.mainnet
 .idea
 tsconfig.tsbuildinfo
