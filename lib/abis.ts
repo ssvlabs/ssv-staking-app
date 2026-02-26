@@ -9,7 +9,7 @@ import ViewsMainnetAbiJson from "@/lib/abis/ViewsMainnet.json";
 import { getNetworkConfigByChainId } from "@/lib/config";
 
 type AbiSet = { staking: Abi; views: Abi };
-type Environment = "stage" | "prod" | "mainnet";
+type Environment = "stage" | "hoodi" | "mainnet";
 
 // Determine environment from env variable
 const getEnvironment = (): Environment => {
@@ -19,8 +19,8 @@ const getEnvironment = (): Environment => {
     return "mainnet";
   }
 
-  if (appEnv === "prod" || appEnv === "production") {
-    return "prod";
+  if (appEnv === "hoodi") {
+    return "hoodi";
   }
 
   // Default to stage
@@ -32,7 +32,7 @@ const abiByEnvironment: Record<Environment, AbiSet> = {
     staking: StakingStageAbiJson as Abi,
     views: ViewsStageAbiJson as Abi
   },
-  prod: {
+  hoodi: {
     staking: StakingHoodiAbiJson as Abi,
     views: ViewsHoodiAbiJson as Abi
   },

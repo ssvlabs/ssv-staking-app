@@ -19,8 +19,8 @@ COPY . .
 # Copy the appropriate env file based on MODE
 RUN if [ "$MODE" = "mainnet" ]; then \
       cp .env.mainnet .env.production.local; \
-    elif [ "$MODE" = "prod" ]; then \
-      cp .env.production .env.production.local; \
+    elif [ "$MODE" = "hoodi" ]; then \
+      cp .env.hoodi .env.production.local; \
     else \
       cp .env.stage .env.production.local; \
     fi
