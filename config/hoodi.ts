@@ -108,7 +108,7 @@ export const HOODI_CONFIG = {
     [
       {
         key: "NEXT_PUBLIC_HOODI_DVT_APP_URL",
-        value: process.env.NEXT_PUBLIC_DVT_APP_URL
+        value: process.env.NEXT_PUBLIC_HOODI_DVT_APP_URL
       },
       { key: "HOODI_DVT_APP_URL", value: process.env.DVT_APP_URL }
     ],
