@@ -18,6 +18,7 @@ export type NetworkConfig = {
   chainId: number;
   chainName: string;
   rpcUrl: string;
+  ssvApiBaseUrl: string;
   contracts: ContractsConfig;
   blockExplorer: {
     name: string;
@@ -33,6 +34,7 @@ const hoodiConfig: NetworkConfig = {
   chainId: hoodi.id,
   chainName: HOODI_CONFIG.chainName,
   rpcUrl: HOODI_CONFIG.rpcUrl,
+  ssvApiBaseUrl: HOODI_CONFIG.ssvApiBaseUrl,
   contracts: HOODI_CONFIG.contracts,
   blockExplorer: HOODI_CONFIG.blockExplorer,
   faucetUrl: HOODI_CONFIG.faucetUrl
@@ -43,6 +45,7 @@ const mainnetConfig: NetworkConfig = {
   chainId: mainnet.id,
   chainName: MAINNET_CONFIG.chainName,
   rpcUrl: MAINNET_CONFIG.rpcUrl,
+  ssvApiBaseUrl: MAINNET_CONFIG.ssvApiBaseUrl,
   contracts: MAINNET_CONFIG.contracts,
   blockExplorer: MAINNET_CONFIG.blockExplorer,
   faucetUrl: MAINNET_CONFIG.faucetUrl
