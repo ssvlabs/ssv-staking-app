@@ -13,12 +13,13 @@ type AprValues = {
   potentialAprValue: number | null;
 };
 
+const resolveAprApiBaseUrl = (chainId: number | undefined): string => {
+  const network = getNetworkConfigByChainId(chainId);
+  return network.ssvApiBaseUrl;
+};
+
 async function fetchApr(chainId?: number): Promise<AprValues> {
-  const params = new URLSearchParams();
-  if (typeof chainId === "number" && Number.isInteger(chainId) && chainId > 0) {
-    params.set("chainId", String(chainId));
-  }
-  const url = `/api/apr${params.size ? `?${params.toString()}` : ""}`;
+  const url = `${resolveAprApiBaseUrl(chainId)}/apr/current`;
   try {
     const response = await fetch(url, {
       cache: "no-store"

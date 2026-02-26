@@ -20,6 +20,19 @@ export const MAINNET_CONFIG = {
     ],
     "Mainnet RPC URL"
   ),
+  ssvApiBaseUrl: getRequiredUrl(
+    [
+      {
+        key: "NEXT_PUBLIC_MAINNET_SSV_API",
+        value: process.env.NEXT_PUBLIC_MAINNET_SSV_API
+      },
+      {
+        key: "MAINNET_SSV_API",
+        value: process.env.MAINNET_SSV_API
+      }
+    ],
+    "Mainnet SSV API URL"
+  ).replace(/\/+$/, ""),
   contracts: {
     SSVToken: getRequiredAddress(
       [
