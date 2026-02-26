@@ -4,19 +4,12 @@ import { useCallback, useEffect, useState } from "react";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
 import { formatUnits } from "viem";
-import {
-  useAccount,
-  useWaitForTransactionReceipt,
-  useWriteContract
-} from "wagmi";
+import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 
 import { ERC20ABI, getStakingAbiByChainId } from "@/lib/abis";
 import { getNetworkConfigByChainId } from "@/lib/config";
 import { useMultisigTransactionModal } from "@/lib/multisig-modal";
-import {
-  CLAIMABLE_DECIMALS,
-  MINIMAL_STAKING_AMOUNT
-} from "@/lib/staking/constants";
+import { CLAIMABLE_DECIMALS, MAX_PENDING_REQUESTS, MINIMAL_STAKING_AMOUNT } from "@/lib/staking/constants";
 import { formatDuration, formatToken, safeParse } from "@/lib/staking/format";
 import { StepStatus, WithdrawalRequest } from "@/lib/staking/types";
 import { useInterval } from "@/hooks/use-interval";
@@ -149,18 +142,20 @@ export function useStakeFlows({
   const stakeAmount = safeParse(amount, tokenDecimals);
   const unstakeAmount = safeParse(amount, receiptDecimals);
   const actionAmount = activeTab === "unstake" ? unstakeAmount : stakeAmount;
+  const isUnstakeRequestLimitReached =
+    withdrawalRequests.length >= MAX_PENDING_REQUESTS;
   const minimalStakeLabel = formatUnits(MINIMAL_STAKING_AMOUNT, tokenDecimals);
   const isBelowMinimalStake =
-    isConnected &&
-    stakeAmount > 0n &&
-    stakeAmount < MINIMAL_STAKING_AMOUNT;
+    isConnected && stakeAmount > 0n && stakeAmount < MINIMAL_STAKING_AMOUNT;
 
   const isActionDisabled =
     isConnected &&
     (actionAmount === 0n ||
       (activeTab === "stake" && isBelowMinimalStake) ||
       (activeTab === "stake" && stakeAmount > (ssvBalanceValue ?? 0n)) ||
-      (activeTab === "unstake" && unstakeAmount > (stakedBalanceValue ?? 0n)));
+      (activeTab === "unstake" &&
+        (unstakeAmount > (stakedBalanceValue ?? 0n) ||
+          isUnstakeRequestLimitReached)));
   const isClaimDisabled = isConnected && claimableValue === 0n;
   const pendingAmountLabel = formatToken(pendingAmount, receiptDecimals);
   const pendingCountdownLabel = formatDuration(cooldownSeconds);
@@ -358,7 +353,12 @@ export function useStakeFlows({
     }
     setWithdrawHash(hash);
     setWithdrawStatus("submitted");
-  }, [sendTransaction, isContractWallet, network.contracts.Staking, stakingAbi]);
+  }, [
+    sendTransaction,
+    isContractWallet,
+    network.contracts.Staking,
+    stakingAbi
+  ]);
 
   const startClaimTransaction = useCallback(async () => {
     if (isContractWallet) {
@@ -381,7 +381,12 @@ export function useStakeFlows({
     }
     setClaimHash(hash);
     setClaimStatus("submitted");
-  }, [sendTransaction, isContractWallet, network.contracts.Staking, stakingAbi]);
+  }, [
+    sendTransaction,
+    isContractWallet,
+    network.contracts.Staking,
+    stakingAbi
+  ]);
 
   const handleStakeFlow = useCallback(async () => {
     if (!isConnected) {
@@ -453,6 +458,12 @@ export function useStakeFlows({
       toast.error("Unstake request already active.");
       return;
     }
+    if (isUnstakeRequestLimitReached) {
+      toast.error(
+        `Max pending unstake requests reached (${MAX_PENDING_REQUESTS}). Withdraw existing requests before creating a new one.`
+      );
+      return;
+    }
 
     const requiresApproval = cssvAllowanceValue < unstakeAmount;
     if (isContractWallet) {
@@ -482,6 +493,7 @@ export function useStakeFlows({
     unstakeAmount,
     stakedBalanceValue,
     multiWithdrawEnabled,
+    isUnstakeRequestLimitReached,
     withdrawalRequests.length,
     cssvAllowanceValue,
     startUnstakeApprovalTransaction,
@@ -958,6 +970,7 @@ export function useStakeFlows({
     pendingAmountLabel,
     pendingCountdownLabel,
     isActionDisabled,
+    isUnstakeRequestLimitReached,
     isClaimDisabled,
     isWithdrawActionDisabled,
     selectedWithdrawalIds,
@@ -1016,8 +1029,14 @@ export function useStakeFlows({
     retryUnstake,
     retryWithdraw,
     retryClaim,
-    closeStakeFlow: () => { setStakeFlowOpen(false); setAmount(""); },
-    closeUnstakeFlow: () => { setUnstakeFlowOpen(false); setAmount(""); },
+    closeStakeFlow: () => {
+      setStakeFlowOpen(false);
+      setAmount("");
+    },
+    closeUnstakeFlow: () => {
+      setUnstakeFlowOpen(false);
+      setAmount("");
+    },
     closeWithdrawFlow: () => setWithdrawFlowOpen(false),
     closeClaimFlow: () => setClaimFlowOpen(false)
   };

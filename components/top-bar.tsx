@@ -13,7 +13,9 @@ import { Button } from "./ui/button";
 export default function TopBar() {
   const { chainId, isConnected } = useAccount();
   const { theme, toggleTheme } = useTheme();
-  const faucetUrl = getNetworkConfigByChainId(chainId).faucetUrl;
+  const activeNetwork = getNetworkConfigByChainId(chainId);
+  const faucetUrl = activeNetwork.faucetUrl;
+  const dvtUrl = activeNetwork.dvtUrl;
   const isDark = theme === "dark";
   const metamaskIcon = "/figma/metamask.png";
   const logoSrc = isDark
@@ -44,6 +46,16 @@ export default function TopBar() {
                   type="button"
                 >
                   Faucet
+                </Button>
+              </a>
+            ) : null}
+            {dvtUrl ? (
+              <a href={dvtUrl} target="_blank" rel="noopener noreferrer">
+                <Button
+                  className="flex h-12 items-center gap-3 rounded-[8px] bg-surface-50 px-4 text-sm"
+                  type="button"
+                >
+                  DVT
                 </Button>
               </a>
             ) : null}

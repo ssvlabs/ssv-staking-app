@@ -4,6 +4,7 @@ import Image from "next/image";
 import { AlertTriangle } from "lucide-react";
 import { formatEther } from "viem";
 
+import { MAX_PENDING_REQUESTS } from "@/lib/staking/constants";
 import { formatDuration, formatToken } from "@/lib/staking/format";
 import { WithdrawalRequest } from "@/lib/staking/types";
 import { InfoIcon } from "@/components/ui/info-icon";
@@ -31,6 +32,7 @@ type StakeTabsProps = {
   cooldownLabel: string;
   isConnected: boolean;
   isActionDisabled: boolean;
+  isUnstakeRequestLimitReached: boolean;
   isStakeFlowBusy: boolean;
   isUnstakeFlowBusy: boolean;
   onWithdrawUnlocked: () => void;
@@ -68,6 +70,7 @@ function StakeTabs({
   cooldownLabel,
   isConnected,
   isActionDisabled,
+  isUnstakeRequestLimitReached,
   isStakeFlowBusy,
   isUnstakeFlowBusy,
   onWithdrawUnlocked,
@@ -280,10 +283,24 @@ function StakeTabs({
               </p>
             </div>
 
+            {isUnstakeRequestLimitReached && (
+              <div className="flex w-full items-center gap-3 rounded-[4px] border border-warning-400 bg-warning-bg px-4 py-3 text-[14px] text-ink-900">
+                <AlertTriangle className="size-5 shrink-0 text-warning-400" />
+                <p>
+                  Max pending unstake requests reached ({MAX_PENDING_REQUESTS}).
+                  Withdraw existing requests before creating a new one.
+                </p>
+              </div>
+            )}
+
             <PrimaryActionButton
               className="font-dm-sans"
               onClick={onRequestUnstake}
-              disabled={isActionDisabled || isUnstakeFlowBusy}
+              disabled={
+                isActionDisabled ||
+                isUnstakeFlowBusy ||
+                isUnstakeRequestLimitReached
+              }
               isActivated={isUnstakeFlowBusy}
             >
               {isConnected ? "Request Unstake" : "Connect Wallet"}
