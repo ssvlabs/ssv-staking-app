@@ -7,6 +7,7 @@ import { InfoIcon } from "@/components/ui/info-icon";
 import { Tooltip } from "@/components/ui/tooltip";
 import { AprHistoryChart } from "../apr-history-chart";
 import { useAccount } from "wagmi";
+import { useLocalStorage } from "react-use";
 
 type StakingHeaderProps = {
   aprValue: number | null;
@@ -72,6 +73,7 @@ export function StakingHeader({
   ];
 
   const { chainId } = useAccount();
+  const [showAprHistory] = useLocalStorage("showChart", false);
 
   return (
     <section className="flex flex-col gap-6 rounded-[16px] bg-[#fdfefe] p-6 dark:bg-[#0b2a3c]">
@@ -235,7 +237,7 @@ export function StakingHeader({
           </div>
         </div>
 
-        <AprHistoryChart chainId={chainId} />
+        {showAprHistory && <AprHistoryChart chainId={chainId} />}
       </div>
     </section>
   );
