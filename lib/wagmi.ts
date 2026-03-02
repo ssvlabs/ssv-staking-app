@@ -66,53 +66,31 @@ const getWalletGroups = () => {
   ];
 };
 
-export const hoodi = defineChain({
-  id: NETWORK_CONFIGS.hoodi.chainId,
-  name: NETWORK_CONFIGS.hoodi.chainName,
-  iconBackground: "none",
-  iconUrl: "/figma/ethereum_0-2171.svg",
-  nativeCurrency: {
-    name: "Ether",
-    symbol: "ETH",
-    decimals: 18
-  },
-  rpcUrls: {
-    default: {
-      http: [NETWORK_CONFIGS.hoodi.rpcUrl]
+// Dynamically generate chains from NETWORK_CONFIGS
+const chains = NETWORK_CONFIGS.map(config =>
+  defineChain({
+    id: config.chainId,
+    name: config.chainName,
+    iconBackground: "none",
+    iconUrl: "/figma/ethereum_0-2171.svg",
+    nativeCurrency: {
+      name: "Ether",
+      symbol: "ETH",
+      decimals: 18
+    },
+    rpcUrls: {
+      default: {
+        http: [config.rpcUrl]
+      }
+    },
+    blockExplorers: {
+      default: {
+        name: config.blockExplorer.name,
+        url: config.blockExplorer.url
+      }
     }
-  },
-  blockExplorers: {
-    default: {
-      name: NETWORK_CONFIGS.hoodi.blockExplorer.name,
-      url: NETWORK_CONFIGS.hoodi.blockExplorer.url
-    }
-  }
-});
-
-export const mainnet = defineChain({
-  id: NETWORK_CONFIGS.mainnet.chainId,
-  name: NETWORK_CONFIGS.mainnet.chainName,
-  iconBackground: "none",
-  iconUrl: "/figma/ethereum_0-2171.svg",
-  nativeCurrency: {
-    name: "Ether",
-    symbol: "ETH",
-    decimals: 18
-  },
-  rpcUrls: {
-    default: {
-      http: [NETWORK_CONFIGS.mainnet.rpcUrl]
-    }
-  },
-  blockExplorers: {
-    default: {
-      name: NETWORK_CONFIGS.mainnet.blockExplorer.name,
-      url: NETWORK_CONFIGS.mainnet.blockExplorer.url
-    }
-  }
-});
-
-const chains = [hoodi, mainnet] as const;
+  })
+) as any;
 
 export const wagmiConfig = getDefaultConfig({
   appName: "SSV Web App",

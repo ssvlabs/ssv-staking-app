@@ -9,52 +9,38 @@ import ViewsMainnetAbiJson from "@/lib/abis/ViewsMainnet.json";
 import { getNetworkConfigByChainId } from "@/lib/config";
 
 type AbiSet = { staking: Abi; views: Abi };
-type Environment = "stage" | "hoodi" | "mainnet";
+type AbiType = "stage" | "hoodi" | "mainnet";
 
-// Determine environment from env variable
-const getEnvironment = (): Environment => {
-  const appEnv = process.env.NEXT_PUBLIC_APP_ENV?.toLowerCase();
-
-  if (appEnv === "mainnet") {
-    return "mainnet";
-  }
-
-  if (appEnv === "hoodi") {
-    return "hoodi";
-  }
-
-  // Default to stage
-  return "stage";
+// Map ABI types to their corresponding ABIs
+const STAKING_ABI_BY_TYPE: Record<AbiType, Abi> = {
+  stage: StakingStageAbiJson as Abi,
+  hoodi: StakingHoodiAbiJson as Abi,
+  mainnet: StakingMainnetAbiJson as Abi
 };
 
-const abiByEnvironment: Record<Environment, AbiSet> = {
-  stage: {
-    staking: StakingStageAbiJson as Abi,
-    views: ViewsStageAbiJson as Abi
-  },
-  hoodi: {
-    staking: StakingHoodiAbiJson as Abi,
-    views: ViewsHoodiAbiJson as Abi
-  },
-  mainnet: {
-    staking: StakingMainnetAbiJson as Abi,
-    views: ViewsMainnetAbiJson as Abi
-  }
+const VIEWS_ABI_BY_TYPE: Record<AbiType, Abi> = {
+  stage: ViewsStageAbiJson as Abi,
+  hoodi: ViewsHoodiAbiJson as Abi,
+  mainnet: ViewsMainnetAbiJson as Abi
 };
 
 export const getAbiSetByChainId = (
   chainId: number | undefined
 ): AbiSet => {
   const network = getNetworkConfigByChainId(chainId);
-  const env = getEnvironment();
+  const abiType = network.abiType;
 
-  // For Hoodi network (testnet), use env-specific ABI
-  if (network.key === "hoodi") {
-    return abiByEnvironment[env === "mainnet" ? "stage" : env];
+  const stakingAbi = STAKING_ABI_BY_TYPE[abiType];
+  const viewsAbi = VIEWS_ABI_BY_TYPE[abiType];
+
+  if (!stakingAbi || !viewsAbi) {
+    throw new Error(`No ABI found for network ${network.chainName} with abiType: ${abiType}`);
   }
 
-  // For Mainnet, always use mainnet ABI
-  return abiByEnvironment.mainnet;
+  return {
+    staking: stakingAbi,
+    views: viewsAbi
+  };
 };
 
 export const getStakingAbiByChainId = (

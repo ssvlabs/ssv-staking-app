@@ -18,7 +18,6 @@ pnpm-debug.log*
 .env.*
 !.env.example
 !.env.stage
-!.env.hoodi
-!.env.mainnet
+!.env.production
 .idea
 tsconfig.tsbuildinfo
