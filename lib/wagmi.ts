@@ -5,6 +5,7 @@ import {
   walletConnectWallet
 } from "@rainbow-me/rainbowkit/wallets";
 import { defineChain } from "viem";
+import { hoodi, mainnet } from "viem/chains";
 
 import { NETWORK_CONFIGS } from "@/lib/config";
 
@@ -66,9 +67,42 @@ const getWalletGroups = () => {
   ];
 };
 
-// Dynamically generate chains from NETWORK_CONFIGS
-const chains = NETWORK_CONFIGS.map(config =>
-  defineChain({
+// Map of chainId to viem's built-in chain configs
+const viemChainsByChainId: Record<number, ReturnType<typeof defineChain>> = {
+  1: mainnet,
+  560048: hoodi
+};
+
+// Dynamically generate chains from NETWORK_CONFIGS, using viem's configs as base
+const chainsArray = NETWORK_CONFIGS.map(config => {
+  const baseChain = viemChainsByChainId[config.chainId];
+
+  if (baseChain) {
+    // Use viem's chain config and override only what's needed
+    return defineChain({
+      ...baseChain,
+      iconBackground: "none",
+      iconUrl: "/figma/ethereum_0-2171.svg",
+      rpcUrls: {
+        ...baseChain.rpcUrls,
+        default: {
+          http: [config.rpcUrl]
+        }
+      },
+      // Override block explorer if custom one is provided
+      ...(config.blockExplorer.url && {
+        blockExplorers: {
+          default: {
+            name: config.blockExplorer.name,
+            url: config.blockExplorer.url
+          }
+        }
+      })
+    });
+  }
+
+  // Fallback for chains not in viem (e.g., custom testnets)
+  return defineChain({
     id: config.chainId,
     name: config.chainName,
     iconBackground: "none",
@@ -89,8 +123,17 @@ const chains = NETWORK_CONFIGS.map(config =>
         url: config.blockExplorer.url
       }
     }
-  })
-) as any;
+  });
+});
+
+// Ensure at least one chain exists for wagmi config
+if (chainsArray.length === 0) {
+  throw new Error("At least one network must be configured in NEXT_PUBLIC_SSV_NETWORKS");
+}
+
+// Type assertion: wagmi requires a readonly tuple with at least one element
+// The runtime check above ensures this constraint is met
+const chains = chainsArray as unknown as readonly [ReturnType<typeof defineChain>, ...ReturnType<typeof defineChain>[]];
 
 export const wagmiConfig = getDefaultConfig({
   appName: "SSV Web App",

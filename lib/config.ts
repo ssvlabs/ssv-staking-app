@@ -1,23 +1,35 @@
 import { Address, isAddress } from "viem";
+import { z } from "zod";
+
+// Zod schema for SSV Network validation
+const SSVNetworkSchema = z.object({
+  networkId: z.number().positive(),
+  chainName: z.string().min(1),
+  rpcUrl: z.string().url(),
+  apiVersion: z.string().min(1),
+  apiNetwork: z.string().min(1),
+  api: z.string().url(),
+  blockExplorerName: z.string().min(1).optional(),
+  blockExplorerUrl: z.string().url().optional(),
+  tokenAddress: z.string().refine((val) => isAddress(val), {
+    message: "Invalid Ethereum address for tokenAddress"
+  }),
+  cTokenAddress: z.string().refine((val) => isAddress(val), {
+    message: "Invalid Ethereum address for cTokenAddress"
+  }),
+  stakingAddress: z.string().refine((val) => isAddress(val), {
+    message: "Invalid Ethereum address for stakingAddress"
+  }),
+  viewsAddress: z.string().refine((val) => isAddress(val), {
+    message: "Invalid Ethereum address for viewsAddress"
+  }),
+  faucetUrl: z.string().url().nullable(),
+  dvtUrl: z.string().url().nullable(),
+  abiType: z.enum(["stage", "hoodi", "mainnet"])
+});
 
 // SSV Network schema from env variable
-type SSVNetworkFromEnv = {
-  networkId: number;
-  chainName: string;
-  rpcUrl: string;
-  apiVersion: string;
-  apiNetwork: string;
-  api: string;
-  blockExplorerName: string;
-  blockExplorerUrl: string;
-  tokenAddress: Address;
-  cTokenAddress: Address;
-  stakingAddress: Address;
-  viewsAddress: Address;
-  faucetUrl: string | null;
-  dvtUrl: string | null;
-  abiType: "stage" | "hoodi" | "mainnet";
-};
+type SSVNetworkFromEnv = z.infer<typeof SSVNetworkSchema>;
 
 type ContractsConfig = {
   SSVToken: Address;
@@ -40,7 +52,25 @@ export type NetworkConfig = {
   };
   faucetUrl: string | null;
   dvtUrl: string | null;
+  // abiType cannot be derived from chainId alone because the same chain (e.g., Hoodi with chainId 560048)
+  // can use different ABIs in different environments (stage vs production)
   abiType: "stage" | "hoodi" | "mainnet";
+};
+
+// Utility function to join URL parts, handling trailing/leading slashes
+const urlJoin = (...parts: string[]): string => {
+  return parts
+    .map((part, index) => {
+      if (index === 0) {
+        return part.replace(/\/+$/, '');
+      }
+      if (index === parts.length - 1) {
+        return part.replace(/^\/+/, '');
+      }
+      return part.replace(/^\/+/, '').replace(/\/+$/, '');
+    })
+    .filter(part => part.length > 0)
+    .join('/');
 };
 
 // Parse SSV_NETWORKS from environment variable
@@ -58,23 +88,20 @@ const parseSSVNetworks = (): SSVNetworkFromEnv[] => {
       throw new Error("NEXT_PUBLIC_SSV_NETWORKS must be a non-empty array");
     }
 
-    // Validate each network
-    parsed.forEach((network, index) => {
-      if (!network.networkId || typeof network.networkId !== "number") {
-        throw new Error(`Network at index ${index}: networkId is required and must be a number`);
-      }
-      if (!network.tokenAddress || !isAddress(network.tokenAddress)) {
-        throw new Error(`Network at index ${index}: tokenAddress is invalid`);
-      }
-      if (!network.stakingAddress || !isAddress(network.stakingAddress)) {
-        throw new Error(`Network at index ${index}: stakingAddress is invalid`);
-      }
-      if (!network.viewsAddress || !isAddress(network.viewsAddress)) {
-        throw new Error(`Network at index ${index}: viewsAddress is invalid`);
+    // Validate each network using Zod schema
+    const validatedNetworks = parsed.map((network, index) => {
+      try {
+        return SSVNetworkSchema.parse(network);
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          const issues = error.issues.map(issue => `${issue.path.join('.')}: ${issue.message}`).join(', ');
+          throw new Error(`Network at index ${index} validation failed: ${issues}`);
+        }
+        throw error;
       }
     });
 
-    return parsed as SSVNetworkFromEnv[];
+    return validatedNetworks;
   } catch (error) {
     throw new Error(`Failed to parse NEXT_PUBLIC_SSV_NETWORKS: ${error instanceof Error ? error.message : String(error)}`);
   }
@@ -86,18 +113,18 @@ const convertToNetworkConfig = (network: SSVNetworkFromEnv): NetworkConfig => {
     chainId: network.networkId,
     chainName: network.chainName,
     rpcUrl: network.rpcUrl,
-    ssvApiBaseUrl: `${network.api}/${network.apiVersion}/${network.apiNetwork}`,
+    ssvApiBaseUrl: urlJoin(network.api, network.apiVersion, network.apiNetwork),
     contracts: {
-      SSVToken: network.tokenAddress,
-      cSSVToken: network.cTokenAddress,
-      Staking: network.stakingAddress,
-      Views: network.viewsAddress
+      SSVToken: network.tokenAddress as Address,
+      cSSVToken: network.cTokenAddress as Address,
+      Staking: network.stakingAddress as Address,
+      Views: network.viewsAddress as Address
     },
     blockExplorer: {
-      name: network.blockExplorerName,
-      url: network.blockExplorerUrl,
-      txBaseUrl: `${network.blockExplorerUrl}/tx/`,
-      addressBaseUrl: `${network.blockExplorerUrl}/address/`
+      name: network.blockExplorerName || '',
+      url: network.blockExplorerUrl || '',
+      txBaseUrl: network.blockExplorerUrl ? urlJoin(network.blockExplorerUrl, 'tx') + '/' : '',
+      addressBaseUrl: network.blockExplorerUrl ? urlJoin(network.blockExplorerUrl, 'address') + '/' : ''
     },
     faucetUrl: network.faucetUrl,
     dvtUrl: network.dvtUrl,
