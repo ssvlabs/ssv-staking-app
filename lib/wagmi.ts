@@ -4,7 +4,7 @@ import {
   metaMaskWallet,
   walletConnectWallet
 } from "@rainbow-me/rainbowkit/wallets";
-import { defineChain } from "viem";
+import { defineChain, type Chain } from "viem";
 import { hoodi, mainnet } from "viem/chains";
 
 import { NETWORK_CONFIGS } from "@/lib/config";
@@ -68,7 +68,7 @@ const getWalletGroups = () => {
 };
 
 // Map of chainId to viem's built-in chain configs
-const viemChainsByChainId: Record<number, ReturnType<typeof defineChain>> = {
+const viemChainsByChainId: Record<number, Chain> = {
   1: mainnet,
   560048: hoodi
 };
@@ -133,7 +133,7 @@ if (chainsArray.length === 0) {
 
 // Type assertion: wagmi requires a readonly tuple with at least one element
 // The runtime check above ensures this constraint is met
-const chains = chainsArray as unknown as readonly [ReturnType<typeof defineChain>, ...ReturnType<typeof defineChain>[]];
+const chains = chainsArray as unknown as readonly [Chain, ...Chain[]];
 
 export const wagmiConfig = getDefaultConfig({
   appName: "SSV Web App",
