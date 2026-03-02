@@ -2,10 +2,16 @@ import { isAddress, type Address } from "viem";
 
 type EnvCandidate = { key: string; value: string | undefined };
 type RequiredReader = (candidates: EnvCandidate[], label: string) => string;
+type UrlWithFallbackReader = (
+  candidates: EnvCandidate[],
+  label: string,
+  fallbackValue: string
+) => string;
 
 export type EnvAssertions = {
   getRequiredEnv: RequiredReader;
   getRequiredUrl: RequiredReader;
+  getUrlWithFallback: UrlWithFallbackReader;
   getRequiredAddress: (candidates: EnvCandidate[], label: string) => Address;
 };
 
@@ -38,6 +44,26 @@ export const createEnvAssertions = (configName: string): EnvAssertions => {
     return value;
   };
 
+  const getUrlWithFallback: UrlWithFallbackReader = (
+    candidates,
+    label,
+    fallbackValue
+  ) => {
+    const resolvedValue =
+      candidates.find(
+        (candidate) =>
+          typeof candidate.value === "string" && candidate.value.trim().length > 0
+      )?.value ?? fallbackValue;
+
+    try {
+      new URL(resolvedValue);
+    } catch {
+      throw new Error(`${prefix} Invalid URL for ${label}: ${resolvedValue}`);
+    }
+
+    return resolvedValue;
+  };
+
   const getRequiredAddress = (
     candidates: EnvCandidate[],
     label: string
@@ -49,5 +75,10 @@ export const createEnvAssertions = (configName: string): EnvAssertions => {
     return value;
   };
 
-  return { getRequiredEnv, getRequiredUrl, getRequiredAddress };
+  return {
+    getRequiredEnv,
+    getRequiredUrl,
+    getUrlWithFallback,
+    getRequiredAddress
+  };
 };

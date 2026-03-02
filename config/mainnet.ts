@@ -2,7 +2,8 @@ import { mainnet } from "viem/chains";
 
 import { createEnvAssertions } from "@/config/env-assertions";
 
-const { getRequiredUrl, getRequiredAddress } = createEnvAssertions("mainnet");
+const { getRequiredUrl, getRequiredAddress, getUrlWithFallback } =
+  createEnvAssertions("mainnet");
 
 const explorerUrl = mainnet.blockExplorers.default.url;
 const normalizedExplorerUrl = explorerUrl.endsWith("/")
@@ -21,7 +22,7 @@ export const MAINNET_CONFIG = {
     ],
     "Mainnet RPC URL"
   ),
-  ssvApiBaseUrl: getRequiredUrl(
+  ssvApiBaseUrl: getUrlWithFallback(
     [
       {
         key: "NEXT_PUBLIC_MAINNET_SSV_API",
@@ -32,7 +33,8 @@ export const MAINNET_CONFIG = {
         value: process.env.MAINNET_SSV_API
       }
     ],
-    "Mainnet SSV API URL"
+    "Mainnet SSV API URL",
+    mainnet.rpcUrls.default.http[0] ?? ""
   ).replace(/\/+$/, ""),
   contracts: {
     SSVToken: getRequiredAddress(
