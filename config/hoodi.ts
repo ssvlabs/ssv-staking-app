@@ -2,7 +2,8 @@ import { hoodi } from "viem/chains";
 
 import { createEnvAssertions } from "@/config/env-assertions";
 
-const { getRequiredUrl, getRequiredAddress } = createEnvAssertions("hoodi");
+const { getRequiredUrl, getRequiredAddress, getUrlWithFallback } =
+  createEnvAssertions("hoodi");
 
 const explorerUrl = hoodi.blockExplorers.default.url;
 const normalizedExplorerUrl = explorerUrl.endsWith("/")
@@ -11,7 +12,7 @@ const normalizedExplorerUrl = explorerUrl.endsWith("/")
 
 export const HOODI_CONFIG = {
   chainName: hoodi.name,
-  rpcUrl: getRequiredUrl(
+  rpcUrl: getUrlWithFallback(
     [
       {
         key: "NEXT_PUBLIC_HOODI_RPC_URL",
@@ -19,7 +20,8 @@ export const HOODI_CONFIG = {
       },
       { key: "HOODI_RPC_URL", value: process.env.HOODI_RPC_URL }
     ],
-    "Hoodi RPC URL"
+    "Hoodi RPC URL",
+    hoodi.rpcUrls.default.http[0] ?? ""
   ),
   ssvApiBaseUrl: getRequiredUrl(
     [
