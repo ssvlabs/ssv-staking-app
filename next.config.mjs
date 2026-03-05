@@ -6,6 +6,7 @@ const emptyModuleAbs = path.resolve(emptyModule);
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  output: "standalone",
   turbopack: {
     resolveAlias: {
       "@react-native-async-storage/async-storage": emptyModule,
