@@ -1,29 +1,46 @@
 import { erc20Abi, type Abi } from "viem";
 
+import StakingStageAbiJson from "@/lib/abis/StakingStage.json";
 import StakingHoodiAbiJson from "@/lib/abis/StakingHoodi.json";
 import StakingMainnetAbiJson from "@/lib/abis/StakingMainnet.json";
+import ViewsStageAbiJson from "@/lib/abis/ViewsStage.json";
 import ViewsHoodiAbiJson from "@/lib/abis/ViewsHoodi.json";
 import ViewsMainnetAbiJson from "@/lib/abis/ViewsMainnet.json";
-import { NetworkKey, getNetworkConfigByChainId } from "@/lib/config";
+import { getNetworkConfigByChainId } from "@/lib/config";
 
 type AbiSet = { staking: Abi; views: Abi };
+type AbiType = "stage" | "hoodi" | "mainnet";
 
-const abiByNetwork: Record<NetworkKey, AbiSet> = {
-  hoodi: {
-    staking: StakingHoodiAbiJson as Abi,
-    views: ViewsHoodiAbiJson as Abi
-  },
-  mainnet: {
-    staking: StakingMainnetAbiJson as Abi,
-    views: ViewsMainnetAbiJson as Abi
-  }
+// Map ABI types to their corresponding ABIs
+const STAKING_ABI_BY_TYPE: Record<AbiType, Abi> = {
+  stage: StakingStageAbiJson as Abi,
+  hoodi: StakingHoodiAbiJson as Abi,
+  mainnet: StakingMainnetAbiJson as Abi
+};
+
+const VIEWS_ABI_BY_TYPE: Record<AbiType, Abi> = {
+  stage: ViewsStageAbiJson as Abi,
+  hoodi: ViewsHoodiAbiJson as Abi,
+  mainnet: ViewsMainnetAbiJson as Abi
 };
 
 export const getAbiSetByChainId = (
   chainId: number | undefined
 ): AbiSet => {
   const network = getNetworkConfigByChainId(chainId);
-  return abiByNetwork[network.key];
+  const abiType = network.abiType;
+
+  const stakingAbi = STAKING_ABI_BY_TYPE[abiType];
+  const viewsAbi = VIEWS_ABI_BY_TYPE[abiType];
+
+  if (!stakingAbi || !viewsAbi) {
+    throw new Error(`No ABI found for network ${network.chainName} with abiType: ${abiType}`);
+  }
+
+  return {
+    staking: stakingAbi,
+    views: viewsAbi
+  };
 };
 
 export const getStakingAbiByChainId = (

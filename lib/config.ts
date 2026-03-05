@@ -1,10 +1,35 @@
-import { Address } from "viem";
-import { hoodi, mainnet } from "viem/chains";
+import { Address, isAddress } from "viem";
+import { z } from "zod";
 
-import { HOODI_CONFIG } from "@/config/hoodi";
-import { MAINNET_CONFIG } from "@/config/mainnet";
+// Zod schema for SSV Network validation
+const SSVNetworkSchema = z.object({
+  networkId: z.number().positive(),
+  chainName: z.string().min(1),
+  rpcUrl: z.string().url(),
+  apiVersion: z.string().min(1),
+  apiNetwork: z.string().min(1),
+  api: z.string().url(),
+  blockExplorerName: z.string().min(1).optional(),
+  blockExplorerUrl: z.string().url().optional(),
+  tokenAddress: z.string().refine((val) => isAddress(val), {
+    message: "Invalid Ethereum address for tokenAddress"
+  }),
+  cTokenAddress: z.string().refine((val) => isAddress(val), {
+    message: "Invalid Ethereum address for cTokenAddress"
+  }),
+  stakingAddress: z.string().refine((val) => isAddress(val), {
+    message: "Invalid Ethereum address for stakingAddress"
+  }),
+  viewsAddress: z.string().refine((val) => isAddress(val), {
+    message: "Invalid Ethereum address for viewsAddress"
+  }),
+  faucetUrl: z.string().url().nullable(),
+  dvtUrl: z.string().url().nullable(),
+  abiType: z.enum(["stage", "hoodi", "mainnet"])
+});
 
-export type NetworkKey = "hoodi" | "mainnet";
+// SSV Network schema from env variable
+type SSVNetworkFromEnv = z.infer<typeof SSVNetworkSchema>;
 
 type ContractsConfig = {
   SSVToken: Address;
@@ -14,7 +39,6 @@ type ContractsConfig = {
 };
 
 export type NetworkConfig = {
-  key: NetworkKey;
   chainId: number;
   chainName: string;
   rpcUrl: string;
@@ -28,47 +52,98 @@ export type NetworkConfig = {
   };
   faucetUrl: string | null;
   dvtUrl: string | null;
+  // abiType cannot be derived from chainId alone because the same chain (e.g., Hoodi with chainId 560048)
+  // can use different ABIs in different environments (stage vs production)
+  abiType: "stage" | "hoodi" | "mainnet";
 };
 
-const hoodiConfig: NetworkConfig = {
-  key: "hoodi",
-  chainId: hoodi.id,
-  chainName: HOODI_CONFIG.chainName,
-  rpcUrl: HOODI_CONFIG.rpcUrl,
-  ssvApiBaseUrl: HOODI_CONFIG.ssvApiBaseUrl,
-  contracts: HOODI_CONFIG.contracts,
-  blockExplorer: HOODI_CONFIG.blockExplorer,
-  faucetUrl: HOODI_CONFIG.faucetUrl,
-  dvtUrl: HOODI_CONFIG.dvtUrl
+// Utility function to join URL parts, handling trailing/leading slashes
+const urlJoin = (...parts: string[]): string => {
+  return parts
+    .map((part, index) => {
+      if (index === 0) {
+        return part.replace(/\/+$/, '');
+      }
+      if (index === parts.length - 1) {
+        return part.replace(/^\/+/, '');
+      }
+      return part.replace(/^\/+/, '').replace(/\/+$/, '');
+    })
+    .filter(part => part.length > 0)
+    .join('/');
 };
 
-const mainnetConfig: NetworkConfig = {
-  key: "mainnet",
-  chainId: mainnet.id,
-  chainName: MAINNET_CONFIG.chainName,
-  rpcUrl: MAINNET_CONFIG.rpcUrl,
-  ssvApiBaseUrl: MAINNET_CONFIG.ssvApiBaseUrl,
-  contracts: MAINNET_CONFIG.contracts,
-  blockExplorer: MAINNET_CONFIG.blockExplorer,
-  faucetUrl: MAINNET_CONFIG.faucetUrl,
-  dvtUrl: MAINNET_CONFIG.dvtUrl
+// Parse SSV_NETWORKS from environment variable
+const parseSSVNetworks = (): SSVNetworkFromEnv[] => {
+  const networksEnv = process.env.NEXT_PUBLIC_SSV_NETWORKS;
+
+  if (!networksEnv) {
+    throw new Error("NEXT_PUBLIC_SSV_NETWORKS is not defined in environment variables");
+  }
+
+  try {
+    const parsed = JSON.parse(networksEnv);
+
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      throw new Error("NEXT_PUBLIC_SSV_NETWORKS must be a non-empty array");
+    }
+
+    // Validate each network using Zod schema
+    const validatedNetworks = parsed.map((network, index) => {
+      try {
+        return SSVNetworkSchema.parse(network);
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          const issues = error.issues.map(issue => `${issue.path.join('.')}: ${issue.message}`).join(', ');
+          throw new Error(`Network at index ${index} validation failed: ${issues}`);
+        }
+        throw error;
+      }
+    });
+
+    return validatedNetworks;
+  } catch (error) {
+    throw new Error(`Failed to parse NEXT_PUBLIC_SSV_NETWORKS: ${error instanceof Error ? error.message : String(error)}`);
+  }
 };
 
-export const NETWORK_CONFIGS: Record<NetworkKey, NetworkConfig> = {
-  hoodi: hoodiConfig,
-  mainnet: mainnetConfig
+// Convert SSVNetworkFromEnv to NetworkConfig
+const convertToNetworkConfig = (network: SSVNetworkFromEnv): NetworkConfig => {
+  return {
+    chainId: network.networkId,
+    chainName: network.chainName,
+    rpcUrl: network.rpcUrl,
+    ssvApiBaseUrl: urlJoin(network.api, network.apiVersion, network.apiNetwork),
+    contracts: {
+      SSVToken: network.tokenAddress as Address,
+      cSSVToken: network.cTokenAddress as Address,
+      Staking: network.stakingAddress as Address,
+      Views: network.viewsAddress as Address
+    },
+    blockExplorer: {
+      name: network.blockExplorerName || '',
+      url: network.blockExplorerUrl || '',
+      txBaseUrl: network.blockExplorerUrl ? urlJoin(network.blockExplorerUrl, 'tx') + '/' : '',
+      addressBaseUrl: network.blockExplorerUrl ? urlJoin(network.blockExplorerUrl, 'address') + '/' : ''
+    },
+    faucetUrl: network.faucetUrl,
+    dvtUrl: network.dvtUrl,
+    abiType: network.abiType
+  };
 };
 
-export const DEFAULT_NETWORK = NETWORK_CONFIGS.hoodi;
+// Parse networks and create NETWORK_CONFIGS array
+const ssvNetworks = parseSSVNetworks();
+export const NETWORK_CONFIGS = ssvNetworks.map(convertToNetworkConfig);
+export const DEFAULT_NETWORK = NETWORK_CONFIGS[0];
 
 export const getNetworkConfigByChainId = (
   chainId: number | undefined
 ): NetworkConfig => {
-  if (chainId === NETWORK_CONFIGS.mainnet.chainId) {
-    return NETWORK_CONFIGS.mainnet;
+  if (!chainId) {
+    return DEFAULT_NETWORK;
   }
-  if (chainId === NETWORK_CONFIGS.hoodi.chainId) {
-    return NETWORK_CONFIGS.hoodi;
-  }
-  return DEFAULT_NETWORK;
+
+  const network = NETWORK_CONFIGS.find(config => config.chainId === chainId);
+  return network || DEFAULT_NETWORK;
 };
