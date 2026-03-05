@@ -17,11 +17,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Copy the appropriate env file based on MODE
-RUN if [ "$MODE" = "production" ]; then \
-      cp .env.production .env.production.local; \
-    else \
-      cp .env.stage .env.production.local; \
-    fi
+COPY .env.${MODE} .env.production.local
 
 RUN pnpm run build
 
