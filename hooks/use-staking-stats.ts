@@ -14,7 +14,7 @@ export function useStakingStats(options?: { enabled?: boolean }) {
   type PendingUnstakeReturn = PendingUnstakeStruct | PendingUnstakeTuple;
 
   const claimableEth = useReadContract({
-    address: network.contracts.Views,
+    address: network.contracts.Getter,
     abi: viewsAbi,
     functionName: "previewClaimableEth",
     args: address ? [address] : undefined,
@@ -22,7 +22,7 @@ export function useStakingStats(options?: { enabled?: boolean }) {
   });
 
   const stakedBalance = useReadContract({
-    address: network.contracts.Views,
+    address: network.contracts.Getter,
     abi: viewsAbi,
     functionName: "stakedBalanceOf",
     args: address ? [address] : undefined,
@@ -30,7 +30,7 @@ export function useStakingStats(options?: { enabled?: boolean }) {
   });
 
   const pendingUnstake = useReadContract({
-    address: network.contracts.Views,
+    address: network.contracts.Getter,
     abi: viewsAbi,
     functionName: "pendingUnstake",
     args: address ? [address] : undefined,
@@ -41,21 +41,21 @@ export function useStakingStats(options?: { enabled?: boolean }) {
   });
 
   const totalStaked = useReadContract({
-    address: network.contracts.Views,
+    address: network.contracts.Getter,
     abi: viewsAbi,
     functionName: "totalStaked",
     query: { enabled }
   });
 
   const cooldownDuration = useReadContract({
-    address: network.contracts.Views,
+    address: network.contracts.Getter,
     abi: viewsAbi,
     functionName: "cooldownDuration",
     query: { enabled }
   });
 
   const stakingEthPoolBalance = useReadContract({
-    address: network.contracts.Views,
+    address: network.contracts.Getter,
     abi: viewsAbi,
     functionName: "stakingEthPoolBalance",
     query: { enabled, refetchInterval: 30000 }
