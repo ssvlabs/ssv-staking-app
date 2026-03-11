@@ -1,7 +1,7 @@
 import { erc20Abi, type Abi } from "viem";
 
-import GetterAbiJson from "@/lib/abis/GetterStage.json";
-import SetterAbiJson from "@/lib/abis/SetterStage.json";
+import GetterAbiJson from "@/lib/abis/getter.json";
+import SetterAbiJson from "@/lib/abis/setter.json";
 import { getNetworkConfigByChainId } from "@/lib/config";
 
 type AbiSet = { staking: Abi; views: Abi };
