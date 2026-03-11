@@ -1,11 +1,11 @@
 import { erc20Abi, type Abi } from "viem";
 
-import StakingStageAbiJson from "@/lib/abis/StakingStage.json";
-import StakingHoodiAbiJson from "@/lib/abis/StakingHoodi.json";
-import StakingMainnetAbiJson from "@/lib/abis/StakingMainnet.json";
-import ViewsStageAbiJson from "@/lib/abis/ViewsStage.json";
-import ViewsHoodiAbiJson from "@/lib/abis/ViewsHoodi.json";
-import ViewsMainnetAbiJson from "@/lib/abis/ViewsMainnet.json";
+import ViewsHoodiAbiJson from "@/lib/abis/GetterHoodi.json";
+import ViewsMainnetAbiJson from "@/lib/abis/GetterMainnet.json";
+import ViewsStageAbiJson from "@/lib/abis/GetterStage.json";
+import StakingHoodiAbiJson from "@/lib/abis/SetterHoodi.json";
+import StakingMainnetAbiJson from "@/lib/abis/SetterMainnet.json";
+import StakingStageAbiJson from "@/lib/abis/SetterStage.json";
 import { getNetworkConfigByChainId } from "@/lib/config";
 
 type AbiSet = { staking: Abi; views: Abi };
@@ -24,9 +24,7 @@ const VIEWS_ABI_BY_TYPE: Record<AbiType, Abi> = {
   mainnet: ViewsMainnetAbiJson as Abi
 };
 
-export const getAbiSetByChainId = (
-  chainId: number | undefined
-): AbiSet => {
+export const getAbiSetByChainId = (chainId: number | undefined): AbiSet => {
   const network = getNetworkConfigByChainId(chainId);
   const abiType = network.abiType;
 
@@ -34,7 +32,9 @@ export const getAbiSetByChainId = (
   const viewsAbi = VIEWS_ABI_BY_TYPE[abiType];
 
   if (!stakingAbi || !viewsAbi) {
-    throw new Error(`No ABI found for network ${network.chainName} with abiType: ${abiType}`);
+    throw new Error(
+      `No ABI found for network ${network.chainName} with abiType: ${abiType}`
+    );
   }
 
   return {
@@ -43,9 +43,8 @@ export const getAbiSetByChainId = (
   };
 };
 
-export const getStakingAbiByChainId = (
-  chainId: number | undefined
-): Abi => getAbiSetByChainId(chainId).staking;
+export const getStakingAbiByChainId = (chainId: number | undefined): Abi =>
+  getAbiSetByChainId(chainId).staking;
 
 export const getViewsAbiByChainId = (chainId: number | undefined): Abi =>
   getAbiSetByChainId(chainId).views;

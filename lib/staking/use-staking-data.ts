@@ -59,7 +59,7 @@ export function useStakingData({ address }: UseStakingDataOptions) {
     address: network.contracts.SSVToken,
     abi: ERC20ABI,
     functionName: "allowance",
-    args: address ? [address, network.contracts.Staking] : undefined,
+    args: address ? [address, network.contracts.Setter] : undefined,
     query: { enabled: Boolean(address) }
   });
 
@@ -68,7 +68,7 @@ export function useStakingData({ address }: UseStakingDataOptions) {
       address: network.contracts.cSSVToken,
       abi: ERC20ABI,
       functionName: "allowance",
-      args: address ? [address, network.contracts.Staking] : undefined,
+      args: address ? [address, network.contracts.Setter] : undefined,
       query: { enabled: Boolean(address) }
     });
 
@@ -76,7 +76,12 @@ export function useStakingData({ address }: UseStakingDataOptions) {
     const data = pendingUnstake.data;
     if (!data) return [];
     const requests: WithdrawalRequest[] = [];
-    if (Array.isArray(data) && data.length > 0 && typeof data[0] === "object" && "amount" in data[0]) {
+    if (
+      Array.isArray(data) &&
+      data.length > 0 &&
+      typeof data[0] === "object" &&
+      "amount" in data[0]
+    ) {
       // Hoodi format: {amount, unlockTime}[]
       for (let index = 0; index < data.length; index += 1) {
         const entry = data[index] as { amount: bigint; unlockTime: bigint };
