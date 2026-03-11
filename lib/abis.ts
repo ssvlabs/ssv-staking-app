@@ -1,11 +1,7 @@
 import { erc20Abi, type Abi } from "viem";
 
-import StakingStageAbiJson from "@/lib/abis/StakingStage.json";
-import StakingHoodiAbiJson from "@/lib/abis/StakingHoodi.json";
-import StakingMainnetAbiJson from "@/lib/abis/StakingMainnet.json";
-import ViewsStageAbiJson from "@/lib/abis/ViewsStage.json";
-import ViewsHoodiAbiJson from "@/lib/abis/ViewsHoodi.json";
-import ViewsMainnetAbiJson from "@/lib/abis/ViewsMainnet.json";
+import GetterAbiJson from "@/lib/abis/getter.json";
+import SetterAbiJson from "@/lib/abis/setter.json";
 import { getNetworkConfigByChainId } from "@/lib/config";
 
 type AbiSet = { staking: Abi; views: Abi };
@@ -13,20 +9,18 @@ type AbiType = "stage" | "hoodi" | "mainnet";
 
 // Map ABI types to their corresponding ABIs
 const STAKING_ABI_BY_TYPE: Record<AbiType, Abi> = {
-  stage: StakingStageAbiJson as Abi,
-  hoodi: StakingHoodiAbiJson as Abi,
-  mainnet: StakingMainnetAbiJson as Abi
+  stage: SetterAbiJson as Abi,
+  hoodi: SetterAbiJson as Abi,
+  mainnet: SetterAbiJson as Abi
 };
 
 const VIEWS_ABI_BY_TYPE: Record<AbiType, Abi> = {
-  stage: ViewsStageAbiJson as Abi,
-  hoodi: ViewsHoodiAbiJson as Abi,
-  mainnet: ViewsMainnetAbiJson as Abi
+  stage: GetterAbiJson as Abi,
+  hoodi: GetterAbiJson as Abi,
+  mainnet: GetterAbiJson as Abi
 };
 
-export const getAbiSetByChainId = (
-  chainId: number | undefined
-): AbiSet => {
+export const getAbiSetByChainId = (chainId: number | undefined): AbiSet => {
   const network = getNetworkConfigByChainId(chainId);
   const abiType = network.abiType;
 
@@ -34,7 +28,9 @@ export const getAbiSetByChainId = (
   const viewsAbi = VIEWS_ABI_BY_TYPE[abiType];
 
   if (!stakingAbi || !viewsAbi) {
-    throw new Error(`No ABI found for network ${network.chainName} with abiType: ${abiType}`);
+    throw new Error(
+      `No ABI found for network ${network.chainName} with abiType: ${abiType}`
+    );
   }
 
   return {
@@ -43,9 +39,8 @@ export const getAbiSetByChainId = (
   };
 };
 
-export const getStakingAbiByChainId = (
-  chainId: number | undefined
-): Abi => getAbiSetByChainId(chainId).staking;
+export const getStakingAbiByChainId = (chainId: number | undefined): Abi =>
+  getAbiSetByChainId(chainId).staking;
 
 export const getViewsAbiByChainId = (chainId: number | undefined): Abi =>
   getAbiSetByChainId(chainId).views;

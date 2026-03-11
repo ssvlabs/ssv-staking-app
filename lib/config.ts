@@ -17,11 +17,11 @@ const SSVNetworkSchema = z.object({
   cTokenAddress: z.string().refine((val) => isAddress(val), {
     message: "Invalid Ethereum address for cTokenAddress"
   }),
-  stakingAddress: z.string().refine((val) => isAddress(val), {
-    message: "Invalid Ethereum address for stakingAddress"
+  setterContractAddress: z.string().refine((val) => isAddress(val), {
+    message: "Invalid Ethereum address for setterContractAddress"
   }),
-  viewsAddress: z.string().refine((val) => isAddress(val), {
-    message: "Invalid Ethereum address for viewsAddress"
+  getterContractAddress: z.string().refine((val) => isAddress(val), {
+    message: "Invalid Ethereum address for getterContractAddress"
   }),
   faucetUrl: z.string().url().nullable(),
   dvtUrl: z.string().url().nullable(),
@@ -34,8 +34,8 @@ type SSVNetworkFromEnv = z.infer<typeof SSVNetworkSchema>;
 type ContractsConfig = {
   SSVToken: Address;
   cSSVToken: Address;
-  Staking: Address;
-  Views: Address;
+  Setter: Address;
+  Getter: Address;
 };
 
 export type NetworkConfig = {
@@ -62,15 +62,15 @@ const urlJoin = (...parts: string[]): string => {
   return parts
     .map((part, index) => {
       if (index === 0) {
-        return part.replace(/\/+$/, '');
+        return part.replace(/\/+$/, "");
       }
       if (index === parts.length - 1) {
-        return part.replace(/^\/+/, '');
+        return part.replace(/^\/+/, "");
       }
-      return part.replace(/^\/+/, '').replace(/\/+$/, '');
+      return part.replace(/^\/+/, "").replace(/\/+$/, "");
     })
-    .filter(part => part.length > 0)
-    .join('/');
+    .filter((part) => part.length > 0)
+    .join("/");
 };
 
 // Parse SSV_NETWORKS from environment variable
@@ -78,7 +78,9 @@ const parseSSVNetworks = (): SSVNetworkFromEnv[] => {
   const networksEnv = process.env.NEXT_PUBLIC_SSV_NETWORKS;
 
   if (!networksEnv) {
-    throw new Error("NEXT_PUBLIC_SSV_NETWORKS is not defined in environment variables");
+    throw new Error(
+      "NEXT_PUBLIC_SSV_NETWORKS is not defined in environment variables"
+    );
   }
 
   try {
@@ -94,8 +96,12 @@ const parseSSVNetworks = (): SSVNetworkFromEnv[] => {
         return SSVNetworkSchema.parse(network);
       } catch (error) {
         if (error instanceof z.ZodError) {
-          const issues = error.issues.map(issue => `${issue.path.join('.')}: ${issue.message}`).join(', ');
-          throw new Error(`Network at index ${index} validation failed: ${issues}`);
+          const issues = error.issues
+            .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+            .join(", ");
+          throw new Error(
+            `Network at index ${index} validation failed: ${issues}`
+          );
         }
         throw error;
       }
@@ -103,7 +109,9 @@ const parseSSVNetworks = (): SSVNetworkFromEnv[] => {
 
     return validatedNetworks;
   } catch (error) {
-    throw new Error(`Failed to parse NEXT_PUBLIC_SSV_NETWORKS: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(
+      `Failed to parse NEXT_PUBLIC_SSV_NETWORKS: ${error instanceof Error ? error.message : String(error)}`
+    );
   }
 };
 
@@ -117,14 +125,18 @@ const convertToNetworkConfig = (network: SSVNetworkFromEnv): NetworkConfig => {
     contracts: {
       SSVToken: network.tokenAddress as Address,
       cSSVToken: network.cTokenAddress as Address,
-      Staking: network.stakingAddress as Address,
-      Views: network.viewsAddress as Address
+      Setter: network.setterContractAddress as Address,
+      Getter: network.getterContractAddress as Address
     },
     blockExplorer: {
-      name: network.blockExplorerName || '',
-      url: network.blockExplorerUrl || '',
-      txBaseUrl: network.blockExplorerUrl ? urlJoin(network.blockExplorerUrl, 'tx') + '/' : '',
-      addressBaseUrl: network.blockExplorerUrl ? urlJoin(network.blockExplorerUrl, 'address') + '/' : ''
+      name: network.blockExplorerName || "",
+      url: network.blockExplorerUrl || "",
+      txBaseUrl: network.blockExplorerUrl
+        ? urlJoin(network.blockExplorerUrl, "tx") + "/"
+        : "",
+      addressBaseUrl: network.blockExplorerUrl
+        ? urlJoin(network.blockExplorerUrl, "address") + "/"
+        : ""
     },
     faucetUrl: network.faucetUrl,
     dvtUrl: network.dvtUrl,
@@ -144,6 +156,6 @@ export const getNetworkConfigByChainId = (
     return DEFAULT_NETWORK;
   }
 
-  const network = NETWORK_CONFIGS.find(config => config.chainId === chainId);
+  const network = NETWORK_CONFIGS.find((config) => config.chainId === chainId);
   return network || DEFAULT_NETWORK;
 };
