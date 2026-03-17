@@ -1,7 +1,7 @@
-import { CONFIG } from "@/lib/config";
 import { STAKING_COPY } from "@/lib/staking/copy";
 
 type AddTokenParams = {
+  tokenAddress: `0x${string}`;
   decimals: number;
   image: string;
   onError?: (message: string) => void;
@@ -12,6 +12,7 @@ type EthereumProvider = {
 };
 
 export async function addCssvToMetamask({
+  tokenAddress,
   decimals,
   image,
   onError
@@ -28,7 +29,7 @@ export async function addCssvToMetamask({
       params: {
         type: "ERC20",
         options: {
-          address: CONFIG.contracts.cSSVToken,
+          address: tokenAddress,
           symbol: "cSSV",
           decimals,
           image

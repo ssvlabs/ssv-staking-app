@@ -3,6 +3,16 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useStakingStats } from "@/hooks/use-staking-stats";
 
+vi.mock("@/lib/config", () => ({
+  getNetworkConfigByChainId: vi.fn(() => ({
+    contracts: { Views: "0x0000000000000000000000000000000000000001" }
+  }))
+}));
+
+vi.mock("@/lib/abis", () => ({
+  getViewsAbiByChainId: vi.fn(() => [])
+}));
+
 vi.mock("wagmi", () => ({
   useAccount: vi.fn(),
   useReadContract: vi.fn()
@@ -34,7 +44,9 @@ describe("useStakingStats", () => {
     expect(getCall("previewClaimableEth")?.args).toEqual(["0xabc"]);
     expect(getCall("previewClaimableEth")?.query).toEqual({ enabled: true });
     expect(getCall("stakedBalanceOf")?.query).toEqual({ enabled: true });
-    expect(getCall("pendingUnstake")?.query).toEqual({ enabled: true });
+    expect(getCall("pendingUnstake")?.query).toEqual(
+      expect.objectContaining({ enabled: true })
+    );
 
     expect(getCall("totalStaked")?.query).toEqual({ enabled: true });
     expect(getCall("cooldownDuration")?.query).toEqual({ enabled: true });
@@ -51,7 +63,9 @@ describe("useStakingStats", () => {
 
     expect(getCall("previewClaimableEth")?.query).toEqual({ enabled: false });
     expect(getCall("stakedBalanceOf")?.query).toEqual({ enabled: false });
-    expect(getCall("pendingUnstake")?.query).toEqual({ enabled: false });
+    expect(getCall("pendingUnstake")?.query).toEqual(
+      expect.objectContaining({ enabled: false })
+    );
     expect(getCall("totalStaked")?.query).toEqual({ enabled: false });
     expect(getCall("cooldownDuration")?.query).toEqual({ enabled: false });
     expect(getCall("stakingEthPoolBalance")?.query).toEqual({

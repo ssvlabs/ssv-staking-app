@@ -1,10 +1,10 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
-import { useBalance, useReadContract } from "wagmi";
+import { useAccount, useBalance, useReadContract } from "wagmi";
 
 import { ERC20ABI } from "@/lib/abis";
-import { CONFIG } from "@/lib/config";
+import { getNetworkConfigByChainId } from "@/lib/config";
 import { WithdrawalRequest } from "@/lib/staking/types";
 import { useStakingStats } from "@/hooks/use-staking-stats";
 
@@ -13,6 +13,9 @@ type UseStakingDataOptions = {
 };
 
 export function useStakingData({ address }: UseStakingDataOptions) {
+  const { chainId } = useAccount();
+  const network = getNetworkConfigByChainId(chainId);
+
   const {
     claimableEth,
     stakedBalance,
@@ -23,19 +26,25 @@ export function useStakingData({ address }: UseStakingDataOptions) {
 
   const { data: ssvBalance, refetch: refetchSsvBalance } = useBalance({
     address,
-    token: CONFIG.contracts.SSVToken,
+    token: network.contracts.SSVToken,
+    query: { enabled: Boolean(address) }
+  });
+
+  const { data: cssvBalance, refetch: refetchCssvBalance } = useBalance({
+    address,
+    token: network.contracts.cSSVToken,
     query: { enabled: Boolean(address) }
   });
 
   const { data: ssvDecimals } = useReadContract({
-    address: CONFIG.contracts.SSVToken,
+    address: network.contracts.SSVToken,
     abi: ERC20ABI,
     functionName: "decimals",
     query: { enabled: true }
   });
 
   const { data: cssvDecimals } = useReadContract({
-    address: CONFIG.contracts.cSSVToken,
+    address: network.contracts.cSSVToken,
     abi: ERC20ABI,
     functionName: "decimals",
     query: { enabled: true }
@@ -47,19 +56,19 @@ export function useStakingData({ address }: UseStakingDataOptions) {
   const { refetch: refetchTotalStaked } = totalStaked;
 
   const { data: ssvAllowance, refetch: refetchSsvAllowance } = useReadContract({
-    address: CONFIG.contracts.SSVToken,
+    address: network.contracts.SSVToken,
     abi: ERC20ABI,
     functionName: "allowance",
-    args: address ? [address, CONFIG.contracts.Staking] : undefined,
+    args: address ? [address, network.contracts.Setter] : undefined,
     query: { enabled: Boolean(address) }
   });
 
   const { data: cssvAllowance, refetch: refetchCssvAllowance } =
     useReadContract({
-      address: CONFIG.contracts.cSSVToken,
+      address: network.contracts.cSSVToken,
       abi: ERC20ABI,
       functionName: "allowance",
-      args: address ? [address, CONFIG.contracts.Staking] : undefined,
+      args: address ? [address, network.contracts.Setter] : undefined,
       query: { enabled: Boolean(address) }
     });
 
@@ -67,7 +76,12 @@ export function useStakingData({ address }: UseStakingDataOptions) {
     const data = pendingUnstake.data;
     if (!data) return [];
     const requests: WithdrawalRequest[] = [];
-    if (Array.isArray(data) && data.length > 0 && typeof data[0] === "object" && "amount" in data[0]) {
+    if (
+      Array.isArray(data) &&
+      data.length > 0 &&
+      typeof data[0] === "object" &&
+      "amount" in data[0]
+    ) {
       // Hoodi format: {amount, unlockTime}[]
       for (let index = 0; index < data.length; index += 1) {
         const entry = data[index] as { amount: bigint; unlockTime: bigint };
@@ -98,7 +112,7 @@ export function useStakingData({ address }: UseStakingDataOptions) {
 
   const claimableValue = (claimableEth.data as bigint | undefined) ?? 0n;
   const ssvBalanceValue = ssvBalance?.value;
-  const stakedBalanceValue = stakedBalance.data as bigint | undefined;
+  const stakedBalanceValue = cssvBalance?.value;
   const totalStakedValue = totalStaked.data as bigint | undefined;
 
   const tokenDecimals = Number(
@@ -121,6 +135,7 @@ export function useStakingData({ address }: UseStakingDataOptions) {
 
   const refreshAll = useCallback(() => {
     refetchSsvBalance();
+    refetchCssvBalance();
     refetchClaimable();
     refetchStaked();
     refetchPending();
@@ -129,6 +144,7 @@ export function useStakingData({ address }: UseStakingDataOptions) {
     refetchTotalStaked();
   }, [
     refetchSsvBalance,
+    refetchCssvBalance,
     refetchClaimable,
     refetchStaked,
     refetchPending,
@@ -156,4 +172,3 @@ export function useStakingData({ address }: UseStakingDataOptions) {
     refetchCssvAllowance
   };
 }
-

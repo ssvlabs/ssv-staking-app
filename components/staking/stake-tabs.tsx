@@ -1,16 +1,17 @@
 "use client";
 
-import { AlertTriangle } from "lucide-react";
 import Image from "next/image";
+import { AlertTriangle } from "lucide-react";
+import { formatEther } from "viem";
 
-import { TokenInputCard } from "@/components/staking/token-input-card";
+import { MAX_PENDING_REQUESTS } from "@/lib/staking/constants";
+import { formatDuration, formatToken } from "@/lib/staking/format";
+import { WithdrawalRequest } from "@/lib/staking/types";
 import { InfoIcon } from "@/components/ui/info-icon";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip } from "@/components/ui/tooltip";
-import { formatDuration, formatToken } from "@/lib/staking/format";
-import { WithdrawalRequest } from "@/lib/staking/types";
-import { formatEther } from "viem";
+import { TokenInputCard } from "@/components/staking/token-input-card";
 
 type StakeTabsProps = {
   activeTab: string;
@@ -25,10 +26,13 @@ type StakeTabsProps = {
   tokenDecimals: number;
   receiptDecimals: number;
   stakeAmount: bigint;
+  isBelowMinimalStake: boolean;
+  minimalStakeLabel: string;
   cooldownDurationSeconds: number;
   cooldownLabel: string;
   isConnected: boolean;
   isActionDisabled: boolean;
+  isUnstakeRequestLimitReached: boolean;
   isStakeFlowBusy: boolean;
   isUnstakeFlowBusy: boolean;
   onWithdrawUnlocked: () => void;
@@ -42,6 +46,9 @@ type StakeTabsProps = {
   isClaimDisabled: boolean;
   isClaimFlowBusy: boolean;
   onClaim: () => void;
+  faucetUrl: string | null;
+  ssvBalanceValue?: bigint;
+  stakedBalanceValue?: bigint;
 };
 
 function StakeTabs({
@@ -57,10 +64,13 @@ function StakeTabs({
   tokenDecimals,
   receiptDecimals,
   stakeAmount,
+  isBelowMinimalStake,
+  minimalStakeLabel,
   cooldownDurationSeconds,
   cooldownLabel,
   isConnected,
   isActionDisabled,
+  isUnstakeRequestLimitReached,
   isStakeFlowBusy,
   isUnstakeFlowBusy,
   onWithdrawUnlocked,
@@ -74,6 +84,9 @@ function StakeTabs({
   isClaimDisabled,
   isClaimFlowBusy,
   onClaim,
+  faucetUrl,
+  ssvBalanceValue,
+  stakedBalanceValue
 }: StakeTabsProps) {
   const tabButtonClass = (value: string) =>
     `flex-1 rounded-[8px] px-4 py-2 text-[16px] font-semibold transition ${
@@ -81,6 +94,18 @@ function StakeTabs({
         ? "bg-[#fdfefe] text-[#34455a] shadow-sm dark:bg-[#0b2a3c] dark:text-[#e6eaf7]"
         : "text-[#97a5ba]"
     }`;
+
+  const hasInsufficientStakeBalance =
+    isConnected &&
+    amount &&
+    stakeAmount > 0n &&
+    stakeAmount > (ssvBalanceValue ?? 0n);
+
+  const hasInsufficientUnstakeBalance =
+    isConnected &&
+    amount &&
+    stakeAmount > 0n &&
+    stakeAmount > (stakedBalanceValue ?? 0n);
 
   return (
     <section className="rounded-[16px] bg-surface-0 p-6">
@@ -108,6 +133,31 @@ function StakeTabs({
               onMax={onMax}
               isConnected={isConnected}
             />
+
+            {hasInsufficientStakeBalance && (
+              <div className="flex w-full items-center justify-between gap-3 rounded-[4px] border border-red-400 bg-red-50 px-4 py-3 text-[14px] text-ink-900">
+                <p>
+                  Insufficient SSV balance. There is not enough SSV in your
+                  wallet.
+                </p>
+                {faucetUrl ? (
+                  <a
+                    href={faucetUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-brand-700 shrink-0 font-semibold text-brand-600 no-underline"
+                  >
+                    Need SSV?
+                  </a>
+                ) : null}
+              </div>
+            )}
+            {isBelowMinimalStake && (
+              <div className="flex w-full items-center gap-3 rounded-[4px] border border-warning-400 bg-warning-bg px-4 py-3 text-[14px] text-ink-900">
+                <AlertTriangle className="size-5 shrink-0 text-warning-400" />
+                <p>Minimum stake amount is {minimalStakeLabel} SSV.</p>
+              </div>
+            )}
 
             <div className="space-y-3 text-[14px]">
               <div className="flex items-center justify-between text-ink-700">
@@ -233,10 +283,24 @@ function StakeTabs({
               </p>
             </div>
 
+            {isUnstakeRequestLimitReached && (
+              <div className="flex w-full items-center gap-3 rounded-[4px] border border-warning-400 bg-warning-bg px-4 py-3 text-[14px] text-ink-900">
+                <AlertTriangle className="size-5 shrink-0 text-warning-400" />
+                <p>
+                  Max pending unstake requests reached ({MAX_PENDING_REQUESTS}).
+                  Withdraw existing requests before creating a new one.
+                </p>
+              </div>
+            )}
+
             <PrimaryActionButton
               className="font-dm-sans"
               onClick={onRequestUnstake}
-              disabled={isActionDisabled || isUnstakeFlowBusy}
+              disabled={
+                isActionDisabled ||
+                isUnstakeFlowBusy ||
+                isUnstakeRequestLimitReached
+              }
               isActivated={isUnstakeFlowBusy}
             >
               {isConnected ? "Request Unstake" : "Connect Wallet"}

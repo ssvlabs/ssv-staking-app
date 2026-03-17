@@ -4,14 +4,18 @@ import Image from "next/image";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 
+import { getNetworkConfigByChainId } from "@/lib/config";
 import { useTheme } from "@/lib/theme";
 
 import { NetworkSwitchBtn } from "./ui/network-switch-btn";
 import { Button } from "./ui/button";
 
 export default function TopBar() {
-  const { isConnected } = useAccount();
+  const { chainId, isConnected } = useAccount();
   const { theme, toggleTheme } = useTheme();
+  const activeNetwork = getNetworkConfigByChainId(chainId);
+  const faucetUrl = activeNetwork.faucetUrl;
+  const dvtUrl = activeNetwork.dvtUrl;
   const isDark = theme === "dark";
   const metamaskIcon = "/figma/metamask.png";
   const logoSrc = isDark
@@ -35,14 +39,26 @@ export default function TopBar() {
         </div>
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
-            <a href="https://faucet.ssv.network/request" target="_blank">
-              <Button
-                className="flex h-12 items-center gap-3 rounded-[8px] bg-surface-50 px-4 text-sm"
-                type="button"
-              >
-                Faucet
-              </Button>
-            </a>
+            {faucetUrl ? (
+              <a href={faucetUrl} target="_blank" rel="noopener noreferrer">
+                <Button
+                  className="flex h-12 items-center gap-3 rounded-[8px] bg-surface-50 px-4 text-sm"
+                  type="button"
+                >
+                  Faucet
+                </Button>
+              </a>
+            ) : null}
+            {dvtUrl ? (
+              <a href={dvtUrl} target="_blank" rel="noopener noreferrer">
+                <Button
+                  className="flex h-12 items-center gap-3 rounded-[8px] bg-surface-50 px-4 text-sm"
+                  type="button"
+                >
+                  DVT
+                </Button>
+              </a>
+            ) : null}
             <NetworkSwitchBtn />
             <ConnectButton.Custom>
               {({

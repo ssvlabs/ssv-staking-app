@@ -1,28 +1,48 @@
 import { erc20Abi, type Abi } from "viem";
 
-import StakingHoodiAbiJson from "@/lib/abis/StakingHoodi.json";
-import StakingStageAbiJson from "@/lib/abis/StakingStage.json";
-import ViewsHoodiAbiJson from "@/lib/abis/ViewsHoodi.json";
-import ViewsStageAbiJson from "@/lib/abis/ViewsStage.json";
+import GetterAbiJson from "@/lib/abis/getter.json";
+import SetterAbiJson from "@/lib/abis/setter.json";
+import { getNetworkConfigByChainId } from "@/lib/config";
 
-type AbiEnv = "Stage" | "Hoodi";
+type AbiSet = { staking: Abi; views: Abi };
+type AbiType = "stage" | "hoodi" | "mainnet";
 
-const abiByEnv: Record<AbiEnv, { staking: Abi; views: Abi }> = {
-  Stage: {
-    staking: StakingStageAbiJson as Abi,
-    views: ViewsStageAbiJson as Abi
-  },
-  Hoodi: {
-    staking: StakingHoodiAbiJson as Abi,
-    views: ViewsHoodiAbiJson as Abi
-  }
+// Map ABI types to their corresponding ABIs
+const STAKING_ABI_BY_TYPE: Record<AbiType, Abi> = {
+  stage: SetterAbiJson as Abi,
+  hoodi: SetterAbiJson as Abi,
+  mainnet: SetterAbiJson as Abi
 };
 
-const appEnv = process.env.NEXT_PUBLIC_APP_ENV?.trim().toLowerCase();
-const abiEnv: AbiEnv = appEnv === "hoodi" ? "Hoodi" : "Stage";
+const VIEWS_ABI_BY_TYPE: Record<AbiType, Abi> = {
+  stage: GetterAbiJson as Abi,
+  hoodi: GetterAbiJson as Abi,
+  mainnet: GetterAbiJson as Abi
+};
 
-export const StakingABI = abiByEnv[abiEnv].staking;
+export const getAbiSetByChainId = (chainId: number | undefined): AbiSet => {
+  const network = getNetworkConfigByChainId(chainId);
+  const abiType = network.abiType;
 
-export const ViewsABI = abiByEnv[abiEnv].views;
+  const stakingAbi = STAKING_ABI_BY_TYPE[abiType];
+  const viewsAbi = VIEWS_ABI_BY_TYPE[abiType];
+
+  if (!stakingAbi || !viewsAbi) {
+    throw new Error(
+      `No ABI found for network ${network.chainName} with abiType: ${abiType}`
+    );
+  }
+
+  return {
+    staking: stakingAbi,
+    views: viewsAbi
+  };
+};
+
+export const getStakingAbiByChainId = (chainId: number | undefined): Abi =>
+  getAbiSetByChainId(chainId).staking;
+
+export const getViewsAbiByChainId = (chainId: number | undefined): Abi =>
+  getAbiSetByChainId(chainId).views;
 
 export { erc20Abi as ERC20ABI };
