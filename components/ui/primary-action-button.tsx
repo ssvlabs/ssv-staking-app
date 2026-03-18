@@ -45,10 +45,19 @@ export function PrimaryActionButton({
         <Image
           alt=""
           src="/figma/ssv-button-bg.svg"
-          className="size-full"
+          className={cn("size-full", isDisabled && "dark:hidden")}
           width={672}
           height={232}
         />
+        {isDisabled && (
+          <Image
+            alt=""
+            src="/figma/ssv-button-bg-disabled.svg"
+            className="hidden size-full dark:block"
+            width={672}
+            height={232}
+          />
+        )}
       </span>
       <span className="relative z-10">{children}</span>
     </Button>
