@@ -62,7 +62,8 @@ const config: Config = {
           soft: "var(--color-warning-soft)"
         },
         danger: {
-          500: "var(--color-danger-500)"
+          500: "var(--color-danger-500)",
+          bg: "var(--color-error-bg)"
         },
         overlay: "var(--color-overlay)",
         tooltip: {
