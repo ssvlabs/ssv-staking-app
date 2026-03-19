@@ -8,6 +8,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 
 import Providers from "@/app/providers";
+import { MaintenanceGuard } from "@/components/maintenance-guard";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -56,8 +57,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en" className={`${manrope.variable} ${dmSans.variable}`}>
       <body>
         <Providers>
-          {children}
-          <Toaster richColors position="top-right" />
+          <MaintenanceGuard>
+            {children}
+            <Toaster richColors position="top-right" />
+          </MaintenanceGuard>
         </Providers>
       </body>
     </html>
