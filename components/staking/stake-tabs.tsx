@@ -135,7 +135,7 @@ function StakeTabs({
             />
 
             {hasInsufficientStakeBalance && (
-              <div className="flex w-full items-center justify-between gap-3 rounded-[4px] border border-red-400 bg-red-50 px-4 py-3 text-[14px] text-ink-900">
+              <div className="flex w-full items-center justify-between gap-3 rounded-[4px] border border-danger-500 bg-danger-bg px-4 py-3 text-[14px] text-ink-900">
                 <p>
                   Insufficient SSV balance. There is not enough SSV in your
                   wallet.
