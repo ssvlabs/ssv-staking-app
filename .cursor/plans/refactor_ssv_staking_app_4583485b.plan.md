@@ -19,7 +19,7 @@ todos:
     status: completed
   - id: "1.6"
     content: Rename NEXT_PUBLIC_* env vars to VITE_* across all files
-    status: in_progress
+    status: completed
   - id: "2.1"
     content: Extract useTransactionReceipt wrapper hook (replaces 7 receipt hooks + 6 effects)
     status: pending

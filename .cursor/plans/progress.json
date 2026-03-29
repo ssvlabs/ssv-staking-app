@@ -3,14 +3,21 @@
   "phases": {
     "phase1": {
       "name": "Migrate from Next.js to Vite + React SPA",
-      "status": "in_progress",
+      "status": "completed",
       "tasks": {
-        "1.1": { "status": "in_progress", "description": "Initialize Vite + React + TypeScript config (vite.config.ts, index.html, src/main.tsx)" },
-        "1.2": { "status": "pending", "description": "Migrate app shell (layout.tsx -> App.tsx, page.tsx inline, providers.tsx, globals.css)" },
-        "1.3": { "status": "pending", "description": "Replace next/image with <img> in 8 component files" },
-        "1.4": { "status": "pending", "description": "Update wagmi config: ssr: true -> ssr: false" },
-        "1.5": { "status": "pending", "description": "Update build tooling (package.json scripts, deps, Dockerfile, remove next.config.mjs)" },
-        "1.6": { "status": "pending", "description": "Rename NEXT_PUBLIC_* env vars to VITE_* across all files" }
+        "1.1": { "status": "completed", "description": "Initialize Vite + React + TypeScript config (vite.config.ts, index.html, src/main.tsx)" },
+        "1.2": { "status": "completed", "description": "Migrate app shell (layout.tsx -> App.tsx, page.tsx inline, providers.tsx, globals.css)" },
+        "1.3": { "status": "completed", "description": "Replace next/image with <img> in 8 component files" },
+        "1.4": { "status": "completed", "description": "Update wagmi config: ssr: true -> ssr: false" },
+        "1.5": { "status": "completed", "description": "Update build tooling (package.json scripts, deps, Dockerfile, remove next.config.mjs)" },
+        "1.6": { "status": "completed", "description": "Rename NEXT_PUBLIC_* env vars to VITE_* across all files" }
+      }
+    },
+    "extra": {
+      "name": "Contract Hooks Generator",
+      "status": "completed",
+      "tasks": {
+        "abi-gen": { "status": "completed", "description": "Brought createContractHooks + generate-hook-exports.cjs from ssv-web, adapted for this project" }
       }
     },
     "phase2": {
@@ -60,6 +67,8 @@
   },
   "notes": [
     "config/hoodi.ts and config/mainnet.ts are dead code (not imported anywhere)",
-    "maintenance.tsx has next/image AND a regular <img> tag - needs cleanup"
+    "maintenance.tsx has next/image AND a regular <img> tag - cleaned up",
+    "Old app/ directory (layout.tsx, page.tsx, providers.tsx) can be deleted after verification",
+    "Generated contract hooks: 66 setter hooks, 58 getter hooks"
   ]
 }
