@@ -1,11 +1,11 @@
-FROM node:24-alpine AS deps
+FROM node:24-alpine@sha256:01743339035a5c3c11a373cd7c83aeab6ed1457b55da6a69e014a95ac4e4700b AS deps
 WORKDIR /app
 RUN apk add --no-cache python3 make g++
 RUN corepack enable
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
-FROM node:24-alpine AS builder
+FROM node:24-alpine@sha256:01743339035a5c3c11a373cd7c83aeab6ed1457b55da6a69e014a95ac4e4700b AS builder
 WORKDIR /app
 RUN corepack enable
 
@@ -21,7 +21,7 @@ COPY .env.${MODE} .env.production.local
 
 RUN pnpm run build
 
-FROM node:24-alpine AS runner
+FROM node:24-alpine@sha256:01743339035a5c3c11a373cd7c83aeab6ed1457b55da6a69e014a95ac4e4700b AS runner
 WORKDIR /app
 RUN corepack enable
 
