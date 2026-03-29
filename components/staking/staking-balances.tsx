@@ -1,7 +1,3 @@
-"use client";
-
-import Image from "next/image";
-
 import { formatToken } from "@/lib/staking/format";
 
 type StakingBalancesProps = {
@@ -32,7 +28,7 @@ export function StakingBalances({
           Available to Stake
         </p>
         <div className="mt-3 flex items-center gap-2">
-          <Image
+          <img
             alt="SSV"
             className="size-7"
             src={ssvLarge}
@@ -48,7 +44,7 @@ export function StakingBalances({
         <p className="text-[14px] font-semibold text-ink-400">Staked Balance</p>
         <div className="mt-3 flex items-center gap-2">
           <span className="flex size-7 items-center justify-center rounded-full bg-[linear-gradient(135deg,#5c8de6_0%,#3e75e2_100%)] p-[6px]">
-            <Image
+            <img
               alt="SSV"
               className="size-4"
               src={ssvSmall}
@@ -64,7 +60,7 @@ export function StakingBalances({
       <div className="rounded-[16px] bg-surface-25 p-6">
         <p className="text-[14px] font-semibold text-ink-400">Claimable</p>
         <div className="mt-3 flex items-center gap-2">
-          <Image
+          <img
             alt="ETH"
             className="size-7"
             src={ethIcon}

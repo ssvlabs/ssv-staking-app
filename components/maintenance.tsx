@@ -1,7 +1,3 @@
-"use client"
-
-import Image from "next/image"
-
 import { useTheme } from "@/lib/theme"
 
 const DISCORD_LINK = "https://discord.com/invite/ssvnetworkofficial"
@@ -19,13 +15,12 @@ export const Maintenance = () => {
     <div className="flex h-screen w-full flex-col items-center">
       <header className="w-full border-b border-border">
         <div className="flex h-[72px] items-center justify-between px-6">
-          <Image
+          <img
             alt="ssv.network staking"
             src={logoSrc}
             className="h-[32px] w-[160px]"
             width={160}
             height={32}
-            priority
           />
           <button
             type="button"
@@ -34,7 +29,7 @@ export const Maintenance = () => {
             aria-label="Theme toggle"
           >
             <span className="relative block size-full">
-              <Image
+              <img
                 alt=""
                 aria-hidden="true"
                 src={toggleLight}
@@ -46,7 +41,7 @@ export const Maintenance = () => {
                 width={44}
                 height={28}
               />
-              <Image
+              <img
                 alt=""
                 aria-hidden="true"
                 src={toggleDark}
@@ -63,7 +58,6 @@ export const Maintenance = () => {
         </div>
       </header>
       <div className="flex flex-1 flex-col items-center justify-center">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/images/maintenance.svg"
           alt="Maintenance"

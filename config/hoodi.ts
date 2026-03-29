@@ -15,10 +15,10 @@ export const HOODI_CONFIG = {
   rpcUrl: getUrlWithFallback(
     [
       {
-        key: "NEXT_PUBLIC_HOODI_RPC_URL",
-        value: process.env.NEXT_PUBLIC_HOODI_RPC_URL
+        key: "VITE_HOODI_RPC_URL",
+        value: import.meta.env.VITE_HOODI_RPC_URL
       },
-      { key: "HOODI_RPC_URL", value: process.env.HOODI_RPC_URL }
+      { key: "HOODI_RPC_URL", value: import.meta.env.HOODI_RPC_URL }
     ],
     "Hoodi RPC URL",
     hoodi.rpcUrls.default.http[0] ?? ""
@@ -26,12 +26,12 @@ export const HOODI_CONFIG = {
   ssvApiBaseUrl: getRequiredUrl(
     [
       {
-        key: "NEXT_PUBLIC_HOODI_SSV_API",
-        value: process.env.NEXT_PUBLIC_HOODI_SSV_API
+        key: "VITE_HOODI_SSV_API",
+        value: import.meta.env.VITE_HOODI_SSV_API
       },
       {
         key: "HOODI_SSV_API",
-        value: process.env.HOODI_SSV_API
+        value: import.meta.env.HOODI_SSV_API
       }
     ],
     "Hoodi SSV API URL"
@@ -40,12 +40,12 @@ export const HOODI_CONFIG = {
     SSVToken: getRequiredAddress(
       [
         {
-          key: "NEXT_PUBLIC_HOODI_SSV_TOKEN_ADDRESS",
-          value: process.env.NEXT_PUBLIC_HOODI_SSV_TOKEN_ADDRESS
+          key: "VITE_HOODI_SSV_TOKEN_ADDRESS",
+          value: import.meta.env.VITE_HOODI_SSV_TOKEN_ADDRESS
         },
         {
           key: "HOODI_SSV_TOKEN_ADDRESS",
-          value: process.env.HOODI_SSV_TOKEN_ADDRESS
+          value: import.meta.env.HOODI_SSV_TOKEN_ADDRESS
         }
       ],
       "Hoodi SSV token address"
@@ -53,12 +53,12 @@ export const HOODI_CONFIG = {
     cSSVToken: getRequiredAddress(
       [
         {
-          key: "NEXT_PUBLIC_HOODI_CSSV_TOKEN_ADDRESS",
-          value: process.env.NEXT_PUBLIC_HOODI_CSSV_TOKEN_ADDRESS
+          key: "VITE_HOODI_CSSV_TOKEN_ADDRESS",
+          value: import.meta.env.VITE_HOODI_CSSV_TOKEN_ADDRESS
         },
         {
           key: "HOODI_CSSV_TOKEN_ADDRESS",
-          value: process.env.HOODI_CSSV_TOKEN_ADDRESS
+          value: import.meta.env.HOODI_CSSV_TOKEN_ADDRESS
         }
       ],
       "Hoodi cSSV token address"
@@ -66,12 +66,12 @@ export const HOODI_CONFIG = {
     Staking: getRequiredAddress(
       [
         {
-          key: "NEXT_PUBLIC_HOODI_STAKING_ADDRESS",
-          value: process.env.NEXT_PUBLIC_HOODI_STAKING_ADDRESS
+          key: "VITE_HOODI_STAKING_ADDRESS",
+          value: import.meta.env.VITE_HOODI_STAKING_ADDRESS
         },
         {
           key: "HOODI_STAKING_ADDRESS",
-          value: process.env.HOODI_STAKING_ADDRESS
+          value: import.meta.env.HOODI_STAKING_ADDRESS
         }
       ],
       "Hoodi staking contract address"
@@ -79,12 +79,12 @@ export const HOODI_CONFIG = {
     Views: getRequiredAddress(
       [
         {
-          key: "NEXT_PUBLIC_HOODI_VIEWS_ADDRESS",
-          value: process.env.NEXT_PUBLIC_HOODI_VIEWS_ADDRESS
+          key: "VITE_HOODI_VIEWS_ADDRESS",
+          value: import.meta.env.VITE_HOODI_VIEWS_ADDRESS
         },
         {
           key: "HOODI_VIEWS_ADDRESS",
-          value: process.env.HOODI_VIEWS_ADDRESS
+          value: import.meta.env.HOODI_VIEWS_ADDRESS
         }
       ],
       "Hoodi views contract address"
@@ -99,20 +99,20 @@ export const HOODI_CONFIG = {
   faucetUrl: getRequiredUrl(
     [
       {
-        key: "NEXT_PUBLIC_HOODI_FAUCET_URL",
-        value: process.env.NEXT_PUBLIC_HOODI_FAUCET_URL
+        key: "VITE_HOODI_FAUCET_URL",
+        value: import.meta.env.VITE_HOODI_FAUCET_URL
       },
-      { key: "HOODI_FAUCET_URL", value: process.env.HOODI_FAUCET_URL }
+      { key: "HOODI_FAUCET_URL", value: import.meta.env.HOODI_FAUCET_URL }
     ],
     "Hoodi faucet URL"
   ),
   dvtUrl: getRequiredUrl(
     [
       {
-        key: "NEXT_PUBLIC_HOODI_DVT_APP_URL",
-        value: process.env.NEXT_PUBLIC_HOODI_DVT_APP_URL
+        key: "VITE_HOODI_DVT_APP_URL",
+        value: import.meta.env.VITE_HOODI_DVT_APP_URL
       },
-      { key: "HOODI_DVT_APP_URL", value: process.env.DVT_APP_URL }
+      { key: "HOODI_DVT_APP_URL", value: import.meta.env.HOODI_DVT_APP_URL }
     ],
     "Hoodi DVT URL"
   )

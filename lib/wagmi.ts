@@ -128,7 +128,7 @@ const chainsArray = NETWORK_CONFIGS.map(config => {
 
 // Ensure at least one chain exists for wagmi config
 if (chainsArray.length === 0) {
-  throw new Error("At least one network must be configured in NEXT_PUBLIC_SSV_NETWORKS");
+  throw new Error("At least one network must be configured in VITE_SSV_NETWORKS");
 }
 
 // Type assertion: wagmi requires a readonly tuple with at least one element
@@ -140,5 +140,5 @@ export const wagmiConfig = getDefaultConfig({
   projectId,
   wallets: getWalletGroups(),
   chains,
-  ssr: true
+  ssr: false
 });

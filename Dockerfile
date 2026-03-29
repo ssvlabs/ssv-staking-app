@@ -9,33 +9,30 @@ FROM node:24-alpine AS builder
 WORKDIR /app
 RUN corepack enable
 
-# Define build argument with a default value: can be stage or prod
 ARG MODE=stage
 ENV MODE=${MODE}
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Copy the appropriate env file based on MODE
-COPY .env.${MODE} .env.production.local
+COPY .env.${MODE} .env.production
 
 RUN pnpm run build
 
-FROM node:24-alpine AS runner
-WORKDIR /app
-RUN corepack enable
+FROM nginx:alpine AS runner
 
-# Set MODE env var for runtime
-ARG MODE=stage
-ENV MODE=${MODE}
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
+COPY --from=builder /app/build /usr/share/nginx/html
 
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+# SPA fallback: serve index.html for all routes
+RUN printf 'server {\n\
+  listen 3000;\n\
+  root /usr/share/nginx/html;\n\
+  index index.html;\n\
+  location / {\n\
+    try_files $uri $uri/ /index.html;\n\
+  }\n\
+}\n' > /etc/nginx/conf.d/default.conf
 
 EXPOSE 3000
-ENV PORT=3000
 
-CMD ["node", "server.js"]
+CMD ["nginx", "-g", "daemon off;"]

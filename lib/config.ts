@@ -75,11 +75,11 @@ const urlJoin = (...parts: string[]): string => {
 
 // Parse SSV_NETWORKS from environment variable
 const parseSSVNetworks = (): SSVNetworkFromEnv[] => {
-  const networksEnv = process.env.NEXT_PUBLIC_SSV_NETWORKS;
+  const networksEnv = import.meta.env.VITE_SSV_NETWORKS;
 
   if (!networksEnv) {
     throw new Error(
-      "NEXT_PUBLIC_SSV_NETWORKS is not defined in environment variables"
+      "VITE_SSV_NETWORKS is not defined in environment variables"
     );
   }
 
@@ -87,7 +87,7 @@ const parseSSVNetworks = (): SSVNetworkFromEnv[] => {
     const parsed = JSON.parse(networksEnv);
 
     if (!Array.isArray(parsed) || parsed.length === 0) {
-      throw new Error("NEXT_PUBLIC_SSV_NETWORKS must be a non-empty array");
+      throw new Error("VITE_SSV_NETWORKS must be a non-empty array");
     }
 
     // Validate each network using Zod schema
@@ -110,7 +110,7 @@ const parseSSVNetworks = (): SSVNetworkFromEnv[] => {
     return validatedNetworks;
   } catch (error) {
     throw new Error(
-      `Failed to parse NEXT_PUBLIC_SSV_NETWORKS: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to parse VITE_SSV_NETWORKS: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 };

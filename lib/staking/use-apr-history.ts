@@ -1,4 +1,4 @@
-"use client";
+
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getNetworkConfigByChainId } from "@/lib/config";

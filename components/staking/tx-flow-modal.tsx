@@ -1,4 +1,4 @@
-"use client";
+
 
 import type { ReactNode } from "react";
 import { X } from "lucide-react";

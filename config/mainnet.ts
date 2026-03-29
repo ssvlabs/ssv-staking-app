@@ -15,22 +15,22 @@ export const MAINNET_CONFIG = {
   rpcUrl: getRequiredUrl(
     [
       {
-        key: "NEXT_PUBLIC_MAINNET_RPC_URL",
-        value: process.env.NEXT_PUBLIC_MAINNET_RPC_URL
+        key: "VITE_MAINNET_RPC_URL",
+        value: import.meta.env.VITE_MAINNET_RPC_URL
       },
-      { key: "MAINNET_RPC_URL", value: process.env.MAINNET_RPC_URL }
+      { key: "MAINNET_RPC_URL", value: import.meta.env.MAINNET_RPC_URL }
     ],
     "Mainnet RPC URL"
   ),
   ssvApiBaseUrl: getUrlWithFallback(
     [
       {
-        key: "NEXT_PUBLIC_MAINNET_SSV_API",
-        value: process.env.NEXT_PUBLIC_MAINNET_SSV_API
+        key: "VITE_MAINNET_SSV_API",
+        value: import.meta.env.VITE_MAINNET_SSV_API
       },
       {
         key: "MAINNET_SSV_API",
-        value: process.env.MAINNET_SSV_API
+        value: import.meta.env.MAINNET_SSV_API
       }
     ],
     "Mainnet SSV API URL",
@@ -40,12 +40,12 @@ export const MAINNET_CONFIG = {
     SSVToken: getRequiredAddress(
       [
         {
-          key: "NEXT_PUBLIC_MAINNET_SSV_TOKEN_ADDRESS",
-          value: process.env.NEXT_PUBLIC_MAINNET_SSV_TOKEN_ADDRESS
+          key: "VITE_MAINNET_SSV_TOKEN_ADDRESS",
+          value: import.meta.env.VITE_MAINNET_SSV_TOKEN_ADDRESS
         },
         {
           key: "MAINNET_SSV_TOKEN_ADDRESS",
-          value: process.env.MAINNET_SSV_TOKEN_ADDRESS
+          value: import.meta.env.MAINNET_SSV_TOKEN_ADDRESS
         }
       ],
       "Mainnet SSV token address"
@@ -53,12 +53,12 @@ export const MAINNET_CONFIG = {
     cSSVToken: getRequiredAddress(
       [
         {
-          key: "NEXT_PUBLIC_MAINNET_CSSV_TOKEN_ADDRESS",
-          value: process.env.NEXT_PUBLIC_MAINNET_CSSV_TOKEN_ADDRESS
+          key: "VITE_MAINNET_CSSV_TOKEN_ADDRESS",
+          value: import.meta.env.VITE_MAINNET_CSSV_TOKEN_ADDRESS
         },
         {
           key: "MAINNET_CSSV_TOKEN_ADDRESS",
-          value: process.env.MAINNET_CSSV_TOKEN_ADDRESS
+          value: import.meta.env.MAINNET_CSSV_TOKEN_ADDRESS
         }
       ],
       "Mainnet cSSV token address"
@@ -66,12 +66,12 @@ export const MAINNET_CONFIG = {
     Staking: getRequiredAddress(
       [
         {
-          key: "NEXT_PUBLIC_MAINNET_STAKING_ADDRESS",
-          value: process.env.NEXT_PUBLIC_MAINNET_STAKING_ADDRESS
+          key: "VITE_MAINNET_STAKING_ADDRESS",
+          value: import.meta.env.VITE_MAINNET_STAKING_ADDRESS
         },
         {
           key: "MAINNET_STAKING_ADDRESS",
-          value: process.env.MAINNET_STAKING_ADDRESS
+          value: import.meta.env.MAINNET_STAKING_ADDRESS
         }
       ],
       "Mainnet staking contract address"
@@ -79,12 +79,12 @@ export const MAINNET_CONFIG = {
     Views: getRequiredAddress(
       [
         {
-          key: "NEXT_PUBLIC_MAINNET_VIEWS_ADDRESS",
-          value: process.env.NEXT_PUBLIC_MAINNET_VIEWS_ADDRESS
+          key: "VITE_MAINNET_VIEWS_ADDRESS",
+          value: import.meta.env.VITE_MAINNET_VIEWS_ADDRESS
         },
         {
           key: "MAINNET_VIEWS_ADDRESS",
-          value: process.env.MAINNET_VIEWS_ADDRESS
+          value: import.meta.env.MAINNET_VIEWS_ADDRESS
         }
       ],
       "Mainnet views contract address"
@@ -100,10 +100,10 @@ export const MAINNET_CONFIG = {
   dvtUrl: getRequiredUrl(
     [
       {
-        key: "NEXT_PUBLIC_MAINNET_DVT_APP_URL",
-        value: process.env.NEXT_PUBLIC_MAINNET_DVT_APP_URL
+        key: "VITE_MAINNET_DVT_APP_URL",
+        value: import.meta.env.VITE_MAINNET_DVT_APP_URL
       },
-      { key: "MAINNET_DVT_APP_URL", value: process.env.MAINNET_DVT_APP_URL }
+      { key: "MAINNET_DVT_APP_URL", value: import.meta.env.MAINNET_DVT_APP_URL }
     ],
     "Mainnet DVT URL"
   )

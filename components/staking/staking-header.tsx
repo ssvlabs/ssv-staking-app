@@ -1,7 +1,3 @@
-"use client";
-
-import Image from "next/image";
-
 import { formatApr, formatToken } from "@/lib/staking/format";
 import { InfoIcon } from "@/components/ui/info-icon";
 import { Tooltip } from "@/components/ui/tooltip";
@@ -100,19 +96,15 @@ export function StakingHeader({
                       key={piece.light}
                       className={`relative ${piece.className}`}
                     >
-                      <Image
+                      <img
                         alt=""
-                        className="dark:hidden"
+                        className="absolute inset-0 size-full dark:hidden"
                         src={piece.light}
-                        fill
-                        sizes="100%"
                       />
-                      <Image
+                      <img
                         alt=""
-                        className="hidden dark:block"
+                        className="absolute inset-0 hidden size-full dark:block"
                         src={piece.dark}
-                        fill
-                        sizes="100%"
                       />
                     </div>
                   ))}
@@ -139,12 +131,10 @@ export function StakingHeader({
               className="pointer-events-none absolute inset-0 flex items-center justify-center"
               aria-hidden="true"
             >
-              <Image
+              <img
                 alt=""
                 src="/figma/apr-bg-logo.svg"
-                fill
-                className="object-cover"
-                sizes="100%"
+                className="absolute inset-0 size-full object-cover"
               />
             </div>
             <div className="relative flex items-center justify-between">
@@ -163,7 +153,7 @@ export function StakingHeader({
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <Image
+                  <img
                     alt="Staking calculator"
                     className="size-5 text-[#cbd3e5]"
                     src={calculatorIcon}
@@ -192,19 +182,15 @@ export function StakingHeader({
                       key={piece.light}
                       className={`relative ${piece.className}`}
                     >
-                      <Image
+                      <img
                         alt=""
-                        className="dark:hidden"
+                        className="absolute inset-0 size-full dark:hidden"
                         src={piece.light}
-                        fill
-                        sizes="100%"
                       />
-                      <Image
+                      <img
                         alt=""
-                        className="hidden dark:block"
+                        className="absolute inset-0 hidden size-full dark:block"
                         src={piece.dark}
-                        fill
-                        sizes="100%"
                       />
                     </div>
                   ))}
@@ -222,7 +208,7 @@ export function StakingHeader({
             </div>
             <div className="flex items-center gap-2">
               <span className="flex size-[28px] items-center justify-center rounded-full bg-[linear-gradient(135deg,#5c8de6_0%,#3e75e2_100%)] p-[6px]">
-                <Image
+                <img
                   alt="SSV"
                   className="size-4"
                   src={ssvSmall}

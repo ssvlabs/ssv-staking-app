@@ -1,7 +1,3 @@
-"use client";
-
-import Image from "next/image";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -64,7 +60,7 @@ export function TokenInputCard({
                 : "flex size-8 items-center justify-center"
             }
           >
-            <Image
+            <img
               alt={symbol}
               className={symbol === "cSSV" ? "size-5" : "size-8"}
               src={iconSrc}

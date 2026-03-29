@@ -1,7 +1,4 @@
-"use client";
-
 import type { ButtonHTMLAttributes } from "react";
-import Image from "next/image";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -42,7 +39,7 @@ export function PrimaryActionButton({
         )}
         aria-hidden="true"
       >
-        <Image
+        <img
           alt=""
           src="/figma/ssv-button-bg.svg"
           className="size-full"

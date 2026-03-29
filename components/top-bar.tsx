@@ -1,6 +1,3 @@
-"use client";
-
-import Image from "next/image";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 
@@ -28,13 +25,12 @@ export default function TopBar() {
     <header className="relative w-full border-b border-border ">
       <div className="flex h-[72px] w-full items-center justify-between px-6">
         <div className="flex items-center">
-          <Image
+          <img
             alt="ssv.network staking"
             src={logoSrc}
             className="h-[32px] w-[160px]"
             width={160}
             height={32}
-            priority
           />
         </div>
         <div className="flex items-center gap-6">
@@ -91,7 +87,7 @@ export default function TopBar() {
                         className="pointer-events-none absolute left-1/2 top-1/2 h-[78px] w-[263px] -translate-x-1/2 -translate-y-1/2 opacity-cta-pattern"
                         aria-hidden="true"
                       >
-                        <Image
+                        <img
                           alt=""
                           src={connectPattern}
                           className="size-full"
@@ -101,7 +97,7 @@ export default function TopBar() {
                       </span>
                     ) : null}
                     {connected ? (
-                      <Image
+                      <img
                         src={metamaskIcon}
                         alt=""
                         className="size-6"
@@ -123,7 +119,7 @@ export default function TopBar() {
             aria-label="Theme toggle"
           >
             <span className="relative block size-full">
-              <Image
+              <img
                 alt=""
                 aria-hidden="true"
                 src={toggleLight}
@@ -135,7 +131,7 @@ export default function TopBar() {
                 width={44}
                 height={28}
               />
-              <Image
+              <img
                 alt=""
                 aria-hidden="true"
                 src={toggleDark}

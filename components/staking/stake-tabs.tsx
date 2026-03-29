@@ -1,6 +1,3 @@
-"use client";
-
-import Image from "next/image";
 import { AlertTriangle } from "lucide-react";
 import { formatEther } from "viem";
 
@@ -314,7 +311,7 @@ function StakeTabs({
                   {formatEther(claimableValue)}
                 </span>
                 <div className="flex items-center gap-2">
-                  <Image
+                  <img
                     alt=""
                     className="size-8"
                     src={ethIcon}

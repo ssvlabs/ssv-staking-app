@@ -1,0 +1,65 @@
+{
+  "planFile": "refactor_ssv_staking_app_4583485b.plan.md",
+  "phases": {
+    "phase1": {
+      "name": "Migrate from Next.js to Vite + React SPA",
+      "status": "in_progress",
+      "tasks": {
+        "1.1": { "status": "in_progress", "description": "Initialize Vite + React + TypeScript config (vite.config.ts, index.html, src/main.tsx)" },
+        "1.2": { "status": "pending", "description": "Migrate app shell (layout.tsx -> App.tsx, page.tsx inline, providers.tsx, globals.css)" },
+        "1.3": { "status": "pending", "description": "Replace next/image with <img> in 8 component files" },
+        "1.4": { "status": "pending", "description": "Update wagmi config: ssr: true -> ssr: false" },
+        "1.5": { "status": "pending", "description": "Update build tooling (package.json scripts, deps, Dockerfile, remove next.config.mjs)" },
+        "1.6": { "status": "pending", "description": "Rename NEXT_PUBLIC_* env vars to VITE_* across all files" }
+      }
+    },
+    "phase2": {
+      "name": "Break Down use-stake-flows.ts",
+      "status": "pending",
+      "tasks": {
+        "2.1": { "status": "pending", "description": "Extract useTransactionReceipt wrapper hook" },
+        "2.2": { "status": "pending", "description": "Extract useTransactionSender hook" },
+        "2.3": { "status": "pending", "description": "Extract createStartTransaction factory" },
+        "2.4": { "status": "pending", "description": "Extract useWithdrawalSelection hook" },
+        "2.5": { "status": "pending", "description": "Extract useCooldownClock hook" },
+        "2.6": { "status": "pending", "description": "Extract per-flow state hooks" },
+        "2.7": { "status": "pending", "description": "Slim down use-stake-flows.ts to thin composer" }
+      }
+    },
+    "phase3": {
+      "name": "Extract useErc20WalletState Hook",
+      "status": "pending",
+      "tasks": {
+        "3.1": { "status": "pending", "description": "Create useErc20WalletState hook" },
+        "3.2": { "status": "pending", "description": "Extract parseWithdrawalRequests helper" }
+      }
+    },
+    "phase4": {
+      "name": "Component Decomposition",
+      "status": "pending",
+      "tasks": {
+        "4.1": { "status": "pending", "description": "Split stake-tabs.tsx into tab panels" },
+        "4.2": { "status": "pending", "description": "Extract WithdrawalRequestsList component" },
+        "4.3": { "status": "pending", "description": "Extract StakingWarningBanner component" },
+        "4.4": { "status": "pending", "description": "Extract DecorativeStatCard from staking-header.tsx" },
+        "4.5": { "status": "pending", "description": "Extract TxFlowModals from staking-interface.tsx" },
+        "4.6": { "status": "pending", "description": "Extract ExternalNavButton from top-bar.tsx" }
+      }
+    },
+    "phase5": {
+      "name": "Cleanup and Polish",
+      "status": "pending",
+      "tasks": {
+        "5.1": { "status": "pending", "description": "Fix inappropriate error copy in apr-history-chart.tsx" },
+        "5.2": { "status": "pending", "description": "Remove dead AprHistoryChart import from staking-interface.tsx" },
+        "5.3": { "status": "pending", "description": "Remove all 'use client' directives" },
+        "5.4": { "status": "pending", "description": "Add barrel index.ts exports" },
+        "5.5": { "status": "pending", "description": "Verify all tests pass" }
+      }
+    }
+  },
+  "notes": [
+    "config/hoodi.ts and config/mainnet.ts are dead code (not imported anywhere)",
+    "maintenance.tsx has next/image AND a regular <img> tag - needs cleanup"
+  ]
+}

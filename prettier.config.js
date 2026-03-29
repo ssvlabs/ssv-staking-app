@@ -7,7 +7,6 @@ const config = {
   trailingComma: "none",
   importOrder: [
     "^(react/(.*)$)|^(react$)",
-    "^(next/(.*)$)|^(next$)",
     "<THIRD_PARTY_MODULES>",
     "",
     "^types$",

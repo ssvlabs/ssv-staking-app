@@ -1,4 +1,4 @@
-"use client";
+
 
 import { useMultisigTransactionModal } from "@/lib/multisig-modal";
 import { STAKING_COPY } from "@/lib/staking/copy";

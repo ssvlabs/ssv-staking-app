@@ -1,7 +1,4 @@
-"use client";
-
 import { useCallback } from "react";
-import Image from "next/image";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { toast } from "sonner";
 import { useAccount } from "wagmi";
@@ -23,7 +20,6 @@ import { StakingHeader } from "@/components/staking/staking-header";
 import { TxFlowFooter } from "@/components/staking/tx-flow-footer";
 import { TxFlowModal } from "@/components/staking/tx-flow-modal";
 import { TxStepList } from "@/components/staking/tx-step-list";
-import { AprHistoryChart } from "@/components/apr-history-chart";
 
 const { ssvLarge, ssvMedium, ssvSmall, ethIcon, metamaskIcon, calculatorIcon } =
   STAKING_ASSETS;
@@ -302,7 +298,7 @@ export default function StakingInterface() {
               <span className="truncate">
                 {STAKING_COPY.buttons.addToMetamask}
               </span>
-              <Image
+              <img
                 alt=""
                 className="size-4"
                 src={metamaskIcon}
