@@ -1,28 +1,51 @@
+import type { ComponentPropsWithoutRef, FC } from "react";
+import { useAccount, useBalance } from "wagmi";
+
+import { getNetworkConfigByChainId } from "@/lib/config";
+import { usePreviewClaimableEth } from "@/lib/contract-interactions/hooks/getter";
+import { useDecimals } from "@/lib/contract-interactions/hooks/token";
+import { STAKING_ASSETS } from "@/lib/staking/constants";
 import { formatToken } from "@/lib/staking/format";
+import { cn } from "@/lib/utils";
 
-type StakingBalancesProps = {
-  ssvBalanceValue: bigint | undefined;
-  stakedBalanceValue: bigint | undefined;
-  claimableValue: bigint;
-  tokenDecimals: number;
-  receiptDecimals: number;
-  ssvLarge: string;
-  ssvSmall: string;
-  ethIcon: string;
-};
+const { ssvLarge, ssvSmall, ethIcon } = STAKING_ASSETS;
 
-export function StakingBalances({
-  ssvBalanceValue,
-  stakedBalanceValue,
-  claimableValue,
-  tokenDecimals,
-  receiptDecimals,
-  ssvLarge,
-  ssvSmall,
-  ethIcon
-}: StakingBalancesProps) {
+export const StakingBalances: FC<ComponentPropsWithoutRef<"section">> = ({
+  className,
+  ...props
+}) => {
+  const { address, chainId } = useAccount();
+  const network = getNetworkConfigByChainId(chainId);
+
+  const { data: ssvBalance } = useBalance({
+    address,
+    token: network.contracts.SSVToken,
+    query: { enabled: !!address },
+  });
+  const { data: cssvBalance } = useBalance({
+    address,
+    token: network.contracts.cSSVToken,
+    query: { enabled: !!address },
+  });
+  const { data: claimableRaw } = usePreviewClaimableEth(
+    { user: address! },
+    { enabled: !!address }
+  );
+  const { data: cssvDec } = useDecimals({
+    contract: network.contracts.cSSVToken,
+  });
+
+  const ssvBalanceValue = ssvBalance?.value;
+  const stakedBalanceValue = cssvBalance?.value;
+  const claimableValue = (claimableRaw as bigint) ?? 0n;
+  const tokenDecimals = ssvBalance?.decimals ?? 18;
+  const receiptDecimals = Number(cssvDec ?? tokenDecimals);
+
   return (
-    <section className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+    <section
+      className={cn("grid grid-cols-1 gap-6 sm:grid-cols-3", className)}
+      {...props}
+    >
       <div className="rounded-[16px] bg-surface-25 p-6">
         <p className="text-[14px] font-semibold text-ink-400">
           Available to Stake
@@ -41,7 +64,9 @@ export function StakingBalances({
         </div>
       </div>
       <div className="rounded-[16px] bg-surface-25 p-6">
-        <p className="text-[14px] font-semibold text-ink-400">Staked Balance</p>
+        <p className="text-[14px] font-semibold text-ink-400">
+          Staked Balance
+        </p>
         <div className="mt-3 flex items-center gap-2">
           <span className="flex size-7 items-center justify-center rounded-full bg-[linear-gradient(135deg,#5c8de6_0%,#3e75e2_100%)] p-[6px]">
             <img
@@ -74,4 +99,6 @@ export function StakingBalances({
       </div>
     </section>
   );
-}
+};
+
+StakingBalances.displayName = "StakingBalances";

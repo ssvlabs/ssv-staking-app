@@ -1,78 +1,93 @@
+import type { ComponentPropsWithoutRef, FC } from "react";
+import { useAccount, useBalance } from "wagmi";
+import { useLocalStorage } from "react-use";
+
+import { getNetworkConfigByChainId } from "@/lib/config";
+import { useTotalStaked } from "@/lib/contract-interactions/hooks/getter";
+import { STAKING_ASSETS } from "@/lib/staking/constants";
 import { formatApr, formatToken } from "@/lib/staking/format";
+import { useAprMetric } from "@/lib/staking/use-apr-metric";
+import { cn } from "@/lib/utils";
 import { InfoIcon } from "@/components/ui/info-icon";
 import { Tooltip } from "@/components/ui/tooltip";
 import { AprHistoryChart } from "../apr-history-chart";
-import { useAccount } from "wagmi";
-import { useLocalStorage } from "react-use";
 
-type StakingHeaderProps = {
-  aprValue: number | null;
-  potentialAprValue: number | null;
-  totalStakedValue: bigint | undefined;
-  tokenDecimals: number;
-  ssvSmall: string;
-  calculatorIcon: string;
-};
+const { ssvSmall, calculatorIcon } = STAKING_ASSETS;
 
-export function StakingHeader({
-  aprValue,
-  potentialAprValue,
-  totalStakedValue,
-  tokenDecimals,
-  ssvSmall,
-  calculatorIcon,
-}: StakingHeaderProps) {
-  const aprBgPieces = [
-    {
-      light: "/figma/staking-apr-bg-light-1.svg",
-      dark: "/figma/staking-apr-bg-dark-1.svg",
-      className: "absolute inset-[61%_36.2%_6.6%_36.44%]",
-    },
-    {
-      light: "/figma/staking-apr-bg-light-2.svg",
-      dark: "/figma/staking-apr-bg-dark-2.svg",
-      className: "absolute inset-[29%_53.64%_38.6%_19%]",
-    },
-    {
-      light: "/figma/staking-apr-bg-light-3.svg",
-      dark: "/figma/staking-apr-bg-dark-3.svg",
-      className: "absolute inset-[28.42%_18.92%_39.18%_53.72%]",
-    },
-    {
-      light: "/figma/staking-apr-bg-light-4.svg",
-      dark: "/figma/staking-apr-bg-dark-4.svg",
-      className: "absolute inset-[8%_36.57%_59.6%_36%]",
-    },
-  ];
+const aprBgPieces = [
+  {
+    light: "/figma/staking-apr-bg-light-1.svg",
+    dark: "/figma/staking-apr-bg-dark-1.svg",
+    className: "absolute inset-[61%_36.2%_6.6%_36.44%]",
+  },
+  {
+    light: "/figma/staking-apr-bg-light-2.svg",
+    dark: "/figma/staking-apr-bg-dark-2.svg",
+    className: "absolute inset-[29%_53.64%_38.6%_19%]",
+  },
+  {
+    light: "/figma/staking-apr-bg-light-3.svg",
+    dark: "/figma/staking-apr-bg-dark-3.svg",
+    className: "absolute inset-[28.42%_18.92%_39.18%_53.72%]",
+  },
+  {
+    light: "/figma/staking-apr-bg-light-4.svg",
+    dark: "/figma/staking-apr-bg-dark-4.svg",
+    className: "absolute inset-[8%_36.57%_59.6%_36%]",
+  },
+];
 
-  const totalBgPieces = [
-    {
-      light: "/figma/staking-total-bg-light-1.svg",
-      dark: "/figma/staking-total-bg-dark-1.svg",
-      className: "absolute inset-[61%_36.2%_6.6%_36.44%]",
-    },
-    {
-      light: "/figma/staking-total-bg-light-2.svg",
-      dark: "/figma/staking-total-bg-dark-2.svg",
-      className: "absolute inset-[29%_53.64%_38.6%_19%]",
-    },
-    {
-      light: "/figma/staking-total-bg-light-3.svg",
-      dark: "/figma/staking-total-bg-dark-3.svg",
-      className: "absolute inset-[28.42%_18.92%_39.18%_53.72%]",
-    },
-    {
-      light: "/figma/staking-total-bg-light-4.svg",
-      dark: "/figma/staking-total-bg-dark-4.svg",
-      className: "absolute inset-[8%_36.57%_59.6%_36%]",
-    },
-  ];
+const totalBgPieces = [
+  {
+    light: "/figma/staking-total-bg-light-1.svg",
+    dark: "/figma/staking-total-bg-dark-1.svg",
+    className: "absolute inset-[61%_36.2%_6.6%_36.44%]",
+  },
+  {
+    light: "/figma/staking-total-bg-light-2.svg",
+    dark: "/figma/staking-total-bg-dark-2.svg",
+    className: "absolute inset-[29%_53.64%_38.6%_19%]",
+  },
+  {
+    light: "/figma/staking-total-bg-light-3.svg",
+    dark: "/figma/staking-total-bg-dark-3.svg",
+    className: "absolute inset-[28.42%_18.92%_39.18%_53.72%]",
+  },
+  {
+    light: "/figma/staking-total-bg-light-4.svg",
+    dark: "/figma/staking-total-bg-dark-4.svg",
+    className: "absolute inset-[8%_36.57%_59.6%_36%]",
+  },
+];
 
-  const { chainId } = useAccount();
+export const StakingHeader: FC<ComponentPropsWithoutRef<"section">> = ({
+  className,
+  ...props
+}) => {
+  const { address, chainId } = useAccount();
+  const network = getNetworkConfigByChainId(chainId);
+
+  const { aprValue, potentialAprValue } = useAprMetric(chainId);
+  const { data: totalStakedRaw } = useTotalStaked();
+  const { data: ssvBalance } = useBalance({
+    address,
+    token: network.contracts.SSVToken,
+    query: { enabled: !!address },
+  });
+
+  const totalStakedValue = totalStakedRaw as bigint | undefined;
+  const tokenDecimals = ssvBalance?.decimals ?? 18;
+
   const [showAprHistory] = useLocalStorage("showChart", false);
 
   return (
-    <section className="flex flex-col gap-6 rounded-[16px] bg-[#fdfefe] p-6 dark:bg-[#0b2a3c]">
+    <section
+      className={cn(
+        "flex flex-col gap-6 rounded-[16px] bg-[#fdfefe] p-6 dark:bg-[#0b2a3c]",
+        className
+      )}
+      {...props}
+    >
       <div className="flex flex-col gap-2">
         <p className="text-[20px] font-bold leading-[28px] text-[#0b2a3c] dark:text-[#fdfefe]">
           SSV Staking
@@ -125,7 +140,6 @@ export function StakingHeader({
             </p>
           </div>
 
-          {/* Potential APR — center card with calculator link */}
           <div className="relative flex flex-col gap-4 overflow-hidden rounded-[12px] bg-gradient-to-br from-[#264FA4] to-[#2F61C9] p-5">
             <div
               className="pointer-events-none absolute inset-0 flex items-center justify-center"
@@ -227,4 +241,6 @@ export function StakingHeader({
       </div>
     </section>
   );
-}
+};
+
+StakingHeader.displayName = "StakingHeader";

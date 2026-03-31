@@ -1,11 +1,9 @@
-import { parseUnits } from "viem";
 import { describe, expect, it } from "vitest";
 
 import {
   formatDuration,
   formatToken,
   formatTxHash,
-  safeParse
 } from "@/lib/staking/format";
 
 describe("formatToken", () => {
@@ -21,16 +19,6 @@ describe("formatToken", () => {
 describe("formatTxHash", () => {
   it("truncates hashes for display", () => {
     expect(formatTxHash("0x1234567890abcdef")).toBe("0x1234...cdef");
-  });
-});
-
-describe("safeParse", () => {
-  it("returns zero for empty input", () => {
-    expect(safeParse("", 18)).toBe(0n);
-  });
-
-  it("parses values with commas", () => {
-    expect(safeParse("1,000.5", 18)).toBe(parseUnits("1000.5", 18));
   });
 });
 

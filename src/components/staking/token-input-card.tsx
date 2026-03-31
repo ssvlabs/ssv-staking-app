@@ -1,7 +1,10 @@
+import type { ComponentPropsWithoutRef, FC } from "react";
+
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-type TokenInputCardProps = {
+export type TokenInputCardProps = {
   balanceLabel: string;
   iconSrc: string;
   symbol: string;
@@ -10,9 +13,15 @@ type TokenInputCardProps = {
   onMax: () => void;
   showMax?: boolean;
   isConnected: boolean;
+  error?: string;
 };
 
-export function TokenInputCard({
+type TokenInputCardFC = FC<
+  Omit<ComponentPropsWithoutRef<"div">, keyof TokenInputCardProps> &
+    TokenInputCardProps
+>;
+
+export const TokenInputCard: TokenInputCardFC = ({
   balanceLabel,
   iconSrc,
   symbol,
@@ -20,20 +29,19 @@ export function TokenInputCard({
   onAmountChange,
   onMax,
   showMax = true,
-  isConnected
-}: TokenInputCardProps) {
+  isConnected,
+  error,
+  className,
+  ...props
+}) => {
   const handleInputChange = (value: string) => {
-    // Allow empty string
     if (value === "") {
       onAmountChange(value);
       return;
     }
 
-    // Only allow numbers and one decimal point
     const regex = /^\d*\.?\d*$/;
     if (regex.test(value)) {
-      // Remove leading zeros except when followed by decimal point
-      // Examples: "01" -> "1", "001" -> "1", but "0.1" stays "0.1", "0" stays "0"
       let cleanedValue = value;
       if (value.length > 1 && value[0] === "0" && value[1] !== ".") {
         cleanedValue = value.replace(/^0+/, "") || "0";
@@ -43,7 +51,13 @@ export function TokenInputCard({
   };
 
   return (
-    <div className="rounded-[12px] border border-border bg-surface-100 px-6 py-4">
+    <div
+      className={cn(
+        "rounded-[12px] border border-border bg-surface-100 px-6 py-4",
+        className
+      )}
+      {...props}
+    >
       <div className="flex items-center justify-between">
         <Input
           className="w-full text-[28px] font-medium text-ink-900 placeholder:text-ink-400"
@@ -84,6 +98,11 @@ export function TokenInputCard({
           </Button>
         ) : null}
       </div>
+      {error ? (
+        <p className="mt-2 text-[14px] text-danger-500">{error}</p>
+      ) : null}
     </div>
   );
-}
+};
+
+TokenInputCard.displayName = "TokenInputCard";

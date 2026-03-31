@@ -1,4 +1,4 @@
-import { formatUnits, parseUnits } from "viem";
+import { formatUnits } from "viem";
 
 export const formatToken = (value?: bigint, decimals = 18, maxDecimals = 4) => {
   if (value === undefined) return "--";
@@ -22,15 +22,6 @@ export const formatApr = (value: number | null): string => {
 
 export const formatTxHash = (hash: string) =>
   `${hash.slice(0, 6)}...${hash.slice(-4)}`;
-
-export const safeParse = (value: string, decimals: number) => {
-  if (!value) return 0n;
-  try {
-    return parseUnits(value.replace(/,/g, ""), decimals);
-  } catch {
-    return 0n;
-  }
-};
 
 export const formatDuration = (totalSeconds: number) => {
   if (totalSeconds <= 0) return "Now";
