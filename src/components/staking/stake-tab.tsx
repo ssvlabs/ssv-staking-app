@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { formatUnits, parseUnits } from "viem";
 import { useAccount, useBalance } from "wagmi";
 
-import { getNetworkConfigByChainId } from "@/lib/config";
 import { useStake } from "@/lib/contract-interactions/hooks/setter";
 import {
   useAllowance,
@@ -23,6 +22,7 @@ import { formatToken } from "@/lib/staking/format";
 import { createStakeSchema } from "@/lib/staking/schemas";
 import { cn } from "@/lib/utils";
 import { useCooldownLabel } from "@/hooks/use-cooldown-label";
+import { useNetworkConfig } from "@/hooks/use-network-config";
 import { InfoIcon } from "@/components/ui/info-icon";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import { Tooltip } from "@/components/ui/tooltip";
@@ -43,8 +43,8 @@ export const StakeTab: StakeTabFC = ({
   className,
   ...props
 }) => {
-  const { address, chainId } = useAccount();
-  const network = getNetworkConfigByChainId(chainId);
+  const { address } = useAccount();
+  const network = useNetworkConfig();
 
   const { data: ssvBalance, refetch: refetchBalance } = useBalance({
     address,

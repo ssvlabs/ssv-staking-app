@@ -92,6 +92,7 @@ export const TokenInputCard: TokenInputCardFC = ({
           <Button
             className="text-[16px] font-medium text-staking-primary-500"
             onClick={onMax}
+            type="button"
             disabled={!isConnected}
           >
             MAX

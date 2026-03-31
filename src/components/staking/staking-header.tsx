@@ -2,12 +2,12 @@ import type { ComponentPropsWithoutRef, FC } from "react";
 import { useAccount, useBalance } from "wagmi";
 import { useLocalStorage } from "react-use";
 
-import { getNetworkConfigByChainId } from "@/lib/config";
 import { useTotalStaked } from "@/lib/contract-interactions/hooks/getter";
 import { STAKING_ASSETS } from "@/lib/staking/constants";
 import { formatApr, formatToken } from "@/lib/staking/format";
 import { useAprMetric } from "@/lib/staking/use-apr-metric";
 import { cn } from "@/lib/utils";
+import { useNetworkConfig } from "@/hooks/use-network-config";
 import { InfoIcon } from "@/components/ui/info-icon";
 import { Tooltip } from "@/components/ui/tooltip";
 import { AprHistoryChart } from "../apr-history-chart";
@@ -65,7 +65,7 @@ export const StakingHeader: FC<ComponentPropsWithoutRef<"section">> = ({
   ...props
 }) => {
   const { address, chainId } = useAccount();
-  const network = getNetworkConfigByChainId(chainId);
+  const network = useNetworkConfig();
 
   const { aprValue, potentialAprValue } = useAprMetric(chainId);
   const { data: totalStakedRaw } = useTotalStaked();

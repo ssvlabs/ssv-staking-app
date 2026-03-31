@@ -1,8 +1,7 @@
 import type { FC, ComponentPropsWithoutRef } from "react";
 import { ExternalLink } from "lucide-react";
-import { useAccount } from "wagmi";
 import { cn } from "@/lib/utils";
-import { getNetworkConfigByChainId } from "@/lib/config";
+import { useNetworkConfig } from "@/hooks/use-network-config";
 import type { TransactionState } from "@/lib/machines/transaction-machine";
 import { formatTxHash } from "@/lib/staking/format";
 import { StepIndicator } from "./step-indicator";
@@ -17,9 +16,8 @@ type TransactionCardFC = FC<
 >;
 
 export const TransactionCard: TransactionCardFC = ({ tx, onRetry, className, ...props }) => {
-  const { chainId } = useAccount();
-  const explorerBaseUrl =
-    getNetworkConfigByChainId(chainId).blockExplorer.txBaseUrl;
+  const network = useNetworkConfig();
+  const explorerBaseUrl = network.blockExplorer.txBaseUrl;
 
   const Label = tx.label;
   const isError = tx.status === "error";

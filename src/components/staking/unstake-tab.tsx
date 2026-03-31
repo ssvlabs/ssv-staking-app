@@ -6,7 +6,6 @@ import { AlertTriangle } from "lucide-react";
 import { formatUnits } from "viem";
 import { useAccount, useBalance } from "wagmi";
 
-import { getNetworkConfigByChainId } from "@/lib/config";
 import {
   useRequestUnstake,
   useWithdrawUnlocked,
@@ -24,6 +23,7 @@ import { formatDuration, formatToken } from "@/lib/staking/format";
 import { createUnstakeSchema } from "@/lib/staking/schemas";
 import { cn } from "@/lib/utils";
 import { useCooldownLabel } from "@/hooks/use-cooldown-label";
+import { useNetworkConfig } from "@/hooks/use-network-config";
 import { useNowEpoch } from "@/hooks/use-now-epoch";
 import { useWithdrawalRequests } from "@/hooks/use-withdrawal-requests";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button";
@@ -44,8 +44,8 @@ export const UnstakeTab: UnstakeTabFC = ({
   className,
   ...props
 }) => {
-  const { address, chainId } = useAccount();
-  const network = getNetworkConfigByChainId(chainId);
+  const { address } = useAccount();
+  const network = useNetworkConfig();
   const nowEpoch = useNowEpoch();
   const modal = useTransactionModal();
 
@@ -159,17 +159,15 @@ export const UnstakeTab: UnstakeTabFC = ({
       {withdrawalRequests.length > 0 && (
         <div className="flex flex-col gap-3">
           {unlockedRequests.length > 0 && (
-            <div className="flex w-full items-center justify-between gap-4 rounded-[12px] border border-brand-100 bg-brand-50 px-5 py-4">
-              <div className="flex flex-col">
-                <span className="font-dm-sans text-[20px] font-medium text-ink-900">
-                  {formatToken(totalUnlockedAmount, tokenDecimals)} SSV
-                </span>
-              </div>
+            <div className="flex w-full items-center justify-between rounded-[12px] border border-[#d1edfe] bg-[#e8f6fe]/50 p-5 dark:border-[#1ba5f8]/30 dark:bg-[#1ba5f8]/10">
+              <span className="text-[24px] font-medium leading-[32px] text-[#0b2a3c] dark:text-[#fdfefe]">
+                {formatToken(totalUnlockedAmount, tokenDecimals)} cSSV
+              </span>
               <button
                 type="button"
                 onClick={handleWithdraw}
                 disabled={modal.isOpen}
-                className="hover:bg-brand-700 h-[36px] rounded-[6px] bg-brand-600 px-4 text-[14px] font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-[4px] bg-[#1ba5f8] px-4 py-1.5 text-[12px] font-medium leading-[20px] text-[#fdfefe] transition hover:bg-[#0d8fd8] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Withdraw
               </button>
@@ -177,22 +175,19 @@ export const UnstakeTab: UnstakeTabFC = ({
           )}
 
           {lockedRequests.map((request) => {
-            const countdownSeconds = Math.max(
-              0,
-              request.unlockTime - nowEpoch
-            );
+            const countdownSeconds = Math.max(0, request.unlockTime - nowEpoch);
             return (
               <div
                 key={request.id}
-                className="flex w-full items-center justify-between gap-4 rounded-[12px] bg-surface-50 px-5 py-4"
+                className="flex w-full items-center justify-between rounded-[12px] border border-[#e6eaf7] bg-[#f9fbfc] p-5 dark:border-[#34455a] dark:bg-[#0b1620]"
               >
-                <div className="flex flex-col">
-                  <span className="font-dm-sans text-[20px] font-medium text-gray-300">
-                    {formatToken(request.amount, tokenDecimals)} SSV
+                <span className="flex-1 text-[24px] font-medium leading-[32px] text-[#97a5ba]">
+                  {formatToken(request.amount, tokenDecimals)} cSSV
+                </span>
+                <div className="flex h-[32px] w-[188px] items-center justify-center overflow-hidden rounded-[4px] bg-[#e6eaf7] dark:bg-[#34455a]">
+                  <span className="text-[12px] font-medium leading-[20px] text-[#63768b] dark:text-[#97a5ba]">
+                    Withdrawable in {formatDuration(countdownSeconds)}
                   </span>
-                </div>
-                <div className="flex h-[36px] items-center justify-center rounded-[4px] border border-surface-100 bg-gray-300 px-4 py-0 text-[14px] font-semibold text-gray-600">
-                  Withdrawable in {formatDuration(countdownSeconds)}
                 </div>
               </div>
             );
@@ -202,7 +197,10 @@ export const UnstakeTab: UnstakeTabFC = ({
 
       <form onSubmit={submit} className="space-y-6">
         <TokenInputCard
-          balanceLabel={`Wallet Balance: ${formatToken(stakedBalance, receiptDecimals)}`}
+          balanceLabel={`Wallet Balance: ${formatToken(
+            stakedBalance,
+            receiptDecimals
+          )}`}
           iconSrc={STAKING_ASSETS.ssvSmall}
           symbol="cSSV"
           amount={form.watch("amount")}

@@ -1,33 +1,25 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 
-import { getNetworkConfigByChainId } from "@/lib/config";
 import { useTheme } from "@/lib/theme";
+import { useNetworkConfig } from "@/hooks/use-network-config";
 
 import { NetworkSwitchBtn } from "./ui/network-switch-btn";
 import { Button } from "./ui/button";
 
 export default function TopBar() {
-  const { chainId, isConnected } = useAccount();
+  const { isConnected } = useAccount();
   const { theme, toggleTheme } = useTheme();
-  const activeNetwork = getNetworkConfigByChainId(chainId);
-  const faucetUrl = activeNetwork.faucetUrl;
-  const dvtUrl = activeNetwork.dvtUrl;
+  const network = useNetworkConfig();
   const isDark = theme === "dark";
-  const metamaskIcon = "/figma/metamask.png";
-  const logoSrc = isDark
-    ? "/figma/logoStaking-dark.svg"
-    : "/figma/logoStaking.svg";
-  const connectPattern = "/figma/ssv-button-bg.svg";
-  const toggleLight = "/figma/modeToggle.svg";
-  const toggleDark = "/figma/modeToggle-dark.svg";
+
   return (
     <header className="relative w-full border-b border-border ">
       <div className="flex h-[72px] w-full items-center justify-between px-6">
         <div className="flex items-center">
           <img
             alt="ssv.network staking"
-            src={logoSrc}
+            src={isDark ? "/figma/logoStaking-dark.svg" : "/figma/logoStaking.svg"}
             className="h-[32px] w-[160px]"
             width={160}
             height={32}
@@ -35,8 +27,8 @@ export default function TopBar() {
         </div>
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
-            {faucetUrl ? (
-              <a href={faucetUrl} target="_blank" rel="noopener noreferrer">
+            {network.faucetUrl ? (
+              <a href={network.faucetUrl} target="_blank" rel="noopener noreferrer">
                 <Button
                   className="flex h-12 items-center gap-3 rounded-[8px] bg-surface-50 px-4 text-sm"
                   type="button"
@@ -45,8 +37,8 @@ export default function TopBar() {
                 </Button>
               </a>
             ) : null}
-            {dvtUrl ? (
-              <a href={dvtUrl} target="_blank" rel="noopener noreferrer">
+            {network.dvtUrl ? (
+              <a href={network.dvtUrl} target="_blank" rel="noopener noreferrer">
                 <Button
                   className="flex h-12 items-center gap-3 rounded-[8px] bg-surface-50 px-4 text-sm"
                   type="button"
@@ -64,20 +56,17 @@ export default function TopBar() {
                 openAccountModal,
                 mounted,
               }) => {
-                const ready = mounted;
-                const connected = ready && isConnected && account && chain;
-                const label = connected
-                  ? account.displayName
-                  : "Connect Wallet";
-                const buttonClass = connected
-                  ? "bg-surface-50 text-ink-900 px-4 gap-3"
-                  : "bg-cta-bg text-cta-text px-5 gap-2 hover:bg-cta-bg-hover active:bg-cta-bg-active disabled:bg-cta-bg-disabled disabled:text-cta-text-disabled";
+                const connected = mounted && isConnected && account && chain;
                 return (
                   <button
                     type="button"
                     onClick={connected ? openAccountModal : openConnectModal}
-                    className={`relative flex h-[48px] items-center overflow-hidden rounded-[8px] text-[14px] font-medium transition ${buttonClass}`}
-                    {...(!ready && {
+                    className={`relative flex h-[48px] items-center overflow-hidden rounded-[8px] text-[14px] font-medium transition ${
+                      connected
+                        ? "bg-surface-50 text-ink-900 px-4 gap-3"
+                        : "bg-cta-bg text-cta-text px-5 gap-2 hover:bg-cta-bg-hover active:bg-cta-bg-active disabled:bg-cta-bg-disabled disabled:text-cta-text-disabled"
+                    }`}
+                    {...(!mounted && {
                       "aria-hidden": true,
                       tabIndex: -1,
                     })}
@@ -89,7 +78,7 @@ export default function TopBar() {
                       >
                         <img
                           alt=""
-                          src={connectPattern}
+                          src="/figma/ssv-button-bg.svg"
                           className="size-full"
                           width={263}
                           height={78}
@@ -98,7 +87,7 @@ export default function TopBar() {
                     ) : null}
                     {connected ? (
                       <img
-                        src={metamaskIcon}
+                        src="/figma/metamask.png"
                         alt=""
                         className="size-6"
                         width={24}
@@ -106,7 +95,7 @@ export default function TopBar() {
                         aria-hidden="true"
                       />
                     ) : null}
-                    {label}
+                    {connected ? account.displayName : "Connect Wallet"}
                   </button>
                 );
               }}
@@ -122,7 +111,7 @@ export default function TopBar() {
               <img
                 alt=""
                 aria-hidden="true"
-                src={toggleLight}
+                src="/figma/modeToggle.svg"
                 className={`absolute inset-0 size-full transition-all duration-200 ease-out ${
                   isDark
                     ? "translate-x-1 opacity-0"
@@ -134,7 +123,7 @@ export default function TopBar() {
               <img
                 alt=""
                 aria-hidden="true"
-                src={toggleDark}
+                src="/figma/modeToggle-dark.svg"
                 className={`absolute inset-0 size-full transition-all duration-200 ease-out ${
                   isDark
                     ? "translate-x-0 opacity-100"

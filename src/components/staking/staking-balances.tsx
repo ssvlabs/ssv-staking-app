@@ -1,12 +1,12 @@
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { useAccount, useBalance } from "wagmi";
 
-import { getNetworkConfigByChainId } from "@/lib/config";
 import { usePreviewClaimableEth } from "@/lib/contract-interactions/hooks/getter";
 import { useDecimals } from "@/lib/contract-interactions/hooks/token";
 import { STAKING_ASSETS } from "@/lib/staking/constants";
 import { formatToken } from "@/lib/staking/format";
 import { cn } from "@/lib/utils";
+import { useNetworkConfig } from "@/hooks/use-network-config";
 
 const { ssvLarge, ssvSmall, ethIcon } = STAKING_ASSETS;
 
@@ -14,8 +14,8 @@ export const StakingBalances: FC<ComponentPropsWithoutRef<"section">> = ({
   className,
   ...props
 }) => {
-  const { address, chainId } = useAccount();
-  const network = getNetworkConfigByChainId(chainId);
+  const { address } = useAccount();
+  const network = useNetworkConfig();
 
   const { data: ssvBalance } = useBalance({
     address,
