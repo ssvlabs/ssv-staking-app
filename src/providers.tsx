@@ -2,7 +2,7 @@ import { useState, type ReactNode } from "react";
 import {
   darkTheme,
   lightTheme,
-  RainbowKitProvider
+  RainbowKitProvider,
 } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
@@ -44,7 +44,7 @@ function ProvidersInner({ children }: { children: ReactNode }) {
             accentColor: "#1ba5f8",
             accentColorForeground: "#fdfefe",
             borderRadius: "large",
-            fontStack: "system"
+            fontStack: "system",
           });
           return {
             ...base,
@@ -66,8 +66,8 @@ function ProvidersInner({ children }: { children: ReactNode }) {
               closeButtonBackground: "rgba(255, 255, 255, 0.06)",
               profileForeground: "#0b2a3c",
               selectedOptionBorder: "#34455a",
-              modalBackdrop: "var(--color-overlay)"
-            }
+              modalBackdrop: "var(--color-overlay)",
+            },
           };
         })()
       : (() => {
@@ -75,7 +75,7 @@ function ProvidersInner({ children }: { children: ReactNode }) {
             accentColor: "#1ba5f8",
             accentColorForeground: "#ffffff",
             borderRadius: "large",
-            fontStack: "system"
+            fontStack: "system",
           });
           return {
             ...base,
@@ -97,8 +97,8 @@ function ProvidersInner({ children }: { children: ReactNode }) {
               closeButtonBackground: "rgba(0, 0, 0, 0.06)",
               profileForeground: "#fdfefe",
               selectedOptionBorder: "#e6eaf7",
-              modalBackdrop: "var(--color-overlay)"
-            }
+              modalBackdrop: "var(--color-overlay)",
+            },
           };
         })();
 

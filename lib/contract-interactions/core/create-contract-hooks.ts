@@ -10,9 +10,7 @@ import { useInterval } from "react-use";
 import { isAddress } from "viem";
 
 import type { QueryKey } from "@tanstack/react-query";
-import type {
-  UseQueryOptions as DefaultUseQueryOptions,
-} from "@tanstack/react-query";
+import type { UseQueryOptions as DefaultUseQueryOptions } from "@tanstack/react-query";
 import { useWaitForTransactionReceipt } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import type {
   MutationOptions,
@@ -33,22 +31,21 @@ type UseQueryOptions<
   TQueryFnData = unknown,
   TError = Error,
   TData = TQueryFnData,
-  TQueryKey extends QueryKey = QueryKey,
+  TQueryKey extends QueryKey = QueryKey
 > = Omit<
   DefaultUseQueryOptions<TQueryFnData, TError, TData, TQueryKey>,
   "queryKey" | "queryFn"
 >;
 
-const wait = (ms: number) =>
-  new Promise((resolve) => setTimeout(resolve, ms));
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-type WriteParams<T extends AbiFunction> = {
+export type WriteParams<T extends AbiFunction> = {
   args: Prettify<AbiInputsToParams<T["inputs"]>>;
   value?: bigint;
   options?: MutationOptions<AllEvents>;
 };
 
-type WriteHookResult<T extends AbiFunction> = {
+export type WriteHookResult<T extends AbiFunction> = {
   error: Error | null;
   isSuccess: boolean;
   isPending: boolean;
@@ -62,7 +59,7 @@ type WriteHookResult<T extends AbiFunction> = {
   wait: ReturnType<typeof useWaitForTransactionReceipt>;
 };
 
-type WriteHooksObject<T extends AbiFunction[]> = {
+export type WriteHooksObject<T extends AbiFunction[]> = {
   [Fn in T[number] as `use${Capitalize<Fn["name"]>}`]: (args?: {
     chainId?: number;
     contract?: Address;
@@ -78,18 +75,20 @@ type CustomQueryOptions = {
 const refetchInterval = 12000;
 
 type ReadHooksObject<T extends AbiFunction[]> = {
-  [Fn in T[number] as `use${Capitalize<Fn["name"]>}`]: Fn["inputs"] extends readonly []
+  [Fn in T[number] as `use${Capitalize<
+    Fn["name"]
+  >}`]: Fn["inputs"] extends readonly []
     ? (
         options?: CustomQueryOptions &
           //@ts-ignore - Fn["name"] constraint
-          UseQueryOptions<UseReadContractReturnType<T, Fn["name"]>["data"]>,
+          UseQueryOptions<UseReadContractReturnType<T, Fn["name"]>["data"]>
         //@ts-ignore - Fn["name"] constraint
       ) => UseReadContractReturnType<T, Fn["name"]>
     : (
         params: AbiInputsToParams<Fn["inputs"]>,
         options?: CustomQueryOptions &
           //@ts-ignore - Fn["name"] constraint
-          UseQueryOptions<UseReadContractReturnType<T, Fn["name"]>["data"]>,
+          UseQueryOptions<UseReadContractReturnType<T, Fn["name"]>["data"]>
         //@ts-ignore - Fn["name"] constraint
       ) => UseReadContractReturnType<T, Fn["name"]>;
 };
@@ -100,7 +99,7 @@ const capitalize = (str: string) => {
 
 export function createContractHooks<
   T extends Abi,
-  DefaultContractAddressGetter extends () => Address | undefined,
+  DefaultContractAddressGetter extends () => Address | undefined
 >(abi: T, defaultContractAddressGetter?: DefaultContractAddressGetter) {
   const abiItems = abi as unknown as Abi;
 
@@ -108,13 +107,13 @@ export function createContractHooks<
     (item) =>
       item.type === "function" &&
       item.stateMutability !== "view" &&
-      item.stateMutability !== "pure",
+      item.stateMutability !== "pure"
   ) as AbiFunction[];
 
   const readFunctions = abiItems.filter(
     (item) =>
       item.type === "function" &&
-      (item.stateMutability === "view" || item.stateMutability === "pure"),
+      (item.stateMutability === "view" || item.stateMutability === "pure")
   ) as AbiFunction[];
 
   const hooks = {};
@@ -135,7 +134,7 @@ export function createContractHooks<
           chainId = getChainId(wagmiConfig),
           contract = defaultContractAddressGetter?.(),
           ...queryOptions
-        }: CustomQueryOptions = {},
+        }: CustomQueryOptions = {}
       ) => {
         const contractAddress = contract || defaultContractAddressGetter?.();
 
@@ -203,7 +202,7 @@ export function createContractHooks<
 
       const abiFunction = useMemo(
         () => extractAbiFunction(abi, functionName),
-        [functionName],
+        [functionName]
       );
 
       const mutation = useWriteContract();
@@ -227,19 +226,17 @@ export function createContractHooks<
             {
               onSuccess: (hash) => params?.options?.onConfirmed?.(hash),
               onError: (error) => params?.options?.onError?.(error),
-            },
+            }
           )
           .then((hash) =>
             waitForTx.mutateAsync(hash, {
               onSuccess: async (receipt) => {
-                await wait(1);
                 return params?.options?.onMined?.(receipt);
               },
               onError: async (error) => {
-                await wait(1);
                 return params?.options?.onError?.(error as any);
               },
-            }),
+            })
           );
       };
 
@@ -261,7 +258,7 @@ export function createContractHooks<
             onSuccess: (hash) => params?.options?.onConfirmed?.(hash),
             onError: (error) =>
               params?.options?.onError?.(error as WriteContractErrorType),
-          },
+          }
         );
       };
 
