@@ -1,15 +1,15 @@
 import type { FC, ReactNode } from "react";
-import type { Hash } from "viem";
-import { setup, fromCallback, assign } from "xstate";
-import type { WriteHookResult } from "@/lib/contract-interactions/core/create-contract-hooks";
 import { toast } from "sonner";
+import type { Hash } from "viem";
+import { assign, fromCallback, setup } from "xstate";
 import { getErrorMessage } from "../utils/wagmi";
 
 export type Status = "idle" | "initiated" | "confirmed" | "mined" | "error";
 
 export type TransactionStep = {
-  write: WriteHookResult<any>["write"];
-  params: Parameters<WriteHookResult<any>["write"]>[0];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  write: (...args: any[]) => any;
+  params?: Record<string, unknown>;
   label: string | FC<{ status: Status }>;
 };
 
@@ -18,11 +18,14 @@ export type TransactionState = TransactionStep & {
   hash?: Hash;
 };
 
-export function tx<T extends (...args: any) => any>(step: {
-  write: T;
-  params: Parameters<T>[0];
-  label: string | FC<{ status: Status }>;
-}) {
+export function tx<T extends (...args: any) => any>(
+  step: {
+    write: T;
+    label: string | FC<{ status: Status }>;
+  } & (undefined extends Parameters<T>[0]
+    ? { params?: Parameters<T>[0] }
+    : { params: Parameters<T>[0] })
+) {
   return step;
 }
 
@@ -36,18 +39,21 @@ const writerActor = fromCallback<
   | { type: "TX_ERROR"; error: unknown },
   WriterInput
 >(({ sendBack, input }) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const params = input.step.params as Record<string, any> | undefined;
   (input.step.write as any)({
-    ...(input.step.params as any),
+    ...params,
     options: {
-      ...input.step.params?.options,
+      ...params?.options,
       onConfirmed: (hash: Hash) => {
+        params?.options?.onConfirmed?.(hash);
         sendBack({ type: "TX_CONFIRMED", hash });
       },
       onMined: () => {
+        params?.options?.onMined?.();
         sendBack({ type: "TX_MINED" });
       },
       onError: (error: unknown) => {
+        params?.options?.onError?.(error);
         sendBack({ type: "TX_ERROR", error });
       },
     },
@@ -55,7 +61,7 @@ const writerActor = fromCallback<
   return () => {};
 });
 
-const updateTx = (
+const updateTransaction = (
   transactions: TransactionState[],
   i: number,
   patch: Partial<Pick<TransactionState, "status" | "hash">>
@@ -81,7 +87,7 @@ export const machine = setup({
           header: ReactNode;
           onDone?: () => void;
         }
-      | { type: "cancel" }
+      | { type: "cancel" | "close" }
       | { type: "TX_CONFIRMED"; hash: Hash }
       | { type: "TX_MINED" }
       | { type: "TX_ERROR"; error: unknown },
@@ -92,22 +98,24 @@ export const machine = setup({
     }),
     setInitiated: assign({
       transactions: ({ context }) =>
-        updateTx(context.transactions, context.i, { status: "initiated" }),
+        updateTransaction(context.transactions, context.i, {
+          status: "initiated",
+        }),
     }),
     setConfirmed: assign({
       transactions: ({ context, event }) =>
-        updateTx(context.transactions, context.i, {
+        updateTransaction(context.transactions, context.i, {
           status: "confirmed",
           hash: "hash" in event ? (event.hash as Hash) : undefined,
         }),
     }),
     setMined: assign({
       transactions: ({ context }) =>
-        updateTx(context.transactions, context.i, { status: "mined" }),
+        updateTransaction(context.transactions, context.i, { status: "mined" }),
     }),
     setError: assign({
       transactions: ({ context }) =>
-        updateTx(context.transactions, context.i, { status: "error" }),
+        updateTransaction(context.transactions, context.i, { status: "error" }),
     }),
   },
   actors: {
@@ -178,13 +186,11 @@ export const machine = setup({
       },
     },
     finished: {
-      after: {
-        1000: {
-          target: "idle",
-          actions: ({ context }) => {
-            context.onDone?.();
-          },
-        },
+      entry: ({ context }) => {
+        context.onDone?.();
+      },
+      on: {
+        close: "idle",
       },
     },
     failed: {

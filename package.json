@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
+    "@radix-ui/react-dialog": "^1.1.15",
     "@rainbow-me/rainbowkit": "2.2.10",
     "@tanstack/react-query": "5.90.12",
     "@xstate/react": "^6.1.0",
@@ -36,6 +37,7 @@
     "recharts": "^3.7.0",
     "sonner": "1.7.4",
     "tailwind-merge": "2.6.0",
+    "valtio": "^2.3.1",
     "viem": "2.43.3",
     "wagmi": "2.19.5",
     "xstate": "^5.30.0",

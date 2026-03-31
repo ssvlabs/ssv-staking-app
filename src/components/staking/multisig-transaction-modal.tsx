@@ -11,7 +11,7 @@ export function MultisigTransactionModal() {
   return (
     <TxFlowModal
       title={STAKING_COPY.modals.multisig}
-      isOpen={isOpen}
+      isOpen={isOpen|| true}
       onClose={close}
     >
       <div className="space-y-3 text-[14px] text-ink-500">

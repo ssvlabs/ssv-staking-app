@@ -75,7 +75,7 @@ describe("BatchTransactionMachine", () => {
     actor.stop();
   });
 
-  it("single transaction: initiated -> confirmed -> mined -> finished -> idle", async () => {
+  it("single transaction: initiated -> confirmed -> mined -> finished, close -> idle", async () => {
     const actor = createActor(machine);
     actor.start();
 
@@ -90,7 +90,8 @@ describe("BatchTransactionMachine", () => {
     await waitFor(actor, (snap) => snap.value === "finished");
     expect(statuses(actor)).toEqual(["mined"]);
 
-    await waitFor(actor, (snap) => snap.value === "idle");
+    actor.send({ type: "close" });
+    expect(actor.getSnapshot().value).toBe("idle");
     actor.stop();
   });
 
@@ -260,7 +261,7 @@ describe("BatchTransactionMachine", () => {
     actor.stop();
   });
 
-  it("onDone callback fires after finished", async () => {
+  it("onDone callback fires immediately on entering finished", async () => {
     const write = mockWriter("0xhash", 5);
     const onDone = vi.fn();
 
@@ -274,11 +275,11 @@ describe("BatchTransactionMachine", () => {
       onDone,
     });
 
-    await waitFor(actor, (snap) => snap.value === "idle", {
-      timeout: 3000,
-    });
-
+    await waitFor(actor, (snap) => snap.value === "finished");
     expect(onDone).toHaveBeenCalledTimes(1);
+
+    actor.send({ type: "close" });
+    expect(actor.getSnapshot().value).toBe("idle");
     actor.stop();
   });
 
