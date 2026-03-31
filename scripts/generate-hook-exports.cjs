@@ -16,14 +16,14 @@ const fs = require("fs");
 const path = require("path");
 
 const HOOKS_INDEX = path.join(
-  __dirname,
-  "../lib/contract-interactions/hooks/index.ts"
+  process.cwd(),
+  "src/lib/contract-interactions/hooks/index.ts"
 );
 const HOOKS_DIR = path.join(
-  __dirname,
-  "../lib/contract-interactions/hooks"
+  process.cwd(),
+  "src/lib/contract-interactions/hooks"
 );
-const ROOT_DIR = path.join(__dirname, "..");
+const ROOT_DIR = path.join(process.cwd(), "src");
 
 /**
  * Capitalize the first letter of a string

@@ -4,6 +4,7 @@ import { createContractHooks } from "@/lib/contract-interactions/core/create-con
 import { getNetworkConfigByChainId } from "@/lib/config";
 import { getChainId } from "wagmi/actions";
 import { wagmiConfig } from "@/lib/wagmi";
+import { TokenABI } from "@/lib/abi/token";
 
 /**
    Contract Hooks
@@ -28,12 +29,12 @@ const getContractAddress = (key: "Setter" | "Getter") => {
   return config.contracts[key];
 };
 
-export const setter = createContractHooks(
-  SetterABI,
-  () => getContractAddress("Setter"),
+export const setter = createContractHooks(SetterABI, () =>
+  getContractAddress("Setter")
 );
 
-export const getter = createContractHooks(
-  GetterABI,
-  () => getContractAddress("Getter"),
+export const getter = createContractHooks(GetterABI, () =>
+  getContractAddress("Getter")
 );
+
+export const token = createContractHooks(TokenABI);

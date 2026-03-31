@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently --raw --hide 1 \"vite\" \"pnpm generate:hooks:watch\"",
     "generate:hooks": "node scripts/generate-hook-exports.cjs",
     "generate:hooks:watch": "node scripts/generate-hook-exports.cjs --watch",
     "build": "tsc --noEmit && vite build",
@@ -55,6 +55,7 @@
     "@vitejs/plugin-react": "^4.3.1",
     "abitype": "^1.2.3",
     "autoprefixer": "10.4.23",
+    "concurrently": "^9.2.1",
     "eslint": "9.39.2",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-react-hooks": "^5.2.0",

@@ -70,7 +70,8 @@
         "5.2": { "status": "pending", "description": "Remove dead AprHistoryChart import from staking-interface.tsx (done in phase1)" },
         "5.3": { "status": "pending", "description": "Remove all 'use client' directives (done in phase1)" },
         "5.4": { "status": "pending", "description": "Add barrel index.ts exports" },
-        "5.5": { "status": "pending", "description": "Verify all tests pass" }
+        "5.5": { "status": "pending", "description": "Verify all tests pass" },
+        "5.6": { "status": "completed", "description": "Rename tx-row.tsx -> transaction-card.tsx and TxRow -> TransactionCard (batch-transaction modal)" }
       }
     }
   },
