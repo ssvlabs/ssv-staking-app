@@ -3,7 +3,7 @@ import { Toaster } from "sonner";
 import { MaintenanceGuard } from "@/components/maintenance-guard";
 import StakingInterface from "@/components/staking-interface";
 import TopBar from "@/components/top-bar";
-import Providers from "@/src/providers";
+import Providers from "@/providers";
 import { Playground } from "@/components/playground";
 
 export function App() {

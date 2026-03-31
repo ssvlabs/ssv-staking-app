@@ -33,12 +33,12 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: {
-        "@": path.resolve(__dirname, "."),
+        "@": path.resolve(__dirname, "src"),
         "@react-native-async-storage/async-storage": path.resolve(
           __dirname,
-          "lib/empty-module.ts"
+          "src/lib/empty-module.ts"
         ),
-        "pino-pretty": path.resolve(__dirname, "lib/empty-module.ts")
+        "pino-pretty": path.resolve(__dirname, "src/lib/empty-module.ts")
       }
     }
   };

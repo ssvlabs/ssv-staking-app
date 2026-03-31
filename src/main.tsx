@@ -4,8 +4,8 @@ globalThis.Buffer = Buffer;
 import ReactDOM from "react-dom/client";
 
 import "@rainbow-me/rainbowkit/styles.css";
-import "@/src/globals.css";
+import "@/globals.css";
 
-import { App } from "@/src/App";
+import { App } from "@/App";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(<App />);
