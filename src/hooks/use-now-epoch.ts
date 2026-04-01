@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useInterval } from "@/hooks/use-interval";
+import { useInterval } from "react-use";
 
 export function useNowEpoch() {
   const [nowEpoch, setNowEpoch] = useState(() =>

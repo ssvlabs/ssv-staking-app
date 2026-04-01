@@ -242,7 +242,7 @@ describe("BatchTransactionMachine", () => {
     actor.stop();
   });
 
-  it("cancel: returns to idle from failed", async () => {
+  it("close: returns to idle from failed", async () => {
     const write = mockFailingWriter();
     const actor = createActor(machine);
     actor.start();
@@ -255,7 +255,7 @@ describe("BatchTransactionMachine", () => {
 
     await waitFor(actor, (snap) => snap.value === "failed");
 
-    actor.send({ type: "cancel" });
+    actor.send({ type: "close" });
     expect(actor.getSnapshot().value).toBe("idle");
 
     actor.stop();

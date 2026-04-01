@@ -1,6 +1,6 @@
 import type { FC, ComponentPropsWithoutRef } from "react";
 import { useMachine } from "@xstate/react";
-import { useEffect } from "react";
+import { useMemo } from "react";
 
 import {
   Dialog,
@@ -19,31 +19,30 @@ import { STAKING_COPY } from "@/lib/staking/copy";
 import { TransactionCard } from "./transaction-card";
 
 const BatchTransactionModalContent: FC = () => {
-  const modal = useTransactionModal();
   const { isContract } = useAccount();
+  const modal = useTransactionModal();
+
+  const transactions = useMemo(
+    () => modal.meta.transactions ?? [],
+    [modal.meta.transactions]
+  ) as TransactionStep[];
+
   const [snapshot, send] = useMachine(machine);
 
-  const { transactions: txs } = snapshot.context;
-  const state = snapshot.value as string;
-
-  useEffect(() => {
+  if (snapshot.can({ type: "write", transactions, header: null })) {
     send({
       type: "write",
-      transactions: (modal.meta.transactions ?? []) as TransactionStep[],
+      transactions,
       header: modal.meta.header ?? "",
-      onDone: () => {
-        modal.meta.onDone?.();
-      },
+      onDone: modal.meta.onDone,
     });
-  }, []);
+  }
 
   const handleClose = () => {
     if (snapshot.can({ type: "close" })) {
       send({ type: "close" });
-    } else if (snapshot.can({ type: "cancel" })) {
-      send({ type: "cancel" });
+      useTransactionModal.state.close(true);
     }
-    useTransactionModal.state.close(true);
   };
 
   return (
@@ -63,7 +62,7 @@ const BatchTransactionModalContent: FC = () => {
               <p>{STAKING_COPY.multisig.pending}</p>
               <p>{STAKING_COPY.multisig.returnWhenApproved}</p>
             </div>
-            {state === "failed" ? (
+            {snapshot.matches("failed") ? (
               <div className="flex w-full gap-2 pt-4">
                 <button
                   className="h-[52px] flex-1 rounded-[12px] bg-brand-600 text-[14px] font-semibold text-white"
@@ -104,7 +103,7 @@ const BatchTransactionModalContent: FC = () => {
             </DialogHeader>
 
             <div className="flex w-full flex-col gap-2">
-              {txs.map((tx, i) => (
+              {snapshot.context.transactions.map((tx, i) => (
                 <TransactionCard
                   key={i}
                   tx={tx}
@@ -113,7 +112,7 @@ const BatchTransactionModalContent: FC = () => {
               ))}
             </div>
 
-            {state === "finished" && (
+            {snapshot.matches("finished") && (
               <div className="flex w-full pt-4">
                 <button
                   className="h-[52px] w-full rounded-[12px] bg-brand-50 text-[14px] font-semibold text-brand-600"
@@ -125,7 +124,7 @@ const BatchTransactionModalContent: FC = () => {
               </div>
             )}
 
-            {state === "failed" && (
+            {snapshot.matches("failed") && (
               <div className="flex w-full gap-2 pt-4">
                 <button
                   className="h-[52px] flex-1 rounded-[12px] bg-surface-100 text-[14px] font-semibold text-ink-700"

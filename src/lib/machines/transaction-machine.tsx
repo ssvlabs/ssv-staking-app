@@ -87,7 +87,7 @@ export const machine = setup({
           header: ReactNode;
           onDone?: () => void;
         }
-      | { type: "cancel" | "close" }
+      | { type: "close" }
       | { type: "TX_CONFIRMED"; hash: Hash }
       | { type: "TX_MINED" }
       | { type: "TX_ERROR"; error: unknown },
@@ -196,7 +196,7 @@ export const machine = setup({
     failed: {
       on: {
         retry: "writing",
-        cancel: "idle",
+        close: "idle",
       },
       entry: [
         ({ event }) => {
