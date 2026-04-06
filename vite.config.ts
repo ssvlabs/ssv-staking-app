@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => {
   return {
     build: {
       target: "es2022",
-      outDir: "build",
+      outDir: "dist",
       sourcemap: true
     },
     server: {
