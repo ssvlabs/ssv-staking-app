@@ -18,6 +18,10 @@ export type TransactionState = TransactionStep & {
   hash?: Hash;
 };
 
+/**
+ * TypeScript helper that provides intellisense on the step parameters.
+ * It returns the input as-is.
+ */
 export function tx<T extends (...args: any) => any>(
   step: {
     write: T;
