@@ -139,6 +139,72 @@ describe("BatchTransactionMachine", () => {
     actor.stop();
   });
 
+  it("forwards full params.options on success (onConfirmed, onMined; not onError)", async () => {
+    const hash = "0xcallback";
+    const onConfirmed = vi.fn();
+    const onMined = vi.fn();
+    const onError = vi.fn();
+    const options = { onConfirmed, onMined, onError };
+    const write = mockWriter(hash, 5);
+
+    const actor = createActor(machine);
+    actor.start();
+
+    actor.send({
+      type: "write",
+      transactions: [
+        {
+          write,
+          params: { args: { amount: 1n }, options } as any,
+          label: "User options",
+        },
+      ],
+      header: "Test",
+    });
+
+    await waitFor(actor, (snap) => snap.value === "finished");
+
+    expect(onConfirmed).toHaveBeenCalledOnce();
+    expect(onConfirmed).toHaveBeenCalledWith(hash);
+    expect(onMined).toHaveBeenCalledOnce();
+    expect(onError).not.toHaveBeenCalled();
+
+    actor.stop();
+  });
+
+  it("forwards full params.options onError on failure (not onConfirmed / onMined)", async () => {
+    const onConfirmed = vi.fn();
+    const onMined = vi.fn();
+    const onError = vi.fn();
+    const options = { onConfirmed, onMined, onError };
+    const err = new Error("revert");
+    const write = mockFailingWriter(err);
+
+    const actor = createActor(machine);
+    actor.start();
+
+    actor.send({
+      type: "write",
+      transactions: [
+        {
+          write,
+          params: { args: { amount: 1n }, options } as any,
+          label: "User options",
+        },
+      ],
+      header: "Test",
+    });
+
+    await waitFor(actor, (snap) => snap.value === "failed");
+
+    expect(onError).toHaveBeenCalledOnce();
+    expect(onError).toHaveBeenCalledWith(err);
+    expect(onConfirmed).not.toHaveBeenCalled();
+    expect(onMined).not.toHaveBeenCalled();
+
+    actor.stop();
+  });
+
   it("batch: processes multiple transactions sequentially", async () => {
     const write1 = mockWriter("0x1", 5);
     const write2 = mockWriter("0x2", 5);

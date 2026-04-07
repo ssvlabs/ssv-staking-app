@@ -1,5 +1,3 @@
-
-
 import { useId, useMemo } from "react";
 import {
   Area,
@@ -94,14 +92,7 @@ export function AprHistoryChart({ chainId }: AprHistoryChartProps) {
         apr: Number.isFinite(apr) ? apr : 0,
       };
     });
-    const last = samples[samples.length - 1];
-    const nextDay = new Date(last.timestamp);
-    nextDay.setDate(nextDay.getDate() + 1);
-    points.push({
-      date: formatChartDate(nextDay.toISOString()),
-      fullDate: nextDay.toISOString(),
-      apr: points[points.length - 1].apr,
-    });
+
     return points;
   }, [data]);
 

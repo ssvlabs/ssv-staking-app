@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useMemo } from "react";
 import type { UseReadContractReturnType } from "wagmi";
-import { useReadContract, useWriteContract } from "wagmi";
+import { usePublicClient, useReadContract, useWriteContract } from "wagmi";
 import type { Abi, AbiFunction, Address } from "viem";
 import type { ExtractAbiFunctions } from "abitype";
 import { getChainId, type WriteContractErrorType } from "wagmi/actions";
@@ -22,6 +22,7 @@ import {
 } from "@/lib/contract-interactions/utils";
 import type { AbiInputsToParams } from "@/lib/contract-interactions/utils";
 import { wagmiConfig } from "@/lib/wagmi";
+import { useAccount } from "@/hooks/use-account";
 
 type Prettify<T> = {
   [K in keyof T]: T[K];
@@ -205,68 +206,77 @@ export function createContractHooks<
         [functionName]
       );
 
-      const mutation = useWriteContract();
+      const account = useAccount();
+
+      const publicClient = usePublicClient();
+      const writeContract = useWriteContract();
 
       const write = (params?: WriteParams<any>) => {
         params?.options?.onInitiated?.();
 
-        return mutation
-          .writeContractAsync(
-            // @ts-expect-error - dynamic ABI call
-            {
-              abi,
-              address: contract,
-              functionName,
-              chainId,
-              args: params?.args
-                ? paramsToArray({ params: params.args, abiFunction })
-                : undefined,
-              value: params?.value,
-            },
-            {
-              onSuccess: (hash) => params?.options?.onConfirmed?.(hash),
-              onError: (error) => params?.options?.onError?.(error),
-            }
+        const contractCallParams = {
+          abi,
+          address: contract,
+          functionName,
+          chainId,
+          args: params?.args
+            ? paramsToArray({ params: params.args, abiFunction })
+            : undefined,
+          account: account.address,
+          value: params?.value,
+        } as any;
+
+        return publicClient!
+          .simulateContract(contractCallParams)
+          .then(({ request }) =>
+            writeContract.writeContractAsync(request as any, {
+              onSuccess: params?.options?.onConfirmed,
+            })
           )
           .then((hash) =>
             waitForTx.mutateAsync(hash, {
-              onSuccess: async (receipt) => {
-                return params?.options?.onMined?.(receipt);
-              },
-              onError: async (error) => {
-                return params?.options?.onError?.(error as any);
-              },
+              onSuccess: params?.options?.onMined,
             })
-          );
+          )
+          .catch((error) => {
+            params?.options?.onError?.(error);
+            throw error;
+          });
       };
 
       const send = (params?: WriteParams<any>) => {
         params?.options?.onInitiated?.();
 
-        return mutation.writeContractAsync(
-          // @ts-expect-error - dynamic ABI call
-          {
-            abi,
-            address: contract,
-            functionName,
-            args: params?.args
-              ? paramsToArray({ params: params.args, abiFunction })
-              : undefined,
-            value: params?.value,
-          },
-          {
-            onSuccess: (hash) => params?.options?.onConfirmed?.(hash),
-            onError: (error) =>
-              params?.options?.onError?.(error as WriteContractErrorType),
-          }
-        );
+        const contractCallParams = {
+          abi,
+          address: contract,
+          functionName,
+          chainId,
+          args: params?.args
+            ? paramsToArray({ params: params.args, abiFunction })
+            : undefined,
+          account: account.address,
+          value: params?.value,
+        } as any;
+
+        return publicClient!
+          .simulateContract(contractCallParams)
+          .then(({ request }) =>
+            writeContract.writeContractAsync(request as any, {
+              onSuccess: params?.options?.onConfirmed,
+            })
+          )
+          .catch((error) => {
+            params?.options?.onError?.(error);
+            throw error;
+          });
       };
 
       return {
-        error: mutation.error || waitForTx.error,
+        error: writeContract.error || waitForTx.error,
         isSuccess: waitForTx.isSuccess,
-        isPending: mutation.isPending || waitForTx.isPending,
-        mutation,
+        isPending: writeContract.isPending || waitForTx.isPending,
+        mutation: writeContract,
         write,
         send,
         wait: waitForTx,
