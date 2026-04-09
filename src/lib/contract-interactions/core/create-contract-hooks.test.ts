@@ -13,6 +13,11 @@ vi.mock("wagmi", () => ({
     isLoading: false,
     error: null,
   })),
+  usePublicClient: vi.fn(() => ({
+    simulateContract: vi.fn((args: unknown) =>
+      Promise.resolve({ request: args })
+    ),
+  })),
   useWriteContract: vi.fn(() => ({
     writeContractAsync: vi.fn(
       (
@@ -20,12 +25,12 @@ vi.mock("wagmi", () => ({
         options?: {
           onSuccess?: (hash: string) => void;
           onError?: (error: Error) => void;
-        },
+        }
       ) => {
         // Invoke onSuccess callback with mock hash
         options?.onSuccess?.(MOCK_TX_HASH);
         return Promise.resolve(args);
-      },
+      }
     ),
     error: null,
     isPending: false,
@@ -50,19 +55,19 @@ vi.mock(
           options?: {
             onSuccess?: (receipt: typeof MOCK_RECEIPT) => void | Promise<void>;
             onError?: (error: Error) => void | Promise<void>;
-          },
+          }
         ) => {
           const receipt = { ...MOCK_RECEIPT, transactionHash: hash };
           // Invoke onSuccess callback with mock receipt (await in case it's async)
           await options?.onSuccess?.(receipt);
           return receipt;
-        },
+        }
       ),
       error: null,
       isPending: false,
       isSuccess: false,
     })),
-  }),
+  })
 );
 
 // Mock wagmi/core
@@ -72,6 +77,14 @@ vi.mock("wagmi/actions", () => ({
 
 vi.mock("@/lib/wagmi", () => ({
   wagmiConfig: {},
+}));
+
+vi.mock("@/hooks/use-account", () => ({
+  useAccount: vi.fn(() => ({
+    address: "0x1234567890abcdef1234567890abcdef12345678",
+    chainId: 1,
+    isContract: false,
+  })),
 }));
 
 // Mock react hooks
@@ -391,11 +404,11 @@ describe("createContractHooks", () => {
           writeContractAsync: vi.fn(
             (
               _args: unknown,
-              options?: { onError?: (error: Error) => void },
+              options?: { onError?: (error: Error) => void }
             ) => {
               options?.onError?.(mockError);
               return Promise.reject(mockError);
-            },
+            }
           ),
           error: null,
           isPending: false,
@@ -413,7 +426,7 @@ describe("createContractHooks", () => {
               amount: 100n,
             },
             options: { onError },
-          }),
+          })
         ).rejects.toThrow("Transaction rejected");
 
         expect(onError).toHaveBeenCalledTimes(1);
@@ -502,11 +515,11 @@ describe("createContractHooks", () => {
           writeContractAsync: vi.fn(
             (
               _args: unknown,
-              options?: { onError?: (error: Error) => void },
+              options?: { onError?: (error: Error) => void }
             ) => {
               options?.onError?.(mockError);
               return Promise.reject(mockError);
-            },
+            }
           ),
           error: null,
           isPending: false,
@@ -524,7 +537,7 @@ describe("createContractHooks", () => {
               amount: 100n,
             },
             options: { onError },
-          }),
+          })
         ).rejects.toThrow("Transaction rejected");
 
         expect(onError).toHaveBeenCalledTimes(1);
@@ -540,11 +553,11 @@ describe("createContractHooks", () => {
           mutateAsync: vi.fn(
             async (
               _hash: string,
-              options?: { onError?: (error: Error) => void | Promise<void> },
+              options?: { onError?: (error: Error) => void | Promise<void> }
             ) => {
               await options?.onError?.(mockError);
               throw mockError;
-            },
+            }
           ),
           error: null,
           isPending: false,
@@ -563,7 +576,7 @@ describe("createContractHooks", () => {
               amount: 100n,
             },
             options: { onError },
-          }),
+          })
         ).rejects.toThrow("Transaction reverted");
 
         expect(onError).toHaveBeenCalledTimes(1);

@@ -1,8 +1,8 @@
 import { useAccount } from "wagmi";
 
-import { getNetworkConfigByChainId } from "@/lib/config";
+import { type NetworkConfig, getNetworkConfigByChainId } from "@/lib/config";
 
-export const useNetworkConfig = () => {
+export const useNetworkConfig = (): NetworkConfig => {
   const { chainId } = useAccount();
   return getNetworkConfigByChainId(chainId);
 };

@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertTriangle } from "lucide-react";
 import { formatUnits } from "viem";
-import { useAccount, useBalance } from "wagmi";
+import { useAccount } from "wagmi";
 
 import {
   useRequestUnstake,
@@ -13,7 +13,6 @@ import {
 import {
   useAllowance,
   useApprove,
-  useDecimals,
 } from "@/lib/contract-interactions/hooks/token";
 import { globals } from "@/lib/globals";
 import { tx } from "@/lib/machines/transaction-machine";
@@ -25,6 +24,7 @@ import { cn } from "@/lib/utils";
 import { useCooldownLabel } from "@/hooks/use-cooldown-label";
 import { useNetworkConfig } from "@/hooks/use-network-config";
 import { useNowEpoch } from "@/hooks/use-now-epoch";
+import { useStakingData } from "@/hooks/use-staking-data";
 import { useWithdrawalRequests } from "@/hooks/use-withdrawal-requests";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import { TokenInputCard } from "@/components/staking/token-input-card";
@@ -48,26 +48,18 @@ export const UnstakeTab: UnstakeTabFC = ({
   const network = useNetworkConfig();
   const nowEpoch = useNowEpoch();
   const modal = useTransactionModal();
+  const { cssvBalance, refetchCssvBalance, tokenDecimals } = useStakingData();
 
-  const { data: cssvBalance, refetch: refetchBalance } = useBalance({
-    address,
-    token: network.contracts.cSSVToken,
-    query: { enabled: !!address },
-  });
   const { data: cssvAllowance, refetch: refetchAllowance } = useAllowance(
     { owner: address!, spender: network.contracts.Setter },
     { contract: network.contracts.cSSVToken, enabled: !!address }
   );
-  const { data: ssvDecimals } = useDecimals({
-    contract: network.contracts.SSVToken,
-  });
+
   const { cooldownLabel } = useCooldownLabel();
   const { requests: withdrawalRequests, refetch: refetchRequests } =
     useWithdrawalRequests();
 
   const stakedBalance = cssvBalance?.value ?? 0n;
-  const receiptDecimals = cssvBalance?.decimals ?? 18;
-  const tokenDecimals = Number(ssvDecimals ?? receiptDecimals);
   const allowance = (cssvAllowance as bigint) ?? 0n;
 
   const requestUnstake = useRequestUnstake();
@@ -88,30 +80,30 @@ export const UnstakeTab: UnstakeTabFC = ({
     0n
   );
 
-  const schema = useMemo(
-    () =>
-      createUnstakeSchema({
-        balance: stakedBalance,
-        decimals: receiptDecimals,
-      }),
-    [stakedBalance, receiptDecimals]
-  );
-
   const form = useForm({
-    resolver: zodResolver(schema),
     defaultValues: { amount: "" },
     mode: "onChange",
+    resolver: zodResolver(
+      useMemo(
+        () =>
+          createUnstakeSchema({
+            balance: stakedBalance,
+            decimals: tokenDecimals,
+          }),
+        [stakedBalance, tokenDecimals]
+      )
+    ),
   });
 
   const handleDone = () => {
-    refetchBalance();
+    refetchCssvBalance();
     refetchAllowance();
     refetchRequests();
   };
 
   const submit = form.handleSubmit(({ amount }) => {
     const needsApproval = allowance < amount;
-    const label = `Unstake ${formatToken(amount, receiptDecimals)} cSSV`;
+    const label = `Unstake ${formatToken(amount, tokenDecimals)} cSSV`;
 
     useTransactionModal.state.open({
       transactions: [
@@ -199,7 +191,7 @@ export const UnstakeTab: UnstakeTabFC = ({
         <TokenInputCard
           balanceLabel={`Wallet Balance: ${formatToken(
             stakedBalance,
-            receiptDecimals
+            tokenDecimals
           )}`}
           iconSrc={STAKING_ASSETS.ssvSmall}
           symbol="cSSV"
@@ -208,11 +200,9 @@ export const UnstakeTab: UnstakeTabFC = ({
             form.setValue("amount", v, { shouldValidate: true })
           }
           onMax={() =>
-            form.setValue(
-              "amount",
-              formatUnits(stakedBalance, receiptDecimals),
-              { shouldValidate: true }
-            )
+            form.setValue("amount", formatUnits(stakedBalance, tokenDecimals), {
+              shouldValidate: true,
+            })
           }
           isConnected={isConnected}
           showMax={false}

@@ -1,5 +1,5 @@
 import type { ComponentPropsWithoutRef, FC } from "react";
-import { useAccount, useBalance } from "wagmi";
+import { useAccount } from "wagmi";
 import { useLocalStorage } from "react-use";
 
 import { useTotalStaked } from "@/lib/contract-interactions/hooks/getter";
@@ -7,7 +7,7 @@ import { STAKING_ASSETS } from "@/lib/staking/constants";
 import { formatApr, formatToken } from "@/lib/staking/format";
 import { useAprMetric } from "@/lib/staking/use-apr-metric";
 import { cn } from "@/lib/utils";
-import { useNetworkConfig } from "@/hooks/use-network-config";
+import { useStakingData } from "@/hooks/use-staking-data";
 import { InfoIcon } from "@/components/ui/info-icon";
 import { Tooltip } from "@/components/ui/tooltip";
 import { AprHistoryChart } from "../apr-history-chart";
@@ -64,19 +64,13 @@ export const StakingHeader: FC<ComponentPropsWithoutRef<"section">> = ({
   className,
   ...props
 }) => {
-  const { address, chainId } = useAccount();
-  const network = useNetworkConfig();
+  const { chainId } = useAccount();
+  const { tokenDecimals } = useStakingData();
 
   const { aprValue, potentialAprValue } = useAprMetric(chainId);
   const { data: totalStakedRaw } = useTotalStaked();
-  const { data: ssvBalance } = useBalance({
-    address,
-    token: network.contracts.SSVToken,
-    query: { enabled: !!address },
-  });
 
   const totalStakedValue = totalStakedRaw as bigint | undefined;
-  const tokenDecimals = ssvBalance?.decimals ?? 18;
 
   const [showAprHistory] = useLocalStorage("showChart", false);
 

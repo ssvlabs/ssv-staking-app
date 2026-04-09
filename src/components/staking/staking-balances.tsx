@@ -1,12 +1,9 @@
 import type { ComponentPropsWithoutRef, FC } from "react";
-import { useAccount, useBalance } from "wagmi";
 
-import { usePreviewClaimableEth } from "@/lib/contract-interactions/hooks/getter";
-import { useDecimals } from "@/lib/contract-interactions/hooks/token";
 import { STAKING_ASSETS } from "@/lib/staking/constants";
 import { formatToken } from "@/lib/staking/format";
 import { cn } from "@/lib/utils";
-import { useNetworkConfig } from "@/hooks/use-network-config";
+import { useStakingData } from "@/hooks/use-staking-data";
 
 const { ssvLarge, ssvSmall, ethIcon } = STAKING_ASSETS;
 
@@ -14,32 +11,11 @@ export const StakingBalances: FC<ComponentPropsWithoutRef<"section">> = ({
   className,
   ...props
 }) => {
-  const { address } = useAccount();
-  const network = useNetworkConfig();
-
-  const { data: ssvBalance } = useBalance({
-    address,
-    token: network.contracts.SSVToken,
-    query: { enabled: !!address },
-  });
-  const { data: cssvBalance } = useBalance({
-    address,
-    token: network.contracts.cSSVToken,
-    query: { enabled: !!address },
-  });
-  const { data: claimableRaw } = usePreviewClaimableEth(
-    { user: address! },
-    { enabled: !!address }
-  );
-  const { data: cssvDec } = useDecimals({
-    contract: network.contracts.cSSVToken,
-  });
+  const { ssvBalance, cssvBalance, claimableValue, tokenDecimals } =
+    useStakingData();
 
   const ssvBalanceValue = ssvBalance?.value;
   const stakedBalanceValue = cssvBalance?.value;
-  const claimableValue = (claimableRaw as bigint) ?? 0n;
-  const tokenDecimals = ssvBalance?.decimals ?? 18;
-  const receiptDecimals = Number(cssvDec ?? tokenDecimals);
 
   return (
     <section
@@ -78,7 +54,7 @@ export const StakingBalances: FC<ComponentPropsWithoutRef<"section">> = ({
             />
           </span>
           <span className="text-[20px] font-bold text-ink-950">
-            {formatToken(stakedBalanceValue, receiptDecimals)}
+            {formatToken(stakedBalanceValue, tokenDecimals)}
           </span>
         </div>
       </div>
