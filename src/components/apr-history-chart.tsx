@@ -107,7 +107,7 @@ export function AprHistoryChart({ chainId }: AprHistoryChartProps) {
   if (isError || !data?.samples?.length) {
     return (
       <div className="flex min-h-[180px] items-center justify-center rounded-lg bg-surface-100 p-5">
-        <p className="text-sm text-ink-400">We fucked up</p>
+        <p className="text-sm text-ink-400">Unable to load APR history</p>
       </div>
     );
   }
