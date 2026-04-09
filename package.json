@@ -31,7 +31,7 @@
     "react-use": "^17.6.0",
     "recharts": "^3.7.0",
     "sonner": "1.7.4",
-    "tailwind-merge": "2.6.0",
+    "tailwind-merge": "2.6.1",
     "viem": "2.43.3",
     "wagmi": "2.19.5",
     "zod": "^3.25.76"
