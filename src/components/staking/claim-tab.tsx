@@ -1,15 +1,14 @@
 import type { ComponentPropsWithoutRef, FC } from "react";
 import confetti from "canvas-confetti";
 import { formatEther } from "viem";
-import { useAccount } from "wagmi";
 
-import { usePreviewClaimableEth } from "@/lib/contract-interactions/hooks/getter";
 import { useClaimEthRewards } from "@/lib/contract-interactions/hooks/setter";
 import { tx } from "@/lib/machines/transaction-machine";
 import { useTransactionModal } from "@/lib/signals/modal";
 import { CLAIMABLE_DECIMALS, STAKING_ASSETS } from "@/lib/staking/constants";
 import { formatToken } from "@/lib/staking/format";
 import { cn } from "@/lib/utils";
+import { useStakingData } from "@/hooks/use-staking-data";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 
 export type ClaimTabProps = {
@@ -45,11 +44,7 @@ export const ClaimTab: ClaimTabFC = ({
   className,
   ...props
 }) => {
-  const { address } = useAccount();
-  const { data: claimableRaw, refetch: refetchClaimable } =
-    usePreviewClaimableEth({ user: address! }, { enabled: !!address });
-
-  const claimableValue = (claimableRaw as bigint) ?? 0n;
+  const { claimableValue, refetchClaimable } = useStakingData();
 
   const claimEthRewards = useClaimEthRewards();
   const modal = useTransactionModal();

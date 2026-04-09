@@ -23,6 +23,7 @@ import {
 import type { AbiInputsToParams } from "@/lib/contract-interactions/utils";
 import { wagmiConfig } from "@/lib/wagmi";
 import { useAccount } from "@/hooks/use-account";
+import { useVisibilityState } from "@/hooks/use-visibility-state";
 
 type Prettify<T> = {
   [K in keyof T]: T[K];
@@ -155,7 +156,9 @@ export function createContractHooks<
           },
         } as any);
 
-        useInterval(() => query.refetch, watch ? refetchInterval : null);
+        const visibilityState = useVisibilityState();
+        const canRefetch = watch && visibilityState === "visible";
+        useInterval(query.refetch, canRefetch ? refetchInterval : null);
 
         return query;
       };
@@ -181,7 +184,9 @@ export function createContractHooks<
           },
         } as any);
 
-        useInterval(() => query.refetch, watch ? refetchInterval : null);
+        const visibilityState = useVisibilityState();
+        const canRefetch = watch && visibilityState === "visible";
+        useInterval(query.refetch, canRefetch ? refetchInterval : null);
 
         return query;
       };

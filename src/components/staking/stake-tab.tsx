@@ -3,13 +3,12 @@ import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatUnits, parseUnits } from "viem";
-import { useAccount, useBalance } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { useStake } from "@/lib/contract-interactions/hooks/setter";
 import {
   useAllowance,
   useApprove,
-  useDecimals,
 } from "@/lib/contract-interactions/hooks/token";
 import { globals } from "@/lib/globals";
 import { tx } from "@/lib/machines/transaction-machine";
@@ -23,6 +22,7 @@ import { createStakeSchema } from "@/lib/staking/schemas";
 import { cn } from "@/lib/utils";
 import { useCooldownLabel } from "@/hooks/use-cooldown-label";
 import { useNetworkConfig } from "@/hooks/use-network-config";
+import { useStakingData } from "@/hooks/use-staking-data";
 import { InfoIcon } from "@/components/ui/info-icon";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import { Tooltip } from "@/components/ui/tooltip";
@@ -45,39 +45,31 @@ export const StakeTab: StakeTabFC = ({
 }) => {
   const { address } = useAccount();
   const network = useNetworkConfig();
+  const { ssvBalance, refetchSsvBalance, tokenDecimals } = useStakingData();
 
-  const { data: ssvBalance, refetch: refetchBalance } = useBalance({
-    address,
-    token: network.contracts.SSVToken,
-    query: { enabled: !!address },
-  });
   const { data: ssvAllowance, refetch: refetchAllowance } = useAllowance(
     { owner: address!, spender: network.contracts.Setter },
     { contract: network.contracts.SSVToken, enabled: !!address }
   );
-  const { data: cssvDecimals } = useDecimals({
-    contract: network.contracts.cSSVToken,
-  });
+
   const { cooldownDurationSeconds, cooldownLabel } = useCooldownLabel();
 
   const balance = ssvBalance?.value ?? 0n;
-  const tokenDecimals = ssvBalance?.decimals ?? 18;
-  const receiptDecimals = Number(cssvDecimals ?? tokenDecimals);
   const allowance = (ssvAllowance as bigint) ?? 0n;
 
-  const stakeHook = useStake();
+  const stake = useStake();
   const approveSsv = useApprove({ contract: network.contracts.SSVToken });
   const modal = useTransactionModal();
 
-  const schema = useMemo(
-    () => createStakeSchema({ balance, decimals: tokenDecimals }),
-    [balance, tokenDecimals]
-  );
-
   const form = useForm({
-    resolver: zodResolver(schema),
     defaultValues: { amount: "" },
     mode: "onChange",
+    resolver: zodResolver(
+      useMemo(
+        () => createStakeSchema({ balance, decimals: tokenDecimals }),
+        [balance, tokenDecimals]
+      )
+    ),
   });
 
   const rawAmount = form.watch("amount");
@@ -115,11 +107,11 @@ export const StakeTab: StakeTabFC = ({
               }),
             ]
           : []),
-        tx({ write: stakeHook.write, params: { args: { amount } }, label }),
+        tx({ write: stake.write, params: { args: { amount } }, label }),
       ],
       header: "Stake SSV",
       onDone: () => {
-        refetchBalance();
+        refetchSsvBalance();
         refetchAllowance();
       },
     });
@@ -174,7 +166,7 @@ export const StakeTab: StakeTabFC = ({
         <div className="flex items-center justify-between text-ink-700">
           <span>You Will Receive</span>
           <span className="font-semibold text-ink-900">
-            {formatToken(parsedAmount, receiptDecimals)} cSSV
+            {formatToken(parsedAmount, tokenDecimals)} cSSV
           </span>
         </div>
         <div className="flex items-center justify-between text-ink-700">
