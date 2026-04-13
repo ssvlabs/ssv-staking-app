@@ -10,11 +10,6 @@ import {
   useRequestUnstake,
   useWithdrawUnlocked,
 } from "@/lib/contract-interactions/hooks/setter";
-import {
-  useAllowance,
-  useApprove,
-} from "@/lib/contract-interactions/hooks/token";
-import { globals } from "@/lib/globals";
 import { tx } from "@/lib/machines/transaction-machine";
 import { useTransactionModal } from "@/lib/signals/modal";
 import { MAX_PENDING_REQUESTS, STAKING_ASSETS } from "@/lib/staking/constants";
@@ -50,21 +45,14 @@ export const UnstakeTab: UnstakeTabFC = ({
   const modal = useTransactionModal();
   const { cssvBalance, refetchCssvBalance, tokenDecimals } = useStakingData();
 
-  const { data: cssvAllowance, refetch: refetchAllowance } = useAllowance(
-    { owner: address!, spender: network.contracts.Setter },
-    { contract: network.contracts.cSSVToken, enabled: !!address }
-  );
-
   const { cooldownLabel } = useCooldownLabel();
   const { requests: withdrawalRequests, refetch: refetchRequests } =
     useWithdrawalRequests();
 
   const stakedBalance = cssvBalance?.value ?? 0n;
-  const allowance = (cssvAllowance as bigint) ?? 0n;
 
   const requestUnstake = useRequestUnstake();
   const withdrawUnlocked = useWithdrawUnlocked();
-  const approveCssv = useApprove({ contract: network.contracts.cSSVToken });
 
   const isRequestLimitReached =
     withdrawalRequests.length >= MAX_PENDING_REQUESTS;
@@ -97,30 +85,14 @@ export const UnstakeTab: UnstakeTabFC = ({
 
   const handleDone = () => {
     refetchCssvBalance();
-    refetchAllowance();
     refetchRequests();
   };
 
   const submit = form.handleSubmit(({ amount }) => {
-    const needsApproval = allowance < amount;
     const label = `Unstake ${formatToken(amount, tokenDecimals)} cSSV`;
 
     useTransactionModal.state.open({
       transactions: [
-        ...(needsApproval
-          ? [
-              tx({
-                write: approveCssv.write,
-                params: {
-                  args: {
-                    spender: network.contracts.Setter,
-                    amount: globals.MAX_WEI_AMOUNT,
-                  },
-                },
-                label: "Approve cSSV",
-              }),
-            ]
-          : []),
         tx({
           write: requestUnstake.write,
           params: { args: { amount } },
