@@ -48,4 +48,9 @@ export const useTransactionModal = createModalSignal<{
   transactions: TransactionStep[];
   header: string;
   onDone?: () => void;
+  addTokenToWallet?: {
+    tokenName: string;
+    tokenAddress: `0x${string}`;
+    decimals: number;
+  };
 }>();
