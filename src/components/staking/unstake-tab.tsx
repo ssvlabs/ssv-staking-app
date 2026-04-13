@@ -205,7 +205,7 @@ export const UnstakeTab: UnstakeTabFC = ({
             })
           }
           isConnected={isConnected}
-          showMax={false}
+          showMax
           error={form.formState.errors.amount?.message}
         />
 
