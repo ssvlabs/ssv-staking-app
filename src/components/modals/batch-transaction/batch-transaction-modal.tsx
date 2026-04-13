@@ -16,6 +16,7 @@ import {
 } from "@/lib/machines/transaction-machine";
 import { useTransactionModal } from "@/lib/signals/modal";
 import { STAKING_COPY } from "@/lib/staking/copy";
+import { AddTokenToWalletButton } from "./add-token-to-wallet-button";
 import { TransactionCard } from "./transaction-card";
 
 const BatchTransactionModalContent: FC = () => {
@@ -113,15 +114,25 @@ const BatchTransactionModalContent: FC = () => {
             </div>
 
             {snapshot.matches("finished") && (
-              <div className="flex w-full pt-4">
-                <button
-                  className="h-[52px] w-full rounded-[12px] bg-brand-50 text-[14px] font-semibold text-brand-600"
-                  onClick={handleClose}
-                  type="button"
-                >
-                  Close
-                </button>
-              </div>
+              <>
+                {modal.meta.addTokenToWallet && (
+                  <AddTokenToWalletButton
+                    className="mx-auto"
+                    tokenName={modal.meta.addTokenToWallet.tokenName}
+                    tokenAddress={modal.meta.addTokenToWallet.tokenAddress}
+                    decimals={modal.meta.addTokenToWallet.decimals}
+                  />
+                )}
+                <div className="flex w-full">
+                  <button
+                    className="h-[52px] w-full rounded-[12px] bg-brand-50 text-[14px] font-semibold text-brand-600"
+                    onClick={handleClose}
+                    type="button"
+                  >
+                    Close
+                  </button>
+                </div>
+              </>
             )}
 
             {snapshot.matches("failed") && (

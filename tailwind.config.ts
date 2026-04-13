@@ -37,7 +37,8 @@ const config: Config = {
         },
         staking: {
           primary: {
-            500: "var(--color-staking-primary-500)"
+            500: "var(--color-staking-primary-500)",
+            50: "var(--color-staking-primary-50)"
           }
         },
         cta: {

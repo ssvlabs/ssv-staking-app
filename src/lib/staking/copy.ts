@@ -24,6 +24,7 @@ export const STAKING_COPY = {
   },
   toasts: {
     metamaskMissing: "Metamask not detected.",
-    metamaskError: "Unable to add cSSV to Metamask."
+    metamaskError: "Unable to add cSSV to Metamask.",
+    walletProviderMissing: "Wallet provider not available."
   }
 } as const;

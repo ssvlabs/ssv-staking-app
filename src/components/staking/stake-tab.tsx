@@ -110,6 +110,11 @@ export const StakeTab: StakeTabFC = ({
         tx({ write: stake.write, params: { args: { amount } }, label }),
       ],
       header: "Stake SSV",
+      addTokenToWallet: {
+        decimals: 18,
+        tokenAddress: network.contracts.cSSVToken,
+        tokenName: "cSSV",
+      },
       onDone: () => {
         refetchSsvBalance();
         refetchAllowance();
