@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertTriangle } from "lucide-react";
 import { formatUnits } from "viem";
-import { useAccount } from "wagmi";
 
 import {
   useRequestUnstake,
@@ -17,7 +16,6 @@ import { formatDuration, formatToken } from "@/lib/staking/format";
 import { createUnstakeSchema } from "@/lib/staking/schemas";
 import { cn } from "@/lib/utils";
 import { useCooldownLabel } from "@/hooks/use-cooldown-label";
-import { useNetworkConfig } from "@/hooks/use-network-config";
 import { useNowEpoch } from "@/hooks/use-now-epoch";
 import { useStakingData } from "@/hooks/use-staking-data";
 import { useWithdrawalRequests } from "@/hooks/use-withdrawal-requests";
@@ -39,8 +37,6 @@ export const UnstakeTab: UnstakeTabFC = ({
   className,
   ...props
 }) => {
-  const { address } = useAccount();
-  const network = useNetworkConfig();
   const nowEpoch = useNowEpoch();
   const modal = useTransactionModal();
   const { cssvBalance, refetchCssvBalance, tokenDecimals } = useStakingData();
@@ -88,7 +84,7 @@ export const UnstakeTab: UnstakeTabFC = ({
     refetchRequests();
   };
 
-  const submit = form.handleSubmit(({ amount }) => {
+  const unstake = form.handleSubmit(({ amount }) => {
     const label = `Unstake ${formatToken(amount, tokenDecimals)} cSSV`;
 
     useTransactionModal.state.open({
@@ -104,7 +100,7 @@ export const UnstakeTab: UnstakeTabFC = ({
     });
   });
 
-  const handleWithdraw = () => {
+  const withdraw = () => {
     const amountLabel = formatToken(totalUnlockedAmount, tokenDecimals);
     useTransactionModal.state.open({
       transactions: [
@@ -125,11 +121,11 @@ export const UnstakeTab: UnstakeTabFC = ({
           {unlockedRequests.length > 0 && (
             <div className="flex w-full items-center justify-between rounded-[12px] border border-[#d1edfe] bg-[#e8f6fe]/50 p-5 dark:border-[#1ba5f8]/30 dark:bg-[#1ba5f8]/10">
               <span className="text-[24px] font-medium leading-[32px] text-[#0b2a3c] dark:text-[#fdfefe]">
-                {formatToken(totalUnlockedAmount, tokenDecimals)} cSSV
+                {formatToken(totalUnlockedAmount, tokenDecimals)} SSV
               </span>
               <button
                 type="button"
-                onClick={handleWithdraw}
+                onClick={withdraw}
                 disabled={modal.isOpen}
                 className="rounded-[4px] bg-[#1ba5f8] px-4 py-1.5 text-[12px] font-medium leading-[20px] text-[#fdfefe] transition hover:bg-[#0d8fd8] disabled:cursor-not-allowed disabled:opacity-50"
               >
@@ -159,7 +155,7 @@ export const UnstakeTab: UnstakeTabFC = ({
         </div>
       )}
 
-      <form onSubmit={submit} className="space-y-6">
+      <form onSubmit={unstake} className="space-y-6">
         <TokenInputCard
           balanceLabel={`Wallet Balance: ${formatToken(
             stakedBalance,

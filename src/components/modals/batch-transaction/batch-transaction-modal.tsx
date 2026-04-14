@@ -63,34 +63,15 @@ const BatchTransactionModalContent: FC = () => {
               <p>{STAKING_COPY.multisig.pending}</p>
               <p>{STAKING_COPY.multisig.returnWhenApproved}</p>
             </div>
-            {snapshot.matches("failed") ? (
-              <div className="flex w-full gap-2 pt-4">
-                <button
-                  className="h-[52px] flex-1 rounded-[12px] bg-brand-600 text-[14px] font-semibold text-white"
-                  onClick={() => send({ type: "retry" })}
-                  type="button"
-                >
-                  Try again
-                </button>
-                <button
-                  className="h-[52px] flex-1 rounded-[12px] bg-surface-100 text-[14px] font-semibold text-ink-700"
-                  onClick={handleClose}
-                  type="button"
-                >
-                  Cancel
-                </button>
-              </div>
-            ) : (
-              <div className="flex w-full pt-4">
-                <button
-                  className="h-[52px] w-full rounded-[12px] bg-brand-50 text-[14px] font-semibold text-brand-600"
-                  onClick={handleClose}
-                  type="button"
-                >
-                  {STAKING_COPY.actions.close}
-                </button>
-              </div>
-            )}
+            <div className="flex w-full pt-4">
+              <button
+                className="h-[52px] w-full rounded-[12px] bg-brand-50 text-[14px] font-semibold text-brand-600"
+                onClick={handleClose}
+                type="button"
+              >
+                {STAKING_COPY.actions.close}
+              </button>
+            </div>
           </>
         ) : (
           <>
