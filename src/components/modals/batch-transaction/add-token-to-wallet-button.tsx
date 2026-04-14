@@ -1,17 +1,10 @@
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { toast } from "sonner";
-import { useAccount, useWatchAsset } from "wagmi";
+import { useWatchAsset } from "wagmi";
 
+import { WalletLogo } from "@/components/ui/wallet-logo";
+import { useWalletConnectorDisplay } from "@/hooks/use-wallet-connector-display";
 import { cn } from "@/lib/utils";
-import { FaWallet } from "react-icons/fa6";
-
-const WALLET_ICONS: Record<string, string> = {
-  MetaMask: "/images/wallets/metamask.svg",
-  "Coinbase Wallet": "/images/wallets/coinbase.svg",
-  WalletConnect: "/images/wallets/walletconnect.svg",
-  Ledger: "/images/wallets/ledger.svg",
-  Trezor: "/images/wallets/trezor.svg",
-};
 
 export type AddTokenToWalletButtonProps = {
   tokenName: string;
@@ -31,11 +24,8 @@ export const AddTokenToWalletButton: AddTokenToWalletButtonFC = ({
   className,
   ...props
 }) => {
-  const { connector } = useAccount();
+  const walletDisplay = useWalletConnectorDisplay();
   const { watchAsset, isPending } = useWatchAsset();
-
-  const walletName = connector?.name ?? "Wallet";
-  const walletIcon = WALLET_ICONS[walletName];
 
   const handleClick = () => {
     watchAsset(
@@ -49,7 +39,7 @@ export const AddTokenToWalletButton: AddTokenToWalletButtonFC = ({
       },
       {
         onError: () => {
-          toast.error(`Unable to add ${tokenName} to ${walletName}.`);
+          toast.error(`Unable to add ${tokenName} to ${walletDisplay.name}.`);
         },
       }
     );
@@ -67,19 +57,9 @@ export const AddTokenToWalletButton: AddTokenToWalletButtonFC = ({
       {...props}
     >
       <span>
-        Add {tokenName} to {walletName}
+        Add {tokenName} to {walletDisplay.name}
       </span>
-      {walletIcon ? (
-        <img
-          src={walletIcon}
-          alt={walletName}
-          className="size-4"
-          width={16}
-          height={16}
-        />
-      ) : (
-        <FaWallet className="size-4" />
-      )}
+      <WalletLogo className="size-4" width={16} height={16} />
     </button>
   );
 };
