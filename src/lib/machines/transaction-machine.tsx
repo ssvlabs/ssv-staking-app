@@ -141,13 +141,7 @@ export const machine = setup({
       on: {
         write: {
           target: "writing",
-          guard: ({ event }) => {
-            console.assert(
-              event.transactions.length > 0,
-              "You've tried to write with no transactions"
-            );
-            return event.transactions.length > 0;
-          },
+          guard: ({ event }) => event.transactions.length > 0,
           actions: assign(({ event }) => ({
             transactions: event.transactions.map(
               (tx): TransactionState => ({ ...tx, status: "idle" })

@@ -40,7 +40,7 @@ const BatchTransactionModalContent: FC = () => {
   }
 
   const handleClose = () => {
-    if (snapshot.can({ type: "close" })) {
+    if (snapshot.can({ type: "close" }) || isContract) {
       send({ type: "close" });
       useTransactionModal.state.close(true);
     }

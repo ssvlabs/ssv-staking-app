@@ -1,6 +1,7 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 
+import { WalletLogo } from "@/components/ui/wallet-logo";
 import { useTheme } from "@/lib/theme";
 import { useNetworkConfig } from "@/hooks/use-network-config";
 
@@ -19,7 +20,9 @@ export default function TopBar() {
         <div className="flex items-center">
           <img
             alt="ssv.network staking"
-            src={isDark ? "/figma/logoStaking-dark.svg" : "/figma/logoStaking.svg"}
+            src={
+              isDark ? "/figma/logoStaking-dark.svg" : "/figma/logoStaking.svg"
+            }
             className="h-[32px] w-[160px]"
             width={160}
             height={32}
@@ -28,7 +31,11 @@ export default function TopBar() {
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
             {network.faucetUrl ? (
-              <a href={network.faucetUrl} target="_blank" rel="noopener noreferrer">
+              <a
+                href={network.faucetUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Button
                   className="flex h-12 items-center gap-3 rounded-[8px] bg-surface-50 px-4 text-sm"
                   type="button"
@@ -38,7 +45,11 @@ export default function TopBar() {
               </a>
             ) : null}
             {network.dvtUrl ? (
-              <a href={network.dvtUrl} target="_blank" rel="noopener noreferrer">
+              <a
+                href={network.dvtUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Button
                   className="flex h-12 items-center gap-3 rounded-[8px] bg-surface-50 px-4 text-sm"
                   type="button"
@@ -85,16 +96,7 @@ export default function TopBar() {
                         />
                       </span>
                     ) : null}
-                    {connected ? (
-                      <img
-                        src="/figma/metamask.png"
-                        alt=""
-                        className="size-6"
-                        width={24}
-                        height={24}
-                        aria-hidden="true"
-                      />
-                    ) : null}
+                    {connected ? <WalletLogo className="size-6" /> : null}
                     {connected ? account.displayName : "Connect Wallet"}
                   </button>
                 );

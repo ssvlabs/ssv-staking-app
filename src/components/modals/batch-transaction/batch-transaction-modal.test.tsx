@@ -108,6 +108,28 @@ describe("BatchTransactionModal", () => {
     expect(screen.queryByText("Waiting...")).not.toBeInTheDocument();
   });
 
+  it("multisig wallet: close button dismisses modal while tx still in flight (no machine close)", async () => {
+    vi.mocked(useAccount).mockReturnValue({
+      isContract: true,
+    } as ReturnType<typeof useAccount>);
+
+    useTransactionModal.state.open({
+      transactions: [{ write: mockWrite, label: "Approve SSV" }],
+      header: "Stake SSV",
+    });
+
+    render(<BatchTransactionModal />);
+
+    expect(useTransactionModal.state.isOpen).toBe(true);
+
+    const closeBtn = await screen.findByRole("button", {
+      name: STAKING_COPY.actions.close,
+    });
+    closeBtn.click();
+
+    expect(useTransactionModal.state.isOpen).toBe(false);
+  });
+
   it("regular wallet: string label on step 1; component label on step 2 updates with status", () => {
     vi.useFakeTimers();
     try {
