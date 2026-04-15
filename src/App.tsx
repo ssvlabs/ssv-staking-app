@@ -5,6 +5,7 @@ import { BatchTransactionModal } from "@/components/modals/batch-transaction";
 import TopBar from "@/components/top-bar";
 import Providers from "@/providers";
 import { StakingInterface } from "./components/staking-interface";
+import "@/lib/supabase";
 
 export function App() {
   return (
