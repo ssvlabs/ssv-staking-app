@@ -17,6 +17,8 @@ interface ImportMetaEnv {
   readonly VITE_MAINNET_STAKING_ADDRESS?: string;
   readonly VITE_MAINNET_VIEWS_ADDRESS?: string;
   readonly VITE_MAINNET_DVT_APP_URL?: string;
+  readonly VITE_SUPABASE_URL?: string;
+  readonly VITE_SUPABASE_PUBLISHABLE_KEY?: string;
 }
 
 interface ImportMeta {
