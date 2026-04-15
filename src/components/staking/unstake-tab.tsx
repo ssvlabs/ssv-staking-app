@@ -82,6 +82,7 @@ export const UnstakeTab: UnstakeTabFC = ({
   const handleDone = () => {
     refetchCssvBalance();
     refetchRequests();
+    form.reset();
   };
 
   const unstake = form.handleSubmit(({ amount }) => {

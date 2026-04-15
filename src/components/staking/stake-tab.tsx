@@ -118,6 +118,7 @@ export const StakeTab: StakeTabFC = ({
       onDone: () => {
         refetchSsvBalance();
         refetchAllowance();
+        form.reset();
       },
     });
   });
