@@ -146,7 +146,7 @@ export const UnstakeTab: UnstakeTabFC = ({
                 className="flex w-full items-center justify-between rounded-[12px] border border-[#e6eaf7] bg-[#f9fbfc] p-5 dark:border-[#34455a] dark:bg-[#0b1620]"
               >
                 <span className="flex-1 text-[24px] font-medium leading-[32px] text-[#97a5ba]">
-                  {formatToken(request.amount, tokenDecimals)} cSSV
+                  {formatToken(request.amount, tokenDecimals)} SSV
                 </span>
                 <div className="flex h-[32px] w-[188px] items-center justify-center overflow-hidden rounded-[4px] bg-[#e6eaf7] dark:bg-[#34455a]">
                   <span className="text-[12px] font-medium leading-[20px] text-[#63768b] dark:text-[#97a5ba]">
