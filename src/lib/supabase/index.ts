@@ -1,5 +1,6 @@
-import { proxy } from "valtio";
+import { proxy, useSnapshot } from "valtio";
 import { createClient } from "@supabase/supabase-js";
+import { useLocalStorage } from "react-use";
 
 const MAINTENANCE_ROW_ID = "ssv-staking";
 const MAINTENANCE_STORAGE_KEY = "__maintenance-live";
@@ -83,3 +84,18 @@ try {
 } catch (error) {
   console.error("Error initializing Supabase maintenance:", error);
 }
+
+/** Live flag from Supabase — applies to all users unless bypass is set. */
+const BYPASS_KEY = "bypassMaintenance";
+
+export const useMaintenance = () => {
+  const isLiveMaintenance = useSnapshot(maintenanceProxy).isActive || true
+
+  const [bypassMaintenance] = useLocalStorage(BYPASS_KEY, false, {
+    raw: false,
+    deserializer: (value) => value === "true",
+    serializer: (value) => String(value),
+  });
+
+  return { isMaintenance: isLiveMaintenance && !bypassMaintenance };
+};
