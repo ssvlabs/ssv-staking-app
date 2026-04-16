@@ -81,6 +81,8 @@ try {
       }
     )
     .subscribe();
+
+  console.log("Connected to Supabase");
 } catch (error) {
   console.error("Error initializing Supabase maintenance:", error);
 }
