@@ -91,7 +91,7 @@ try {
 const BYPASS_KEY = "bypassMaintenance";
 
 export const useMaintenance = () => {
-  const isLiveMaintenance = useSnapshot(maintenanceProxy).isActive || true
+  const isLiveMaintenance = useSnapshot(maintenanceProxy).isActive;
 
   const [bypassMaintenance] = useLocalStorage(BYPASS_KEY, false, {
     raw: false,
