@@ -83,7 +83,8 @@ export function StakingHeader({
           SSV Staking
         </p>
         <p className="text-[16px] font-medium leading-[24px] text-[#34455a] dark:text-[#e6eaf7]">
-          Stake your SSV tokens to earn ETH network fees.
+          Enable balance oracles for accurate on-chain reporting and earn ETH
+          fees
         </p>
       </div>
 
