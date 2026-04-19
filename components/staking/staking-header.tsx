@@ -1,13 +1,14 @@
 "use client";
 
 import Image from "next/image";
+import { useLocalStorage } from "react-use";
+import { useAccount } from "wagmi";
 
 import { formatApr, formatToken } from "@/lib/staking/format";
 import { InfoIcon } from "@/components/ui/info-icon";
 import { Tooltip } from "@/components/ui/tooltip";
+
 import { AprHistoryChart } from "../apr-history-chart";
-import { useAccount } from "wagmi";
-import { useLocalStorage } from "react-use";
 
 type StakingHeaderProps = {
   aprValue: number | null;
@@ -24,55 +25,55 @@ export function StakingHeader({
   totalStakedValue,
   tokenDecimals,
   ssvSmall,
-  calculatorIcon,
+  calculatorIcon
 }: StakingHeaderProps) {
   const aprBgPieces = [
     {
       light: "/figma/staking-apr-bg-light-1.svg",
       dark: "/figma/staking-apr-bg-dark-1.svg",
-      className: "absolute inset-[61%_36.2%_6.6%_36.44%]",
+      className: "absolute inset-[61%_36.2%_6.6%_36.44%]"
     },
     {
       light: "/figma/staking-apr-bg-light-2.svg",
       dark: "/figma/staking-apr-bg-dark-2.svg",
-      className: "absolute inset-[29%_53.64%_38.6%_19%]",
+      className: "absolute inset-[29%_53.64%_38.6%_19%]"
     },
     {
       light: "/figma/staking-apr-bg-light-3.svg",
       dark: "/figma/staking-apr-bg-dark-3.svg",
-      className: "absolute inset-[28.42%_18.92%_39.18%_53.72%]",
+      className: "absolute inset-[28.42%_18.92%_39.18%_53.72%]"
     },
     {
       light: "/figma/staking-apr-bg-light-4.svg",
       dark: "/figma/staking-apr-bg-dark-4.svg",
-      className: "absolute inset-[8%_36.57%_59.6%_36%]",
-    },
+      className: "absolute inset-[8%_36.57%_59.6%_36%]"
+    }
   ];
 
   const totalBgPieces = [
     {
       light: "/figma/staking-total-bg-light-1.svg",
       dark: "/figma/staking-total-bg-dark-1.svg",
-      className: "absolute inset-[61%_36.2%_6.6%_36.44%]",
+      className: "absolute inset-[61%_36.2%_6.6%_36.44%]"
     },
     {
       light: "/figma/staking-total-bg-light-2.svg",
       dark: "/figma/staking-total-bg-dark-2.svg",
-      className: "absolute inset-[29%_53.64%_38.6%_19%]",
+      className: "absolute inset-[29%_53.64%_38.6%_19%]"
     },
     {
       light: "/figma/staking-total-bg-light-3.svg",
       dark: "/figma/staking-total-bg-dark-3.svg",
-      className: "absolute inset-[28.42%_18.92%_39.18%_53.72%]",
+      className: "absolute inset-[28.42%_18.92%_39.18%_53.72%]"
     },
     {
       light: "/figma/staking-total-bg-light-4.svg",
       dark: "/figma/staking-total-bg-dark-4.svg",
-      className: "absolute inset-[8%_36.57%_59.6%_36%]",
-    },
+      className: "absolute inset-[8%_36.57%_59.6%_36%]"
+    }
   ];
 
-  const { chainId } = useAccount();
+  const { chainId, chain } = useAccount();
   const [showAprHistory] = useLocalStorage("showChart", false);
 
   return (
@@ -237,7 +238,9 @@ export function StakingHeader({
           </div>
         </div>
 
-        {showAprHistory && <AprHistoryChart chainId={chainId} />}
+        {(showAprHistory || chain?.testnet) && (
+          <AprHistoryChart chainId={chainId} />
+        )}
       </div>
     </section>
   );
