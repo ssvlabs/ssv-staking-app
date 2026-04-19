@@ -94,14 +94,7 @@ export function AprHistoryChart({ chainId }: AprHistoryChartProps) {
         apr: Number.isFinite(apr) ? apr : 0,
       };
     });
-    const last = samples[samples.length - 1];
-    const nextDay = new Date(last.timestamp);
-    nextDay.setDate(nextDay.getDate() + 1);
-    points.push({
-      date: formatChartDate(nextDay.toISOString()),
-      fullDate: nextDay.toISOString(),
-      apr: points[points.length - 1].apr,
-    });
+
     return points;
   }, [data]);
 
@@ -116,7 +109,7 @@ export function AprHistoryChart({ chainId }: AprHistoryChartProps) {
   if (isError || !data?.samples?.length) {
     return (
       <div className="flex min-h-[180px] items-center justify-center rounded-lg bg-surface-100 p-5">
-        <p className="text-sm text-ink-400">We fucked up</p>
+        <p className="text-sm text-ink-400">Unable to load APR history</p>
       </div>
     );
   }
