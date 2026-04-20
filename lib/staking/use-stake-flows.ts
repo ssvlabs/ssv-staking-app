@@ -463,7 +463,7 @@ export function useStakeFlows({
       return;
     }
 
-    const requiresApproval = cssvAllowanceValue < unstakeAmount;
+    const requiresApproval = false;
     if (isContractWallet) {
       if (requiresApproval) {
         await startUnstakeApprovalTransaction();
