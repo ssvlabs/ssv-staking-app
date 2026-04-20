@@ -24,14 +24,14 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "Stake SSV | SSV Network",
   description:
-    "Stake your SSV tokens to earn a share of SSV Network fees, paid in ETH.",
+    "Enable balance oracles for accurate on-chain reporting and earn ETH fees",
   icons: {
     icon: "/favicon.svg"
   },
   openGraph: {
     title: "Stake SSV | SSV Network",
     description:
-      "Stake your SSV tokens to earn a share of SSV Network fees, paid in ETH.",
+      "Enable balance oracles for accurate on-chain reporting and earn ETH fees",
     type: "website",
     images: [
       {
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Stake SSV | SSV Network",
     description:
-      "Stake your SSV tokens to earn a share of SSV Network fees, paid in ETH.",
+      "Enable balance oracles for accurate on-chain reporting and earn ETH fees",
     images: ["/OGStaking.png"]
   }
 };
