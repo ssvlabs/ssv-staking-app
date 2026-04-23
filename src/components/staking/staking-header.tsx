@@ -64,7 +64,7 @@ export const StakingHeader: FC<ComponentPropsWithoutRef<"section">> = ({
   className,
   ...props
 }) => {
-  const { chainId } = useAccount();
+  const { chainId, chain } = useAccount();
   const { tokenDecimals } = useStakingData();
 
   const { aprValue, potentialAprValue } = useAprMetric(chainId);
@@ -232,7 +232,9 @@ export const StakingHeader: FC<ComponentPropsWithoutRef<"section">> = ({
           </div>
         </div>
 
-        {showAprHistory && <AprHistoryChart chainId={chainId} />}
+        {(showAprHistory || chain?.testnet) && (
+          <AprHistoryChart chainId={chainId} />
+        )}
       </div>
     </section>
   );
