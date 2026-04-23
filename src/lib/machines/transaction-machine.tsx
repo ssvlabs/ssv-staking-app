@@ -10,7 +10,10 @@ export type TransactionStep = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   write: (...args: any[]) => any;
   params?: Record<string, unknown>;
-  label: string | FC<{ status: Status }>;
+  label:
+    | string
+    | FC<{ status: Status }>
+    | (Partial<Record<Status, string>> & { default: string });
 };
 
 export type TransactionState = TransactionStep & {
@@ -25,12 +28,19 @@ export type TransactionState = TransactionStep & {
 export function tx<T extends (...args: any) => any>(
   step: {
     write: T;
-    label: string | FC<{ status: Status }>;
+    label: TransactionStep["label"];
   } & (undefined extends Parameters<T>[0]
     ? { params?: Parameters<T>[0] }
     : { params: Parameters<T>[0] })
 ) {
   return step;
+}
+
+export function statusLabel(
+  status: Status,
+  map: Partial<Record<Status, string>> & { default: string }
+): string {
+  return map[status] ?? map.default;
 }
 
 type WriterInput = {

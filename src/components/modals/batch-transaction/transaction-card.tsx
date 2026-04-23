@@ -2,7 +2,10 @@ import type { FC, ComponentPropsWithoutRef } from "react";
 import { ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNetworkConfig } from "@/hooks/use-network-config";
-import type { TransactionState } from "@/lib/machines/transaction-machine";
+import {
+  statusLabel,
+  type TransactionState,
+} from "@/lib/machines/transaction-machine";
 import { formatTxHash } from "@/lib/staking/format";
 import { StepIndicator } from "./step-indicator";
 
@@ -12,10 +15,16 @@ export type TransactionCardProps = {
 };
 
 type TransactionCardFC = FC<
-  Omit<ComponentPropsWithoutRef<"div">, keyof TransactionCardProps> & TransactionCardProps
+  Omit<ComponentPropsWithoutRef<"div">, keyof TransactionCardProps> &
+    TransactionCardProps
 >;
 
-export const TransactionCard: TransactionCardFC = ({ tx, onRetry, className, ...props }) => {
+export const TransactionCard: TransactionCardFC = ({
+  tx,
+  onRetry,
+  className,
+  ...props
+}) => {
   const network = useNetworkConfig();
   const explorerBaseUrl = network.blockExplorer.txBaseUrl;
 
@@ -86,7 +95,13 @@ export const TransactionCard: TransactionCardFC = ({ tx, onRetry, className, ...
         )}
       >
         <p className="text-[16px] font-medium leading-[24px] text-ink-900">
-          {typeof Label === "string" ? Label : <Label status={tx.status} />}
+          {typeof Label === "string" ? (
+            Label
+          ) : typeof Label === "function" ? (
+            <Label status={tx.status} />
+          ) : (
+            statusLabel(tx.status, Label)
+          )}
         </p>
       </div>
       {renderAction()}

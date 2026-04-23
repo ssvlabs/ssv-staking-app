@@ -1,15 +1,15 @@
-import type { ComponentPropsWithoutRef, FC } from "react";
 import confetti from "canvas-confetti";
+import type { ComponentPropsWithoutRef, FC } from "react";
 import { formatEther } from "viem";
 
+import { PrimaryActionButton } from "@/components/ui/primary-action-button";
+import { useStakingData } from "@/hooks/use-staking-data";
 import { useClaimEthRewards } from "@/lib/contract-interactions/hooks/setter";
 import { tx } from "@/lib/machines/transaction-machine";
 import { useTransactionModal } from "@/lib/signals/modal";
 import { CLAIMABLE_DECIMALS, STAKING_ASSETS } from "@/lib/staking/constants";
 import { formatToken } from "@/lib/staking/format";
 import { cn } from "@/lib/utils";
-import { useStakingData } from "@/hooks/use-staking-data";
-import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 
 export type ClaimTabProps = {
   isConnected: boolean;
@@ -30,7 +30,12 @@ const fireConfetti = () => {
       confetti.shapeFromPath({
         path: "M0 0 H20 V10 H0 Z",
         matrix: new DOMMatrix([
-          size * 20, 0, 0, size * 20, -0.5 * 20, -0.25 * 20,
+          size * 20,
+          0,
+          0,
+          size * 20,
+          -0.5 * 20,
+          -0.25 * 20,
         ]),
       }),
     ],
@@ -61,7 +66,11 @@ export const ClaimTab: ClaimTabFC = ({
       transactions: [
         tx({
           write: claimEthRewards.write,
-          label: `Claim ${amountLabel} ETH`,
+          label: {
+            default: `Claim ${amountLabel} ETH`,
+            confirmed: `Claiming ${amountLabel} ETH`,
+            mined: `Claimed ${amountLabel} ETH`,
+          },
         }),
       ],
       header: "Claim ETH Rewards",
