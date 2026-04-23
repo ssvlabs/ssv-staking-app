@@ -52,6 +52,25 @@ const firstWriteCompletes = vi.fn(
   }
 );
 
+/** Staged writer: one tick fires onConfirmed, the next fires onMined. */
+const stagedWriteCompletes = vi.fn(
+  (params: {
+    options?: {
+      onConfirmed?: (h: `0x${string}`) => void;
+      onMined?: () => void;
+    };
+  }) => {
+    setTimeout(() => {
+      params?.options?.onConfirmed?.(
+        "0x2222222222222222222222222222222222222222222222222222222222222222"
+      );
+      setTimeout(() => {
+        params?.options?.onMined?.();
+      }, 0);
+    }, 0);
+  }
+);
+
 describe("BatchTransactionModal", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -159,5 +178,68 @@ describe("BatchTransactionModal", () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  it("regular wallet: object label renders the right text per status (default -> confirmed -> mined)", () => {
+    vi.useFakeTimers();
+    try {
+      useTransactionModal.state.open({
+        transactions: [
+          {
+            write: stagedWriteCompletes,
+            label: {
+              default: "Claim 1 ETH",
+              confirmed: "Claiming 1 ETH",
+              mined: "Claimed 1 ETH",
+            },
+          },
+        ],
+        header: "Claim ETH Rewards",
+      });
+
+      render(<BatchTransactionModal />);
+
+      expect(screen.getByText("Claim 1 ETH")).toBeInTheDocument();
+      expect(screen.queryByText("Claiming 1 ETH")).not.toBeInTheDocument();
+      expect(screen.queryByText("Claimed 1 ETH")).not.toBeInTheDocument();
+
+      act(() => {
+        vi.runOnlyPendingTimers();
+      });
+
+      expect(screen.getByText("Claiming 1 ETH")).toBeInTheDocument();
+      expect(screen.queryByText("Claim 1 ETH")).not.toBeInTheDocument();
+      expect(screen.queryByText("Claimed 1 ETH")).not.toBeInTheDocument();
+
+      act(() => {
+        vi.runOnlyPendingTimers();
+      });
+
+      expect(screen.getByText("Claimed 1 ETH")).toBeInTheDocument();
+      expect(screen.queryByText("Claim 1 ETH")).not.toBeInTheDocument();
+      expect(screen.queryByText("Claiming 1 ETH")).not.toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("regular wallet: object label falls back to `default` when current status has no entry", () => {
+    useTransactionModal.state.open({
+      transactions: [
+        {
+          write: mockWrite,
+          label: {
+            default: "Claim 1 ETH",
+            mined: "Claimed 1 ETH",
+          },
+        },
+      ],
+      header: "Claim ETH Rewards",
+    });
+
+    render(<BatchTransactionModal />);
+
+    expect(screen.getByText("Claim 1 ETH")).toBeInTheDocument();
+    expect(screen.queryByText("Claimed 1 ETH")).not.toBeInTheDocument();
   });
 });

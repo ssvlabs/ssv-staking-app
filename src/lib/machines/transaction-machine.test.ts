@@ -377,6 +377,41 @@ describe("BatchTransactionMachine", () => {
     actor.stop();
   });
 
+  it("label can be a status-keyed object with a default", async () => {
+    const write = mockWriter("0xhash", 5);
+
+    const txStep: TransactionStep = {
+      write,
+      params: { args: { amount: 1n } } as any,
+      label: {
+        default: "Claim 1 ETH",
+        confirmed: "Claiming 1 ETH",
+        mined: "Claimed 1 ETH",
+      },
+    };
+
+    const actor = createActor(machine);
+    actor.start();
+
+    actor.send({
+      type: "write",
+      transactions: [txStep],
+      header: "Test",
+    });
+
+    await waitFor(actor, (snap) => snap.value === "finished");
+
+    const tx = actor.getSnapshot().context.transactions[0];
+    expect(tx.label).toEqual({
+      default: "Claim 1 ETH",
+      confirmed: "Claiming 1 ETH",
+      mined: "Claimed 1 ETH",
+    });
+    expect(tx.status).toBe("mined");
+
+    actor.stop();
+  });
+
   it("full lifecycle: idle -> initiated -> confirmed -> mined -> finished", async () => {
     const hash = "0xlifecycle";
     const collectedStatuses: string[] = [];

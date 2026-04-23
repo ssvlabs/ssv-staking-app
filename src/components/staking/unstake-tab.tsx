@@ -86,14 +86,12 @@ export const UnstakeTab: UnstakeTabFC = ({
   };
 
   const unstake = form.handleSubmit(({ amount }) => {
-    const label = `Unstake ${formatToken(amount, tokenDecimals)} cSSV`;
-
     useTransactionModal.state.open({
       transactions: [
         tx({
           write: requestUnstake.write,
           params: { args: { amount } },
-          label,
+          label: `Unstake ${formatToken(amount, tokenDecimals)} cSSV`,
         }),
       ],
       header: "Unstake cSSV",
