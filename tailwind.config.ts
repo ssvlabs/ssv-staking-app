@@ -2,7 +2,7 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
   darkMode: "class",
-  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
+  content: ["./index.html", "./src/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
   theme: {
     extend: {
       borderRadius: {
@@ -37,7 +37,8 @@ const config: Config = {
         },
         staking: {
           primary: {
-            500: "var(--color-staking-primary-500)"
+            500: "var(--color-staking-primary-500)",
+            50: "var(--color-staking-primary-50)"
           }
         },
         cta: {

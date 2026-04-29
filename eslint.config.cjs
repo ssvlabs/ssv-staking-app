@@ -1,18 +1,23 @@
 const { defineConfig, globalIgnores } = require("eslint/config");
-const nextVitals = require("eslint-config-next/core-web-vitals");
-const nextTs = require("eslint-config-next/typescript");
 const prettier = require("eslint-config-prettier");
 const tailwindcss = require("eslint-plugin-tailwindcss");
+const reactHooks = require("eslint-plugin-react-hooks");
+const reactRefresh = require("eslint-plugin-react-refresh");
 
 const eslintConfig = defineConfig([
-  ...nextVitals,
-  ...nextTs,
   {
     plugins: {
       tailwindcss,
+      "react-hooks": reactHooks,
+      "react-refresh": reactRefresh,
     },
     rules: {
       ...tailwindcss.configs.recommended.rules,
+      ...reactHooks.configs.recommended.rules,
+      "react-refresh/only-export-components": [
+        "warn",
+        { allowConstantExport: true },
+      ],
     },
     settings: {
       tailwindcss: {
@@ -20,17 +25,12 @@ const eslintConfig = defineConfig([
         config: "./tailwind.config.ts",
         classRegex: "^(class(Name)?|tw)$",
       },
-      next: {
-        rootDir: ["./"],
-      },
     },
   },
   {
     rules: {
-      // Tailwind
       "tailwindcss/no-custom-classname": "off",
 
-      // TypeScript (basic rules - type-checked rules not available without parserOptions.project)
       "@typescript-eslint/array-type": "off",
       "@typescript-eslint/consistent-type-definitions": "off",
       "@typescript-eslint/no-unused-vars": [
@@ -43,14 +43,6 @@ const eslintConfig = defineConfig([
         },
       ],
       "@typescript-eslint/no-empty-object-type": "off",
-
-      // Standard react-hooks rules (rules-of-hooks, exhaustive-deps) are enabled via eslint-config-next
-      // Disable only the new React 19 strict rules added in Next.js 16
-      "react-hooks/refs": "off",
-      "react-hooks/set-state-in-effect": "off",
-      "react-hooks/immutability": "off",
-      "react-hooks/preserve-manual-memoization": "off",
-      "react-hooks/incompatible-library": "off",
     },
   },
   prettier,
@@ -67,11 +59,8 @@ const eslintConfig = defineConfig([
     }
   },
   globalIgnores([
-    ".next/**",
-    "out/**",
     "build/**",
-    "next-env.d.ts",
-    "scripts/**/*",
+    "node_modules/**",
   ]),
 ]);
 

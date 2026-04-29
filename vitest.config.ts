@@ -1,17 +1,17 @@
-import { dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import path from "path";
 import { defineConfig } from "vitest/config";
 
-const rootDir = dirname(fileURLToPath(import.meta.url));
-
 export default defineConfig({
+  esbuild: {
+    jsx: "automatic",
+  },
   test: {
     environment: "jsdom",
-    setupFiles: ["./vitest.setup.ts"]
+    setupFiles: ["./vitest.setup.ts"],
   },
   resolve: {
     alias: {
-      "@": rootDir
-    }
-  }
+      "@": path.resolve(__dirname, "src"),
+    },
+  },
 });
