@@ -23,7 +23,7 @@
     "@radix-ui/react-dialog": "^1.1.15",
     "@rainbow-me/rainbowkit": "2.2.10",
     "@supabase/supabase-js": "^2.103.1",
-    "@tanstack/react-query": "5.90.12",
+    "@tanstack/react-query": "5.100.6",
     "@xstate/react": "^6.1.0",
     "buffer": "^6.0.3",
     "canvas-confetti": "^1.9.4",
