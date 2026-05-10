@@ -1,9 +1,10 @@
 import type { ComponentPropsWithoutRef, FC } from "react";
+import { useMemo } from "react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
-import { formatUnits } from "viem";
+import { formatUnits, getAddress, isAddress } from "viem";
 
-import { cn } from "@/lib/utils";
+import { cn, safeLocalStorage } from "@/lib/utils";
 import { useStakingData, TOKEN_DECIMALS } from "@/hooks/use-staking-data";
 import { isOGHolder } from "@/lib/staking/genesis-allowlist";
 import { calculateBoost } from "@/lib/staking/genesis-boost";
@@ -21,11 +22,17 @@ export const GenesisCampaignBanner: FC<ComponentPropsWithoutRef<"div">> = ({
       ? Number(formatUnits(cssvBalance.value, TOKEN_DECIMALS))
       : undefined;
 
-  const isOG = isConnected && address ? isOGHolder(address) : false;
+  const isOG = useMemo(() => {
+    if (!isConnected || !address) return false;
+    const override = safeLocalStorage("boostWalletAddress");
+    if (override && isAddress(override) && getAddress(override) === getAddress(address)) return true;
+    return isOGHolder(address);
+  }, [isConnected, address]);
+
   const holderLabel = isOG ? "OG" : "New Holder";
   const boostValue =
     stakedSSV !== undefined ? calculateBoost(isOG, stakedSSV) : "–";
-  const boostIsValue = boostValue !== "–";
+  const boostIsValue = boostValue !== "–" && boostValue !== "0%";
 
   return (
     <div
@@ -56,7 +63,7 @@ export const GenesisCampaignBanner: FC<ComponentPropsWithoutRef<"div">> = ({
         />
       </div>
 
-      {/* SSV icon — Figma structure: outer flex (no overflow) → mirror wrapper → inner overflow-clip div */}
+      {/* Figma pixel-perfect — do not adjust */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute left-[-2px] flex h-[73px] w-[94px] items-center justify-center"
@@ -125,6 +132,7 @@ export const GenesisCampaignBanner: FC<ComponentPropsWithoutRef<"div">> = ({
       {/* Right-side: Connect Wallet (disconnected) OR TYPE/BOOST panel (connected) */}
       {!isConnected ? (
         <button
+          type="button"
           className="absolute right-3 top-1/2 -translate-y-1/2 h-[28px] rounded-[4px] bg-[rgba(232,246,254,0.2)] px-3 text-[10px] font-medium text-white whitespace-nowrap transition-colors hover:bg-[rgba(232,246,254,0.3)]"
           onClick={openConnectModal}
         >

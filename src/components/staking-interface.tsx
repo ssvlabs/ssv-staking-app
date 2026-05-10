@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 
-import { cn } from "@/lib/utils";
+import { cn, safeLocalStorage } from "@/lib/utils";
 import { ClaimTab } from "@/components/staking/claim-tab";
 import { GenesisCampaignBanner } from "@/components/staking/genesis-campaign-banner";
 import { StakeTab } from "@/components/staking/stake-tab";
@@ -13,6 +13,9 @@ import { StakingHeader } from "@/components/staking/staking-header";
 import { UnstakeTab } from "@/components/staking/unstake-tab";
 import { useNetworkConfig } from "@/hooks/use-network-config";
 
+const isGenesisCampaignActive =
+  import.meta.env.VITE_GENESIS_CAMPAIGN_ACTIVE === "true";
+
 export const StakingInterface: FC<ComponentPropsWithoutRef<"div">> = ({
   className,
   ...props
@@ -21,7 +24,9 @@ export const StakingInterface: FC<ComponentPropsWithoutRef<"div">> = ({
   const { openConnectModal } = useConnectModal();
   const [activeTab, setActiveTab] = useState("stake");
   const { chainId } = useNetworkConfig();
-  const showGenesisBanner = chainId === 1 || localStorage.getItem("showGenesisBanner") === "true";
+  const showGenesisBanner =
+    isGenesisCampaignActive &&
+    (chainId === 1 || safeLocalStorage("showGenesisBanner") === "true");
 
   const connectWallet = () => openConnectModal?.();
 

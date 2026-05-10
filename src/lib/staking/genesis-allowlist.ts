@@ -1,6 +1,7 @@
-import { getAddress, isAddress } from "viem";
+import { getAddress } from "viem";
 import raw from "@/assets/genesis-allowlist.csv?raw";
 
+// Addresses are public — bundled in JS chunk by design (campaign eligibility, not access control)
 const allowlist = new Set(
   raw
     .split("\n")
@@ -16,9 +17,5 @@ const allowlist = new Set(
     .filter((addr): addr is `0x${string}` => addr !== null)
 );
 
-export const isOGHolder = (address: string): boolean => {
-  const addr = getAddress(address);
-  const boostOverride = localStorage.getItem("boostWalletAddress");
-  if (boostOverride && isAddress(boostOverride) && getAddress(boostOverride) === addr) return true;
-  return allowlist.has(addr);
-};
+export const isOGHolder = (address: string): boolean =>
+  allowlist.has(getAddress(address));
