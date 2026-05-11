@@ -6,6 +6,7 @@ import { useAccount } from "wagmi";
 import { cn, safeLocalStorage } from "@/lib/utils";
 import { ClaimTab } from "@/components/staking/claim-tab";
 import { GenesisCampaignBanner } from "@/components/staking/genesis-campaign-banner";
+import { ImportantNote } from "@/components/staking/important-note";
 import { StakeTab } from "@/components/staking/stake-tab";
 import { StakeTabs } from "@/components/staking/stake-tabs";
 import { StakingBalances } from "@/components/staking/staking-balances";
@@ -63,6 +64,7 @@ export const StakingInterface: FC<ComponentPropsWithoutRef<"div">> = ({
           />
         }
       />
+      <ImportantNote />
     </div>
   );
 };
