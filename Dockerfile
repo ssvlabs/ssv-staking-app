@@ -1,13 +1,13 @@
 FROM node:24-alpine AS deps
 WORKDIR /app
 RUN apk add --no-cache python3 make g++
-RUN corepack enable
+RUN npm install -g pnpm@10.20.0
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 FROM node:24-alpine AS builder
 WORKDIR /app
-RUN corepack enable
+RUN npm install -g pnpm@10.20.0
 
 ARG MODE=stage
 ENV MODE=${MODE}
