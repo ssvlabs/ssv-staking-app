@@ -21,7 +21,7 @@ const Disclaimer = () => (
     >
       Terms &amp; Conditions
     </a>{" "}
-    and{" "}
+    ,{" "}
     <a
       className="font-semibold text-rk-accent-color"
       href="https://ssv.network/privacy-policy/"
@@ -30,7 +30,14 @@ const Disclaimer = () => (
     >
       Privacy Policy
     </a>
-    .
+    , and{" "}<a
+      className="font-semibold text-rk-accent-color"
+      href="https://ssv.network/legal/terms-and-conditions-for-cssv-genesis-boost-campaign/"
+      rel="noreferrer"
+      target="_blank"
+    >
+      cSSV Genesis Boost Campaign Terms
+    </a>
   </span>
 );
 

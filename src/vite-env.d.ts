@@ -19,6 +19,7 @@ interface ImportMetaEnv {
   readonly VITE_MAINNET_DVT_APP_URL?: string;
   readonly VITE_SUPABASE_URL?: string;
   readonly VITE_SUPABASE_PUBLISHABLE_KEY?: string;
+  readonly VITE_GENESIS_CAMPAIGN_ACTIVE?: string;
 }
 
 interface ImportMeta {
