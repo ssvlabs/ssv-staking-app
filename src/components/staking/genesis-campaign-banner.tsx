@@ -114,7 +114,7 @@ export const GenesisCampaignBanner: FC<ComponentPropsWithoutRef<"div">> = ({
       {/* Campaign text */}
       <div className="absolute left-[106px] top-1/2 -translate-y-1/2 flex flex-col items-start">
         <p className="text-[14px] font-bold leading-[20px] text-white whitespace-nowrap">
-          cSSV Genesis Campaign
+          cSSV Genesis Boost
         </p>
         <p className="text-[10px] font-medium leading-[12px] text-white whitespace-nowrap">
           Stake 50+ SSV to unlock up to 50% boosted rewards.{" "}
