@@ -22,10 +22,10 @@ export const ImportantNote: FC<ComponentPropsWithoutRef<"div">> = ({
         slashing penalties that may result in partial or total loss of staked
         assets due to validator misbehavior or downtime; (b) smart contract
         risk, including the possibility of bugs or vulnerabilities in the
-        protocol or infrastructure software; (c) illiquidity risk, as staked
-        assets may be subject to unbonding periods during which they cannot be
-        transferred or sold; (d) regulatory risk, as the legal and regulatory
-        treatment of staking activities and related tokens varies by
+        protocol or infrastructure software; {`(‌c)`} illiquidity risk, as
+        staked assets may be subject to unbonding periods during which they
+        cannot be transferred or sold; (d) regulatory risk, as the legal and
+        regulatory treatment of staking activities and related tokens varies by
         jurisdiction and is subject to change; and (e) protocol risk, including
         changes to the Ethereum network&apos;s consensus rules or reward
         structure. SSV Network does not guarantee any particular level of
