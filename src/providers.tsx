@@ -36,7 +36,7 @@ const Disclaimer = () => (
       rel="noreferrer"
       target="_blank"
     >
-      (cSSV Genesis Boost Campaign Terms)
+      cSSV Genesis Boost Campaign Terms
     </a>
   </span>
 );
