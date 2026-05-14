@@ -17,7 +17,7 @@ const MIN_STAKED_FOR_BOOST = 50;
 export const calculateBoost = (isOG: boolean, stakedSSV: number): string => {
   if (stakedSSV < MIN_STAKED_FOR_BOOST) return "–";
   const tiers = isOG ? OG_TIERS : NEW_HOLDER_TIERS;
-  const match = tiers.find(([threshold]) => stakedSSV >= threshold);
+  const match = tiers.find(([threshold]) => stakedSSV > threshold);
   if (!match) return "–";
   return match[1] === 0 ? "0%" : `+${match[1]}%`;
 };
