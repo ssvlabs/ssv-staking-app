@@ -46,7 +46,7 @@ const MOCK_RECEIPT = {
 
 // Mock useWaitForTransactionReceipt - invokes callbacks (must await async callbacks)
 vi.mock(
-  "@/lib/contract-interactions/utils/useWaitForTransactionReceipt",
+  "@/lib/contract-interactions/utils/use-wait-for-transaction-receipt",
   () => ({
     useWaitForTransactionReceipt: vi.fn(() => ({
       mutateAsync: vi.fn(
@@ -547,7 +547,7 @@ describe("createContractHooks", () => {
       it("should call onError when waitForTransactionReceipt fails", async () => {
         const mockError = new Error("Transaction reverted");
         const { useWaitForTransactionReceipt } = await import(
-          "@/lib/contract-interactions/utils/useWaitForTransactionReceipt"
+          "@/lib/contract-interactions/utils/use-wait-for-transaction-receipt"
         );
         vi.mocked(useWaitForTransactionReceipt).mockReturnValueOnce({
           mutateAsync: vi.fn(

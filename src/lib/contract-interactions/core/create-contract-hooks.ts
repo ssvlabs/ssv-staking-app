@@ -11,11 +11,11 @@ import { isAddress } from "viem";
 
 import type { QueryKey } from "@tanstack/react-query";
 import type { UseQueryOptions as DefaultUseQueryOptions } from "@tanstack/react-query";
-import { useWaitForTransactionReceipt } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
+import { useWaitForTransactionReceipt } from "@/lib/contract-interactions/utils/use-wait-for-transaction-receipt";
 import type {
   MutationOptions,
   AllEvents,
-} from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
+} from "@/lib/contract-interactions/utils/use-wait-for-transaction-receipt";
 import {
   paramsToArray,
   extractAbiFunction,
