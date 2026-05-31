@@ -64,15 +64,13 @@ export const StakingHeader: FC<ComponentPropsWithoutRef<"section">> = ({
   className,
   ...props
 }) => {
-  const { chainId, chain } = useAccount();
+  const { chainId } = useAccount();
   const { tokenDecimals } = useStakingData();
 
   const { aprValue, potentialAprValue } = useAprMetric(chainId);
   const { data: totalStakedRaw } = useTotalStaked();
 
   const totalStakedValue = totalStakedRaw as bigint | undefined;
-
-  const [showAprHistory] = useLocalStorage("showChart", false);
 
   return (
     <section
@@ -85,10 +83,6 @@ export const StakingHeader: FC<ComponentPropsWithoutRef<"section">> = ({
       <div className="flex flex-col gap-2">
         <p className="text-[20px] font-bold leading-[28px] text-[#0b2a3c] dark:text-[#fdfefe]">
           SSV Staking
-        </p>
-        <p className="text-[16px] font-medium leading-[24px] text-[#34455a] dark:text-[#e6eaf7]">
-          Enable balance oracles for accurate on-chain reporting and earn ETH
-          fees
         </p>
       </div>
 
@@ -232,9 +226,7 @@ export const StakingHeader: FC<ComponentPropsWithoutRef<"section">> = ({
           </div>
         </div>
 
-        {(showAprHistory || chain?.testnet) && (
-          <AprHistoryChart chainId={chainId} />
-        )}
+        <AprHistoryChart chainId={chainId} />
       </div>
     </section>
   );

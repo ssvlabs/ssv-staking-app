@@ -174,7 +174,7 @@ export function AprHistoryChart({ chainId }: AprHistoryChartProps) {
               cursor={<CursorWithGradient />}
             />
             <Area
-              type="stepAfter"
+              type="natural"
               dataKey="apr"
               stroke="var(--color-brand-500)"
               strokeWidth={1}
