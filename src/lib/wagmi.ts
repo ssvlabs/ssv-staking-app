@@ -8,6 +8,7 @@ import { defineChain, type Chain } from "viem";
 import { hoodi, mainnet } from "viem/chains";
 
 import { NETWORK_CONFIGS } from "@/lib/config";
+import { safeLocalStorage } from "@/lib/utils";
 
 const projectId = "c93804911b583e5cacf856eee58655e6";
 
@@ -75,6 +76,7 @@ const viemChainsByChainId: Record<number, Chain> = {
 
 // Dynamically generate chains from NETWORK_CONFIGS, using viem's configs as base
 const chainsArray = NETWORK_CONFIGS.map(config => {
+  const rpcUrl = safeLocalStorage(`customRpcUrl_${config.chainId}`) ?? config.rpcUrl;
   const baseChain = viemChainsByChainId[config.chainId];
 
   if (baseChain) {
@@ -86,7 +88,7 @@ const chainsArray = NETWORK_CONFIGS.map(config => {
       rpcUrls: {
         ...baseChain.rpcUrls,
         default: {
-          http: [config.rpcUrl]
+          http: [rpcUrl]
         }
       },
       // Override block explorer if custom one is provided
@@ -114,7 +116,7 @@ const chainsArray = NETWORK_CONFIGS.map(config => {
     },
     rpcUrls: {
       default: {
-        http: [config.rpcUrl]
+        http: [rpcUrl]
       }
     },
     blockExplorers: {
