@@ -74,15 +74,19 @@ const viemChainsByChainId: Record<number, Chain> = {
   560048: hoodi
 };
 
+const overrideChainId = safeLocalStorage("overrideChainId");
+
 // Dynamically generate chains from NETWORK_CONFIGS, using viem's configs as base
 const chainsArray = NETWORK_CONFIGS.map(config => {
-  const rpcUrl = safeLocalStorage(`customRpcUrl_${config.chainId}`) ?? config.rpcUrl;
+  const chainId = config.chainId === 1 && overrideChainId ? Number(overrideChainId) : config.chainId;
+  const rpcUrl = safeLocalStorage(`customRpcUrl_${chainId}`) ?? config.rpcUrl;
   const baseChain = viemChainsByChainId[config.chainId];
 
   if (baseChain) {
     // Use viem's chain config and override only what's needed
     return defineChain({
       ...baseChain,
+      id: chainId,
       iconBackground: "none",
       iconUrl: "/figma/ethereum_0-2171.svg",
       rpcUrls: {
