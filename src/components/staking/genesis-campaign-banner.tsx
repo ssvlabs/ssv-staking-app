@@ -1,37 +1,47 @@
 import type { ComponentPropsWithoutRef, FC } from "react";
-import { useMemo } from "react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 import { formatUnits, getAddress, isAddress } from "viem";
 
 import { cn, safeLocalStorage } from "@/lib/utils";
 import { useStakingData, TOKEN_DECIMALS } from "@/hooks/use-staking-data";
-import { isOGHolder } from "@/lib/staking/genesis-allowlist";
+import { useGenesisEligibility } from "@/lib/staking/use-genesis-eligibility";
 import { calculateBoost } from "@/lib/staking/genesis-boost";
 
 export const GenesisCampaignBanner: FC<ComponentPropsWithoutRef<"div">> = ({
   className,
   ...props
 }) => {
-  const { isConnected, address } = useAccount();
+  const { isConnected, address, chainId } = useAccount();
   const { openConnectModal } = useConnectModal();
   const { cssvBalance } = useStakingData();
+  const { isEligible: apiEligible, isLoading: isEligibilityLoading } =
+    useGenesisEligibility(chainId, address);
 
   const stakedSSV =
     cssvBalance?.value !== undefined
       ? Number(formatUnits(cssvBalance.value, TOKEN_DECIMALS))
       : undefined;
 
-  const isOG = useMemo(() => {
-    if (!isConnected || !address) return false;
-    const override = safeLocalStorage("boostWalletAddress");
-    if (override && isAddress(override) && getAddress(override) === getAddress(address)) return true;
-    return isOGHolder(address);
-  }, [isConnected, address]);
+  // QA override: force eligibility for a specific wallet via localStorage.
+  const override = safeLocalStorage("boostWalletAddress");
+  const forcedEligible =
+    !!address &&
+    !!override &&
+    isAddress(override) &&
+    getAddress(override) === getAddress(address);
+  const isEligible = forcedEligible || apiEligible;
 
-  const holderLabel = isOG ? "OG" : "New Holder";
-  const boostValue =
-    stakedSSV !== undefined ? calculateBoost(isOG, stakedSSV) : "–";
+  const eligibilityLabel = isEligibilityLoading
+    ? "…"
+    : isEligible
+      ? "Eligible"
+      : "Not eligible";
+  const boostValue = isEligibilityLoading
+    ? "–"
+    : stakedSSV !== undefined
+      ? calculateBoost(isEligible, stakedSSV)
+      : "–";
   const boostIsValue = boostValue !== "–" && boostValue !== "0%";
 
   return (
@@ -117,7 +127,7 @@ export const GenesisCampaignBanner: FC<ComponentPropsWithoutRef<"div">> = ({
           cSSV Genesis Boost
         </p>
         <p className="text-[10px] font-medium leading-[12px] text-white whitespace-nowrap">
-          Stake 50+ SSV to unlock up to 50% boosted rewards.{" "}
+          Held eligible LSTs at snapshot? Stake SSV for up to 20% boosted rewards.{" "}
           <a
             className="text-[#e0bbfe] underline"
             href="https://ssv.network/cssv"
@@ -140,14 +150,14 @@ export const GenesisCampaignBanner: FC<ComponentPropsWithoutRef<"div">> = ({
         </button>
       ) : (
         <div className="absolute right-[8px] top-1/2 -translate-y-1/2 flex items-center gap-[16px] rounded-[6px] bg-[rgba(232,246,254,0.2)] pl-[16px] pr-[8px] pb-[8px] pt-[8px]">
-          {/* TYPE */}
+          {/* STATUS */}
           <div className="flex flex-col gap-[2px] items-start">
             <span className="text-[8px] font-bold text-white/50 uppercase leading-normal">
-              TYPE
+              STATUS
             </span>
             <div className="flex items-center gap-[2px]">
               <span className="text-[14px] font-extrabold text-white leading-normal whitespace-nowrap">
-                {holderLabel}
+                {eligibilityLabel}
               </span>
             </div>
           </div>
