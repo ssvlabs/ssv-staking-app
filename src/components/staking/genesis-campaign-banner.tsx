@@ -121,35 +121,39 @@ export const GenesisCampaignBanner: FC<ComponentPropsWithoutRef<"div">> = ({
         </div>
       </div>
 
-      {/* Campaign text */}
-      <div className="absolute left-[106px] top-1/2 -translate-y-1/2 flex flex-col items-start">
-        <p className="text-[14px] font-bold leading-[20px] text-white whitespace-nowrap">
-          cSSV Syndicate Boost
-        </p>
-        <p className="text-[10px] font-medium leading-[12px] text-white whitespace-nowrap">
-          Held eligible LSTs at snapshot? Stake SSV for up to 20% boosted rewards.{" "}
-          <a
-            className="text-[#e0bbfe] underline"
-            href="https://ssv.network/cssv/syndicate"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Learn more.
-          </a>
-        </p>
-      </div>
+      {/* Content row — text shrinks/wraps to fit; the right panel stays fixed
+          width so the two can never overlap. */}
+      <div className="absolute inset-0 flex items-center gap-3 pl-[106px] pr-[8px]">
+        {/* Campaign text */}
+        <div className="flex min-w-0 flex-1 flex-col items-start">
+          <p className="text-[14px] font-bold leading-[20px] text-white">
+            cSSV Syndicate Boost
+          </p>
+          <p className="text-[10px] font-medium leading-[13px] text-white">
+            Held eligible LSTs at snapshot? Stake SSV for up to 20% boosted
+            rewards.{" "}
+            <a
+              className="text-[#e0bbfe] underline"
+              href="https://ssv.network/cssv/syndicate"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Learn more.
+            </a>
+          </p>
+        </div>
 
-      {/* Right-side: Connect Wallet (disconnected) OR TYPE/BOOST panel (connected) */}
-      {!isConnected ? (
-        <button
-          type="button"
-          className="absolute right-3 top-1/2 -translate-y-1/2 h-[28px] rounded-[4px] bg-[rgba(232,246,254,0.2)] px-3 text-[10px] font-medium text-white whitespace-nowrap transition-colors hover:bg-[rgba(232,246,254,0.3)]"
-          onClick={openConnectModal}
-        >
-          Connect Wallet
-        </button>
-      ) : (
-        <div className="absolute right-[8px] top-1/2 -translate-y-1/2 flex items-center gap-[16px] rounded-[6px] bg-[rgba(232,246,254,0.2)] pl-[16px] pr-[8px] pb-[8px] pt-[8px]">
+        {/* Right-side: Connect Wallet (disconnected) OR STATUS/BOOST panel (connected) */}
+        {!isConnected ? (
+          <button
+            type="button"
+            className="h-[28px] flex-none rounded-[4px] bg-[rgba(232,246,254,0.2)] px-3 text-[10px] font-medium text-white whitespace-nowrap transition-colors hover:bg-[rgba(232,246,254,0.3)]"
+            onClick={openConnectModal}
+          >
+            Connect Wallet
+          </button>
+        ) : (
+          <div className="flex flex-none items-center gap-[16px] rounded-[6px] bg-[rgba(232,246,254,0.2)] pl-[16px] pr-[8px] pb-[8px] pt-[8px]">
           {/* STATUS */}
           <div className="flex flex-col gap-[2px] items-start">
             <span className="text-[8px] font-bold text-white/50 uppercase leading-normal">
@@ -181,6 +185,7 @@ export const GenesisCampaignBanner: FC<ComponentPropsWithoutRef<"div">> = ({
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };
