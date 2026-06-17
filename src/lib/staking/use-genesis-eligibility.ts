@@ -33,7 +33,7 @@ async function fetchEligibility(
 }
 
 /**
- * Resolves cSSV Genesis Boost eligibility for the connected wallet by querying
+ * Resolves cSSV Syndicate Boost eligibility for the connected wallet by querying
  * the LST snapshot API exactly once per address. The result is cached for the
  * lifetime of the session (staleTime/gcTime Infinity, no refetch triggers), so
  * the request fires only when a wallet first connects.

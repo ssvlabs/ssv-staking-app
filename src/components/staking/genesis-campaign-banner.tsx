@@ -124,13 +124,13 @@ export const GenesisCampaignBanner: FC<ComponentPropsWithoutRef<"div">> = ({
       {/* Campaign text */}
       <div className="absolute left-[106px] top-1/2 -translate-y-1/2 flex flex-col items-start">
         <p className="text-[14px] font-bold leading-[20px] text-white whitespace-nowrap">
-          cSSV Genesis Boost
+          cSSV Syndicate Boost
         </p>
         <p className="text-[10px] font-medium leading-[12px] text-white whitespace-nowrap">
           Held eligible LSTs at snapshot? Stake SSV for up to 20% boosted rewards.{" "}
           <a
             className="text-[#e0bbfe] underline"
-            href="https://ssv.network/cssv"
+            href="https://ssv.network/cssv/syndicate"
             target="_blank"
             rel="noreferrer"
           >

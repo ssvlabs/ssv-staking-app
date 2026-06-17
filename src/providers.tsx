@@ -32,11 +32,11 @@ const Disclaimer = () => (
     </a>
     , and{" "}<a
       className="font-semibold text-rk-accent-color"
-      href="https://ssv.network/legal/terms-and-conditions-for-cssv-genesis-boost-campaign/"
+      href="https://ssv.network/legal/terms-and-conditions-for-cssv-syndicate-boost-campaign/"
       rel="noreferrer"
       target="_blank"
     >
-      cSSV Genesis Boost Campaign Terms
+      cSSV Syndicate Boost Campaign Terms
     </a>
   </span>
 );

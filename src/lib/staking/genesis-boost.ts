@@ -1,4 +1,4 @@
-// cSSV Genesis Boost tiers, effective 2026-06-09. Boost is gated on the June 5
+// cSSV Syndicate Boost tiers, effective 2026-06-09. Boost is gated on the June 5
 // LST snapshot (see use-genesis-eligibility): ineligible wallets always get 0%.
 // For eligible wallets the boost is determined by SSV staked, with no minimum
 // stake floor. Tiers (inclusive upper bound) — kept in lockstep with the
