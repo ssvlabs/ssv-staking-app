@@ -46,8 +46,13 @@ export const useAccount = () => {
       ({
         ...account,
         isContract: isMultisig || (isContractWallet.data ?? false),
+        isSafe: account.connector?.id === "safe",
         acceptedTerms: acceptedTerms.isSuccess,
-      } as typeof account & { isContract: boolean; acceptedTerms: boolean }),
+      } as typeof account & {
+        isContract: boolean;
+        isSafe: boolean;
+        acceptedTerms: boolean;
+      }),
     [account, isContractWallet.data, acceptedTerms.isSuccess]
   );
 };

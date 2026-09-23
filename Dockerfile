@@ -31,6 +31,11 @@ RUN printf 'server {\n\
   location / {\n\
     try_files $uri $uri/ /index.html;\n\
   }\n\
+  location = /manifest.json {\n\
+    add_header Access-Control-Allow-Origin "*";\n\
+    add_header Access-Control-Allow-Methods "GET";\n\
+    add_header Access-Control-Allow-Headers "X-Requested-With, content-type, Authorization";\n\
+  }\n\
 }\n' > /etc/nginx/conf.d/default.conf
 
 EXPOSE 3000

@@ -5,8 +5,10 @@ import type {
   WaitForTransactionReceiptErrorType,
 } from "viem";
 import { usePublicClient } from "wagmi";
-
 import type { WriteContractErrorType } from "wagmi/actions";
+
+import { waitForSafeTransaction } from "@/lib/safe";
+import { useAccount } from "@/hooks/use-account";
 
 export type AllEvents = Record<string, unknown>;
 
@@ -27,14 +29,16 @@ export const useWaitForTransactionReceipt = <T extends AllEvents = AllEvents>(
   key: MutationKey = [],
 ) => {
   const client = usePublicClient();
+  const { isSafe } = useAccount();
 
   return useMutation({
     mutationKey: ["waitForTransactionReceipt", ...key],
-    mutationFn: (hash: `0x${string}`) => {
+    mutationFn: async (hash: `0x${string}`) => {
       if (!client) {
         throw new Error("Public client not found");
       }
-      return client.waitForTransactionReceipt({ hash });
+      const txHash = isSafe ? await waitForSafeTransaction(hash) : hash;
+      return client.waitForTransactionReceipt({ hash: txHash });
     },
   });
 };

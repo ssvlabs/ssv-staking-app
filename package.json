@@ -1,7 +1,8 @@
 {
   "name": "ssv-staking-dashboard",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "type": "module",
+  "packageManager": "pnpm@10.20.0",
   "scripts": {
     "dev": "concurrently --raw --hide 1 \"vite\" \"pnpm generate:hooks:watch\"",
     "generate:hooks": "node scripts/generate-hook-exports.cjs",
@@ -22,6 +23,7 @@
     "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
     "@radix-ui/react-dialog": "^1.1.15",
     "@rainbow-me/rainbowkit": "2.2.10",
+    "@safe-global/safe-apps-sdk": "9.1.0",
     "@supabase/supabase-js": "^2.103.1",
     "@tanstack/react-query": "5.90.12",
     "@xstate/react": "^6.1.0",

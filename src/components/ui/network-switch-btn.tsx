@@ -2,14 +2,18 @@ import type { ComponentPropsWithRef, FC } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { FaChevronDown } from "react-icons/fa6";
 
+import { useAccount } from "@/hooks/use-account";
+
 export const NetworkSwitchBtn: FC<ComponentPropsWithRef<"button">> = (
   props
 ) => {
+  const { isSafe } = useAccount();
+
   return (
     <ConnectButton.Custom>
       {({ account, chain, openChainModal, mounted }) => {
         const connected = mounted && account && chain;
-        if (!connected) return null;
+        if (!connected || isSafe) return null;
 
         return (
           <button

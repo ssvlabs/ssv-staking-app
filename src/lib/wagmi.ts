@@ -2,6 +2,7 @@ import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 import {
   coinbaseWallet,
   metaMaskWallet,
+  safeWallet,
   walletConnectWallet
 } from "@rainbow-me/rainbowkit/wallets";
 import { defineChain, type Chain } from "viem";
@@ -41,9 +42,15 @@ const hasProviderFlag = (flag: keyof InjectedEthereumProvider) =>
     (provider: InjectedEthereumProvider) => provider?.[flag]
   );
 
+const isInIframe = typeof window !== "undefined" && window.parent !== window;
+
 const getWalletGroups = () => {
   const installedWallets = [];
   const popularWallets = [];
+
+  if (isInIframe) {
+    installedWallets.push(safeWallet);
+  }
 
   if (hasProviderFlag("isMetaMask")) {
     installedWallets.push(metaMaskWallet);

@@ -1,6 +1,6 @@
 import type { FC, ReactNode } from "react";
 import { toast } from "sonner";
-import type { Hash } from "viem";
+import type { Hash, TransactionReceipt } from "viem";
 import { assign, fromCallback, setup } from "xstate";
 import { getErrorMessage } from "../utils/wagmi";
 
@@ -49,7 +49,7 @@ type WriterInput = {
 
 const writerActor = fromCallback<
   | { type: "TX_CONFIRMED"; hash: Hash }
-  | { type: "TX_MINED" }
+  | { type: "TX_MINED"; hash?: Hash }
   | { type: "TX_ERROR"; error: unknown },
   WriterInput
 >(({ sendBack, input }) => {
@@ -62,9 +62,9 @@ const writerActor = fromCallback<
         params?.options?.onConfirmed?.(hash);
         sendBack({ type: "TX_CONFIRMED", hash });
       },
-      onMined: () => {
-        params?.options?.onMined?.();
-        sendBack({ type: "TX_MINED" });
+      onMined: (receipt?: TransactionReceipt) => {
+        params?.options?.onMined?.(receipt);
+        sendBack({ type: "TX_MINED", hash: receipt?.transactionHash });
       },
       onError: (error: unknown) => {
         params?.options?.onError?.(error);
@@ -103,7 +103,7 @@ export const machine = setup({
         }
       | { type: "close" }
       | { type: "TX_CONFIRMED"; hash: Hash }
-      | { type: "TX_MINED" }
+      | { type: "TX_MINED"; hash?: Hash }
       | { type: "TX_ERROR"; error: unknown },
   },
   actions: {
@@ -124,8 +124,12 @@ export const machine = setup({
         }),
     }),
     setMined: assign({
-      transactions: ({ context }) =>
-        updateTransaction(context.transactions, context.i, { status: "mined" }),
+      transactions: ({ context, event }) =>
+        updateTransaction(context.transactions, context.i, {
+          status: "mined",
+          // Replace the submitted hash with the executed one (Safe, speed-ups)
+          ...("hash" in event && event.hash ? { hash: event.hash } : {}),
+        }),
     }),
     setError: assign({
       transactions: ({ context }) =>
