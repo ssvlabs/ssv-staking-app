@@ -1,11 +1,11 @@
-FROM node:24-alpine AS deps
+FROM node:24-alpine@sha256:a34ab6d7f6f4813f4d0c5469d74685604b962fbdbf5793a7bc7b4998ecb867c8 AS deps
 WORKDIR /app
 RUN apk add --no-cache python3 make g++
 RUN npm install -g pnpm@10.20.0
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
-FROM node:24-alpine AS builder
+FROM node:24-alpine@sha256:a34ab6d7f6f4813f4d0c5469d74685604b962fbdbf5793a7bc7b4998ecb867c8 AS builder
 WORKDIR /app
 RUN npm install -g pnpm@10.20.0
 
@@ -19,7 +19,7 @@ COPY .env.${MODE} .env.production
 
 RUN pnpm run build
 
-FROM nginx:alpine AS runner
+FROM nginx:alpine@sha256:713fc2ebfd92e8217db451477182ee91944b123d2b1ee9fd5a8c6e91ca6c3a11 AS runner
 
 COPY --from=builder /app/build /usr/share/nginx/html
 
